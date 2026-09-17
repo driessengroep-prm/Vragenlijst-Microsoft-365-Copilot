@@ -1,0 +1,562 @@
+/* ==========================================================================
+   Driessen Groep - huisstijl
+   --------------------------------------------------------------------------
+   Alle kleuren, fonts en maten staan als variabele in :root. Wil je een
+   kleur bijstellen naar de exacte merkwaarde uit het huisstijlhandboek?
+   Pas hem hier aan; de rest van de site volgt automatisch.
+   ========================================================================== */
+
+:root {
+  /* Merkkleuren */
+  --dg-goud: #d9a93c;
+  --dg-goud-donker: #c2932c;
+  --dg-goud-licht: #f2e3c2;
+  --dg-groen: #1e4e4a;
+  --dg-groen-donker: #143835;
+  --dg-groen-licht: #e8f0ee;
+
+  /* Neutralen */
+  --dg-wit: #ffffff;
+  --dg-tekst: #333333;
+  --dg-tekst-zacht: #6b6b6b;
+  --dg-rand: #d5d5d5;
+  --dg-rand-zacht: #ececec;
+  --dg-achtergrond: #f6f6f4;
+
+  /* Statuskleuren voor de beheerdersomgeving */
+  --dg-status-groen: #2e7d5b;
+  --dg-status-blauw: #2b6b8f;
+  --dg-status-oranje: #c8761f;
+  --dg-status-rood: #b4453c;
+
+  /* Vorm */
+  --dg-radius: 4px;
+  --dg-radius-knop: 999px;
+  --dg-schaduw: 0 2px 14px rgba(0, 0, 0, 0.08);
+  --dg-kader: 1100px;
+
+  --dg-font: 'Poppins', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--dg-font);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--dg-tekst);
+  background: var(--dg-goud);
+}
+
+body.dg-body--neutraal {
+  background: var(--dg-achtergrond);
+}
+
+/* --------------------------------------------------------------- Header -- */
+
+.dg-header {
+  background: var(--dg-wit);
+  border-bottom: 1px solid var(--dg-rand-zacht);
+}
+
+.dg-header__binnen {
+  max-width: var(--dg-kader);
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.dg-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.dg-logo img {
+  display: block;
+  height: 46px;
+  width: auto;
+}
+
+.dg-header__titel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dg-groen);
+  letter-spacing: 0.01em;
+}
+
+/* ------------------------------------------------------------------ Kaart -- */
+
+.dg-kader {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 24px 72px;
+}
+
+.dg-kader--breed {
+  max-width: var(--dg-kader);
+}
+
+.dg-kaart {
+  background: var(--dg-wit);
+  border-radius: var(--dg-radius);
+  box-shadow: var(--dg-schaduw);
+  padding: 40px;
+}
+
+@media (max-width: 640px) {
+  .dg-kader {
+    padding: 24px 16px 48px;
+  }
+  .dg-kaart {
+    padding: 24px 20px;
+  }
+}
+
+/* ------------------------------------------------------------- Typografie -- */
+
+h1,
+h2,
+h3 {
+  color: var(--dg-groen);
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0 0 12px;
+}
+
+h1 {
+  font-size: 30px;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+h3 {
+  font-size: 16px;
+}
+
+.dg-inleiding {
+  color: var(--dg-tekst);
+  margin: 0 0 8px;
+}
+
+.dg-klein {
+  font-size: 13px;
+  color: var(--dg-tekst-zacht);
+}
+
+a {
+  color: var(--dg-groen);
+}
+
+/* --------------------------------------------------------------- Secties -- */
+
+.dg-sectie {
+  border-top: 1px solid var(--dg-rand-zacht);
+  margin-top: 32px;
+  padding-top: 28px;
+}
+
+.dg-sectie:first-of-type {
+  border-top: 0;
+  margin-top: 24px;
+  padding-top: 0;
+}
+
+.dg-sectie__titel {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.dg-sectie__toelichting {
+  margin: 0 0 20px;
+  color: var(--dg-tekst-zacht);
+  font-size: 14px;
+}
+
+/* ------------------------------------------------------------------ Vraag -- */
+
+.dg-vraag {
+  margin: 0 0 28px;
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.dg-vraag__label,
+.dg-vraag > legend {
+  display: block;
+  font-weight: 600;
+  color: var(--dg-groen);
+  font-size: 15px;
+  margin-bottom: 4px;
+  padding: 0;
+}
+
+.dg-vraag__toelichting {
+  font-size: 13px;
+  color: var(--dg-tekst-zacht);
+  margin: 0 0 10px;
+}
+
+.dg-verplicht {
+  color: var(--dg-goud-donker);
+  font-weight: 700;
+  margin-left: 2px;
+}
+
+/* --------------------------------------------------------- Invoervelden -- */
+
+.dg-veld {
+  width: 100%;
+  padding: 9px 12px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--dg-tekst);
+  background: var(--dg-wit);
+  border: 1px solid var(--dg-rand);
+  border-radius: var(--dg-radius);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dg-veld:focus,
+.dg-veld:focus-visible {
+  outline: none;
+  border-color: var(--dg-goud);
+  box-shadow: 0 0 0 3px rgba(217, 169, 60, 0.25);
+}
+
+textarea.dg-veld {
+  min-height: 130px;
+  resize: vertical;
+}
+
+.dg-veld--fout {
+  border-color: var(--dg-status-rood);
+}
+
+.dg-veldrij {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 560px) {
+  .dg-veldrij {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dg-fout {
+  display: block;
+  color: var(--dg-status-rood);
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+/* --------------------------------------------- Keuzelijsten (radio/check) -- */
+
+.dg-opties {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.dg-optie {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.dg-optie input[type='radio'],
+.dg-optie input[type='checkbox'] {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: var(--dg-goud);
+  cursor: pointer;
+}
+
+.dg-optie:hover {
+  color: var(--dg-groen);
+}
+
+.dg-optie-anders {
+  margin: 8px 0 0 28px;
+  max-width: 420px;
+}
+
+/* ----------------------------------------------------------- Matrixvraag -- */
+
+.dg-matrix {
+  margin-top: 12px;
+  border: 1px solid var(--dg-rand-zacht);
+  border-radius: var(--dg-radius);
+  overflow: hidden;
+}
+
+.dg-matrix__kop {
+  display: none;
+}
+
+.dg-matrix__rij {
+  border-top: 1px solid var(--dg-rand-zacht);
+  padding: 14px 16px;
+  min-width: 0;
+}
+
+/* De kop is het eerste kind; de rijen beginnen dus bij nth-child(2). */
+.dg-matrix__rij:nth-child(2) {
+  border-top: 0;
+}
+
+.dg-matrix__rij:nth-child(even) {
+  background: #fbfaf7;
+}
+
+.dg-matrix__rijlabel {
+  display: block;
+  padding: 0 0 8px;
+  font-weight: 600;
+  color: var(--dg-groen);
+  font-size: 14px;
+}
+
+.dg-matrix__opties {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.dg-matrix__optie {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.dg-matrix__optie input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--dg-goud);
+  cursor: pointer;
+}
+
+/* Vanaf tablet tonen we de matrix als een echte tabel met kolomkoppen. */
+@media (min-width: 760px) {
+  .dg-matrix__kop {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) repeat(var(--dg-kolommen), minmax(0, 1fr));
+    background: var(--dg-groen-licht);
+    padding: 10px 16px;
+    gap: 8px;
+  }
+
+  .dg-matrix__kopcel {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--dg-groen);
+    line-height: 1.3;
+    text-align: center;
+  }
+
+  .dg-matrix__kopcel:first-child {
+    text-align: left;
+  }
+
+  .dg-matrix__rij {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) repeat(var(--dg-kolommen), minmax(0, 1fr));
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dg-matrix__rijlabel {
+    padding: 0;
+    font-weight: 500;
+    color: var(--dg-tekst);
+  }
+
+  .dg-matrix__opties {
+    display: contents;
+  }
+
+  .dg-matrix__optie {
+    justify-content: center;
+  }
+
+  .dg-matrix__optietekst {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+/* ----------------------------------------------------------------- Knop -- */
+
+.dg-knop {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 30px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--dg-wit);
+  background: var(--dg-goud);
+  border: 1px solid var(--dg-goud);
+  border-radius: var(--dg-radius-knop);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.dg-knop:hover:not(:disabled) {
+  background: var(--dg-goud-donker);
+  border-color: var(--dg-goud-donker);
+}
+
+.dg-knop:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dg-knop--secundair {
+  background: transparent;
+  color: var(--dg-groen);
+  border-color: var(--dg-groen);
+}
+
+.dg-knop--secundair:hover:not(:disabled) {
+  background: var(--dg-groen);
+  color: var(--dg-wit);
+  border-color: var(--dg-groen);
+}
+
+.dg-knop--klein {
+  padding: 7px 18px;
+  font-size: 14px;
+}
+
+.dg-versturen {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--dg-rand-zacht);
+}
+
+.dg-versturen__hint {
+  font-weight: 700;
+  color: var(--dg-tekst);
+  font-size: 14px;
+}
+
+/* --------------------------------------------------------------- Meldingen -- */
+
+.dg-melding {
+  padding: 14px 16px;
+  border-radius: var(--dg-radius);
+  border-left: 4px solid;
+  margin: 20px 0;
+  font-size: 14px;
+}
+
+.dg-melding--fout {
+  background: #fdf1f0;
+  border-color: var(--dg-status-rood);
+  color: #7d2f28;
+}
+
+.dg-melding--info {
+  background: var(--dg-groen-licht);
+  border-color: var(--dg-groen);
+  color: var(--dg-groen-donker);
+}
+
+.dg-melding[hidden] {
+  display: none;
+}
+
+/* ------------------------------------------------------------ Voortgang -- */
+
+.dg-voortgang {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: 4px;
+  background: var(--dg-rand-zacht);
+}
+
+.dg-voortgang__balk {
+  height: 100%;
+  width: 0;
+  background: var(--dg-goud);
+  transition: width 0.25s ease;
+}
+
+/* --------------------------------------------------------------- Footer -- */
+
+.dg-footer {
+  text-align: center;
+  padding: 24px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.dg-body--neutraal .dg-footer {
+  color: var(--dg-tekst-zacht);
+}
+
+/* ----------------------------------------------------------- Toegankelijk -- */
+
+.dg-verborgen {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}

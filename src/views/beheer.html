@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Beheer vragenlijst Copilot | Driessen Groep</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/css/driessen.css" />
+    <link rel="stylesheet" href="/assets/css/beheer.css" />
+  </head>
+  <body class="dg-body--neutraal">
+    <header class="dg-header">
+      <div class="dg-header__binnen">
+        <a class="dg-logo" href="/beheer">
+          <img src="/assets/img/logo.svg" alt="Driessen Groep" />
+        </a>
+        <span class="dg-header__titel">Beheer &middot; Microsoft 365 Copilot-aanvragen</span>
+      </div>
+    </header>
+
+    <main class="dg-kader dg-kader--breed">
+      <div class="dg-beheer__kop">
+        <div>
+          <h1>Ingezonden vragenlijsten</h1>
+          <p class="dg-klein" id="aantalmelding">Bezig met laden…</p>
+        </div>
+        <div>
+          <a class="dg-knop dg-knop--secundair dg-knop--klein" href="/api/beheer/export.csv">Exporteer naar CSV</a>
+        </div>
+      </div>
+
+      <div class="dg-melding dg-melding--fout" id="foutmelding" role="alert" hidden></div>
+
+      <!-- Samenvatting per adviescategorie -->
+      <div class="dg-tegels" id="tegels"></div>
+
+      <!-- Filters -->
+      <div class="dg-filters">
+        <div class="dg-filter">
+          <label for="filter-categorie">Adviescategorie</label>
+          <select class="dg-veld" id="filter-categorie">
+            <option value="">Alle categorieën</option>
+          </select>
+        </div>
+        <div class="dg-filter">
+          <label for="filter-besluit">Besluit</label>
+          <select class="dg-veld" id="filter-besluit">
+            <option value="">Alle besluiten</option>
+          </select>
+        </div>
+        <div class="dg-filter">
+          <label for="filter-zoek">Zoeken</label>
+          <input class="dg-veld" id="filter-zoek" type="search" placeholder="Naam, e-mail of afdeling" />
+        </div>
+        <div class="dg-filters__rechts">
+          <button class="dg-knop dg-knop--secundair dg-knop--klein" type="button" id="wisfilters">
+            Filters wissen
+          </button>
+        </div>
+      </div>
+
+      <!-- Overzichtstabel -->
+      <div class="dg-tabelwikkel">
+        <table class="dg-tabel">
+          <thead>
+            <tr>
+              <th scope="col">Naam</th>
+              <th scope="col">Afdeling</th>
+              <th scope="col">Ingezonden</th>
+              <th scope="col">Score-opbouw</th>
+              <th scope="col" style="text-align: right">Totaal</th>
+              <th scope="col">Advies</th>
+              <th scope="col">Besluit</th>
+            </tr>
+          </thead>
+          <tbody id="tabelinhoud"></tbody>
+        </table>
+        <div class="dg-leeg" id="leegmelding" hidden>Er zijn nog geen inzendingen die aan dit filter voldoen.</div>
+      </div>
+
+      <details class="dg-uitklap" style="margin-top: 22px">
+        <summary>Hoe wordt de score berekend?</summary>
+        <div id="modeluitleg" class="dg-klein"></div>
+      </details>
+    </main>
+
+    <!-- Detailpaneel -->
+    <div class="dg-detail__overlay" id="detailoverlay" hidden></div>
+    <aside class="dg-detail" id="detail" hidden aria-label="Details van de inzending" tabindex="-1"></aside>
+
+    <script src="/assets/js/beheer.js"></script>
+  </body>
+</html>
