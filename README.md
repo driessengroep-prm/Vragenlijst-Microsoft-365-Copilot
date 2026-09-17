@@ -56,10 +56,11 @@ GitHub Pages moet nog aangezet worden; dat kan alleen via de repository-instelli
 
 1. Ga naar **Settings** &rarr; **Pages** in de repository.
 2. Zet **Source** op *Deploy from a branch*.
-3. Kies bij **Branch** de branch `claude/friendly-fermat-k2x1ur` en de map **`/docs`**.
+3. Kies bij **Branch** de branch `main` en de map **`/docs`**.
 4. Klik op **Save**. Na een minuut staat de site op bovenstaande adressen.
 
-Merge je de branch later naar `main`? Zet de branch in stap 3 dan om naar `main`.
+Vanaf dat moment werkt elke push naar `main` die `docs/` wijzigt de testversie automatisch
+bij; je hoeft deze instelling maar één keer te doen.
 
 ### Let op
 
