@@ -13,7 +13,9 @@
  * `npm run migrate`. De rest van de applicatie volgt automatisch.
  *
  * Let op: elk antwoordveld krijgt een kolom in de database met exact dezelfde
- * naam als het `id` hieronder.
+ * naam als het `id` hieronder. Die id's liggen vast, ook als de nummering van
+ * de vragen verandert: vraag 7 (de open vraag) is vervallen, waardoor de
+ * vragen met id v8, v9 en v10 nu als vraag 7, 8 en 9 worden getoond.
  */
 
 /** Antwoordschalen die we vaker gebruiken. `punten` bepaalt de score. */
@@ -214,24 +216,11 @@ const VRAGEN = [
     ],
     onderdeel: 'businesswaarde',
   },
-  {
-    id: 'v7',
-    deel: 3,
-    nummer: 7,
-    type: 'tekstvlak',
-    vraag: 'Kun je één concreet voorbeeld beschrijven waarbij Copilot jou structureel zou helpen?',
-    toelichting:
-      'Beschrijf zo concreet mogelijk wát je doet, hoe vaak dat voorkomt en wat het je nu kost. Hoe concreter je voorbeeld, hoe beter we je aanvraag kunnen beoordelen.',
-    verplicht: true,
-    maxLengte: 2000,
-    onderdeel: 'usecase',
-  },
-
   // ---------------------------------------------------------------- Deel 4 --
   {
     id: 'v8',
     deel: 4,
-    nummer: 8,
+    nummer: 7,
     type: 'radio',
     vraag: 'Maak je al gebruik van Copilot Chat?',
     verplicht: true,
@@ -246,7 +235,7 @@ const VRAGEN = [
   {
     id: 'v9',
     deel: 4,
-    nummer: 9,
+    nummer: 8,
     type: 'radio',
     vraag: 'Hoe beoordeel je jouw vaardigheid in het werken met AI?',
     verplicht: true,
@@ -261,7 +250,7 @@ const VRAGEN = [
   {
     id: 'v10',
     deel: 4,
-    nummer: 10,
+    nummer: 9,
     type: 'radio',
     vraag: 'Ben je bereid tijd te investeren in het leren gebruiken van Microsoft 365 Copilot?',
     verplicht: true,

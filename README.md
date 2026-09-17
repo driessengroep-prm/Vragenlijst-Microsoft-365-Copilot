@@ -2,8 +2,8 @@
 
 Webformulier waarmee medewerkers de vragenlijst *Microsoft 365 Copilot* invullen, plus een
 beheerdersomgeving waarin je per inzending ziet of je voor die persoon een Copilot-licentie
-zou moeten afsluiten. De beoordeling volgt het beoordelingsmodel (40/30/20/10 met vier
-adviescategorieën).
+zou moeten afsluiten. De score wordt volledig berekend uit de meerkeuzeantwoorden
+(50/38/12 met vier adviescategorieën).
 
 Alles staat in Driessen Groep-huisstijl: goud, donkergroen, witte kaart en afgeronde knoppen.
 
@@ -142,6 +142,15 @@ Controleer de verbinding met `curl http://localhost:3000/gezondheid`.
 aangemaakt. Bestaat hij al, dan worden alleen ontbrekende kolommen toegevoegd — bestaande
 gegevens blijven staan.
 
+Het script verwijdert nooit kolommen. Heb je de tabel aangemaakt toen de vragenlijst nog een
+open vraag 7 bevatte, dan blijven `v7`, `score_usecase`, `score_usecase_automatisch` en
+`usecase_score_handmatig` bestaan. Ze worden niet meer gevuld en mogen weg; dat doe je
+desgewenst zelf, bijvoorbeeld met `ALTER TABLE copilot_aanvragen DROP COLUMN v7;`.
+
+Scores van eerdere inzendingen worden bij het openen van de beheerdersomgeving opnieuw
+berekend met het huidige model, dus oude en nieuwe inzendingen blijven onderling
+vergelijkbaar.
+
 ---
 
 ## 4. Wat komt er in de database te staan?
@@ -157,12 +166,9 @@ JSON, zodat er niets verloren gaat.
 | --- | --- |
 | `id` | Volgnummer van de inzending |
 | `ingezonden_op` | Tijdstip van inzenden |
-| `score_informatiewerk` | Deelscore informatiewerk (max. 40) |
-| `score_businesswaarde` | Deelscore verwachte businesswaarde (max. 30) |
-| `score_usecase_automatisch` | Automatische indicatie voor vraag 7 (max. 20) |
-| `score_usecase` | Score die daadwerkelijk meetelt voor vraag 7 |
-| `usecase_score_handmatig` | Jouw handmatige score, of leeg als je de automatische aanhoudt |
-| `score_volwassenheid` | Deelscore AI-volwassenheid (max. 10) |
+| `score_informatiewerk` | Deelscore informatiewerk (max. 50) |
+| `score_businesswaarde` | Deelscore verwachte businesswaarde (max. 38) |
+| `score_volwassenheid` | Deelscore AI-volwassenheid (max. 12) |
 | `score_totaal` | Totaalscore (0-100) |
 | `advies_categorie` | `direct_kandidaat`, `pilotgroep`, `nog_niet` of `geen_businesscase` |
 | `besluit` | `nieuw`, `licentie_toekennen`, `pilot`, `nog_niet` of `afgewezen` |
@@ -187,21 +193,24 @@ aantal punten dat die keuze oplevert.
 | `v1_documenten` | 1. Documenten schrijven | minder_dan_2_uur (0), 2_tot_5_uur (1), 5_tot_10_uur (2), meer_dan_10_uur (3) |
 | `v1_presentaties` | 1. Presentaties maken | minder_dan_2_uur (0), 2_tot_5_uur (1), 5_tot_10_uur (2), meer_dan_10_uur (3) |
 | `v1_zoeken` | 1. Informatie zoeken in documenten, Teams of SharePoint | minder_dan_2_uur (0), 2_tot_5_uur (1), 5_tot_10_uur (2), meer_dan_10_uur (3) |
-| `v2` | 2. Werk je regelmatig met grote hoeveelheden informatie uit ver | nooit (0), soms (1), regelmatig (2), dagelijks (3) |
-| `v3` | 3. Met hoeveel collega's werk je gemiddeld samen binnen Microso | 1_tot_5 (0), 6_tot_10 (1), 11_tot_25 (2), meer_dan_25 (3) |
+| `v2` | 2. Werk je regelmatig met grote hoeveelheden informatie uit v | nooit (0), soms (1), regelmatig (2), dagelijks (3) |
+| `v3` | 3. Met hoeveel collega's werk je gemiddeld samen binnen Micro | 1_tot_5 (0), 6_tot_10 (1), 11_tot_25 (2), meer_dan_25 (3) |
 | `v4_oude_mails` | 4. Ik zoek informatie in oude mails | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_documenten_kwijt` | 4. Ik zoek documenten waarvan ik niet meer weet waar ze staan | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_vergadering_voorbereiden` | 4. Ik moet vergaderingen voorbereiden | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_context_missen` | 4. Ik mis soms context omdat ik niet bij eerdere gesprekken aanwezig was | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_informatie_combineren` | 4. Ik moet informatie uit meerdere documenten combineren | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_samenvatten` | 4. Ik maak samenvattingen van lange documenten of overleggen | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
-| `v5` | 5. Welke van onderstaande werkzaamheden zouden volgens jou het  | kommagescheiden lijst van gekozen waarden |
+| `v5` | 5. Welke van onderstaande werkzaamheden zouden volgens jou he | kommagescheiden lijst van gekozen waarden |
 | `v5_anders` | Toelichting bij "Anders, namelijk" | vrije tekst |
-| `v6` | 6. Hoeveel tijd denk je wekelijks te kunnen besparen met Copilo | minder_dan_30_min (0), 30_tot_60_min (1), 1_tot_2_uur (2), 2_tot_4_uur (3), meer_dan_4_uur (4) |
-| `v7` | 7. Kun je één concreet voorbeeld beschrijven waarbij Copilot jo | vrije tekst |
-| `v8` | 8. Maak je al gebruik van Copilot Chat? | nee (0), af_en_toe (1), regelmatig (2), dagelijks (3) |
-| `v9` | 9. Hoe beoordeel je jouw vaardigheid in het werken met AI? | beginner (0), basis (1), gevorderd (2), expert (3) |
-| `v10` | 10. Ben je bereid tijd te investeren in het leren gebruiken van  | nee (0), beperkt (1), ja (2), ja_en_delen (3) |
+| `v6` | 6. Hoeveel tijd denk je wekelijks te kunnen besparen met Copi | minder_dan_30_min (0), 30_tot_60_min (1), 1_tot_2_uur (2), 2_tot_4_uur (3), meer_dan_4_uur (4) |
+| `v8` | 7. Maak je al gebruik van Copilot Chat? | nee (0), af_en_toe (1), regelmatig (2), dagelijks (3) |
+| `v9` | 8. Hoe beoordeel je jouw vaardigheid in het werken met AI? | beginner (0), basis (1), gevorderd (2), expert (3) |
+| `v10` | 9. Ben je bereid tijd te investeren in het leren gebruiken va | nee (0), beperkt (1), ja (2), ja_en_delen (3) |
+
+De kolomnamen liggen vast en veranderen niet als de nummering van de vragen wijzigt. De
+oorspronkelijke vraag 7 (een open vraag) is vervallen; daardoor staan de vragen met kolomnaam
+`v8`, `v9` en `v10` nu op het formulier als vraag 7, 8 en 9.
 
 Handige query om te zien wie in aanmerking komt:
 
@@ -216,62 +225,56 @@ ORDER BY score_totaal DESC;
 
 ## 5. Het beoordelingsmodel
 
-De totaalscore van 100 punten is opgebouwd uit vier onderdelen, precies volgens het
-beoordelingskader:
+De score wordt volledig berekend uit de meerkeuzeantwoorden. De open vraag naar een concreet
+use case-voorbeeld is vervallen; de 20 punten daarvan zijn herverdeeld over de overgebleven
+onderdelen.
 
-| Onderdeel | Vragen | Gewicht |
-| --- | --- | --- |
-| Informatiewerk | 1 t/m 4 | 40 punten |
-| Verwachte businesswaarde | 5 en 6 | 30 punten |
-| Concreet use case voorbeeld | 7 | 20 punten |
-| AI-volwassenheid | 8 t/m 10 | 10 punten |
+| Onderdeel | Vragen | In het kader | Nu |
+| --- | --- | --- | --- |
+| Informatiewerk | 1 t/m 4 | 40% | **50 punten** |
+| Verwachte businesswaarde | 5 en 6 | 30% | **38 punten** |
+| Concreet use case voorbeeld | (vervallen) | 20% | – |
+| AI-volwassenheid | 7 t/m 9 | 10% | **12 punten** |
 
 De totaalscore bepaalt de adviescategorie:
 
 | Score | Advies | Betekenis |
 | --- | --- | --- |
-| 80-100 | **Direct kandidaat** | Licentie toekennen |
-| 60-79 | **Pilotgroep** | Toekennen met proefperiode van 2-3 maanden |
-| 40-59 | **Nog niet** | Eerst optimaal leren werken met Copilot Chat binnen E5 |
-| 0-39 | **Geen businesscase** | Geen aanvullende Copilot-licentie |
+| vanaf 80 | **Direct kandidaat** | Licentie toekennen |
+| 60 tot 80 | **Pilotgroep** | Toekennen met proefperiode van 2-3 maanden |
+| 40 tot 60 | **Nog niet** | Eerst optimaal leren werken met Copilot Chat binnen E5 |
+| onder 40 | **Geen businesscase** | Geen aanvullende Copilot-licentie |
+
+Een score kan een decimaal hebben, dus de categorie wordt bepaald op de ondergrens: 59,6
+punten valt onder *Nog niet*, 79,9 onder *Pilotgroep*.
 
 ### Hoe de punten binnen een onderdeel verdeeld zijn
 
-Het kader geeft de gewichten; de verdeling daarbinnen is als volgt ingevuld. Elke
-antwoordoptie heeft een puntenwaarde (zie de tabel in hoofdstuk 4). Binnen een onderdeel
+Elke antwoordoptie heeft een puntenwaarde (zie de tabel in hoofdstuk 4). Binnen een onderdeel
 worden die punten opgeteld en daarna naar het gewicht van dat onderdeel geschaald.
 
-- **Informatiewerk (40 punten)** — de vijf activiteiten uit vraag 1, vraag 2, vraag 3 en de
+- **Informatiewerk (50 punten)** — de vijf activiteiten uit vraag 1, vraag 2, vraag 3 en de
   zes situaties uit vraag 4 tellen allemaal mee. Wie overal het hoogste antwoord geeft,
-  haalt de volle 40 punten.
-- **Verwachte businesswaarde (30 punten)** — de verwachte tijdwinst uit vraag 6 weegt het
-  zwaarst (24 punten); de breedte van de genoemde toepassingen uit vraag 5 levert maximaal
-  6 punten op (vanaf vier aangevinkte toepassingen is dat maximum bereikt). Iemand met veel
+  haalt de volle 50 punten.
+- **Verwachte businesswaarde (38 punten)** — de verwachte tijdwinst uit vraag 6 weegt het
+  zwaarst (30 punten); de breedte van de genoemde toepassingen uit vraag 5 levert maximaal
+  8 punten op (vanaf vier aangevinkte toepassingen is dat maximum bereikt). Iemand met veel
   aangevinkte vakjes maar weinig verwachte tijdwinst scoort dus lager dan andersom.
-- **Concreet use case voorbeeld (20 punten)** — zie hieronder.
-- **AI-volwassenheid (10 punten)** — vragen 8, 9 en 10 wegen even zwaar.
+- **AI-volwassenheid (12 punten)** — vragen 7, 8 en 9 wegen even zwaar.
 
 Wil je een andere verdeling? Pas de `punten` per antwoordoptie aan in `src/vragenlijst.js`,
 of de gewichten in `src/scoring.js`. Draai daarna `npm test`: die controleert onder meer of
-de gewichten nog optellen tot 100 en of de categoriegrenzen op elkaar aansluiten.
-
-### Vraag 7 beoordeel je zelf
-
-Vraag 7 is een open vraag en laat zich niet volautomatisch beoordelen. De applicatie geeft
-daarom een **automatische indicatie** (0-20 punten) op basis van hoe uitgewerkt, concreet en
-meetbaar het antwoord is. In de beheerdersomgeving zie je precies waarop die indicatie is
-gebaseerd, en kun je er zelf een score voor in de plaats zetten. De totaalscore en de
-adviescategorie worden dan meteen opnieuw berekend en teruggeschreven naar de database.
-
-Mijn advies: loop de open antwoorden altijd even zelf na voordat je een besluit neemt. De
-automatische indicatie is bedoeld om te sorteren, niet om te beslissen.
+de gewichten nog optellen tot 100 en of elke mogelijke score in een categorie valt.
 
 ### Profielkenmerken naast de score
 
-Het kader beschrijft bij *Direct kandidaat* vier kenmerken (kenniswerker, veel
-vergaderingen/documenten/e-mails, concreet gebruiksscenario, tijdwinst groter dan 2 uur per
-week). Die worden per inzending apart getoond met een vinkje, zodat je kunt zien of het
-profiel achter de score klopt met het beeld dat het kader schetst.
+Het kader beschrijft bij *Direct kandidaat* een aantal kenmerken. Vier daarvan worden per
+inzending apart getoond met een vinkje: kenniswerker, veel vergaderingen/documenten/e-mails,
+meerdere concrete toepassingen genoemd, en een verwachte tijdwinst van meer dan 2 uur per
+week. Zo zie je of het profiel achter de score klopt met het beeld dat het kader schetst.
+
+Omdat de score volledig automatisch tot stand komt, is dat het moment om even mee te kijken:
+twee mensen met dezelfde score kunnen een heel verschillend profiel hebben.
 
 ---
 
@@ -285,8 +288,8 @@ Je ziet daar:
 - het aantal inzendingen per adviescategorie, klikbaar als filter;
 - een overzichtstabel gesorteerd op score, met per inzending de opbouw in vier balkjes;
 - filters op categorie, besluit, naam, e-mailadres en afdeling;
-- per inzending een detailpaneel met de score-opbouw, de profielkenmerken, alle antwoorden
-  en de onderbouwing van de automatische indicatie voor vraag 7;
+- per inzending een detailpaneel met de score-opbouw, de profielkenmerken en alle
+  antwoorden;
 - een formulier om je besluit vast te leggen (licentie toekennen, pilotgroep, nog niet,
   afgewezen) met toelichting;
 - een CSV-export van alles, met puntkomma's als scheidingsteken zodat Excel hem direct

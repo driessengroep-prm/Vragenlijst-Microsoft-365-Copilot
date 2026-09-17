@@ -18,7 +18,6 @@ function geldigeInvoer(overschrijf = {}) {
     v5: ['samenvatten_email'],
     v5_anders: '',
     v6: '2_tot_4_uur',
-    v7: 'Ik notuleer wekelijks drie teamoverleggen en werk die daarna uit in Word.',
     v8: 'af_en_toe',
     v9: 'basis',
     v10: 'ja',
@@ -63,10 +62,6 @@ test('zonder akkoord is de inzending niet geldig', () => {
   const resultaat = valideer(geldigeInvoer({ akkoord_privacy: false }));
   assert.strictEqual(resultaat.geldig, false);
   assert.ok(resultaat.fouten.akkoord_privacy);
-});
-
-test('een te kort antwoord op vraag 7 wordt geweigerd', () => {
-  assert.ok(valideer(geldigeInvoer({ v7: 'Weet niet' })).fouten.v7);
 });
 
 test('onbekende keuzes worden niet overgenomen', () => {

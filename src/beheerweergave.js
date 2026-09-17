@@ -8,7 +8,7 @@
  * GitHub Pages er precies hetzelfde uit kan halen.
  */
 
-const { beoordeel, CATEGORIEEN, GEWICHTEN } = require('./scoring');
+const { beoordeel, CATEGORIEEN } = require('./scoring');
 const { BESLUITEN, besluit } = require('./besluiten');
 const { leesbaar } = require('./validatie');
 const { VRAGEN } = require('./vragenlijst');
@@ -28,18 +28,10 @@ function jaNee(waarde) {
   return waarde === true || waarde === 1 || waarde === '1';
 }
 
-/** Getallen komen bij sommige databases als tekst terug. */
-function getalOfNull(waarde) {
-  if (waarde === null || waarde === undefined || waarde === '') return null;
-  const getal = Number(waarde);
-  return Number.isFinite(getal) ? getal : null;
-}
-
 /** Verrijk een opgeslagen rij met de actuele berekening van het beoordelingsmodel. */
 function metBeoordeling(rij) {
   const antwoorden = antwoordenVan(rij);
-  const beoordeling = beoordeel(antwoorden, getalOfNull(rij.usecase_score_handmatig));
-  return { antwoorden, beoordeling };
+  return { antwoorden, beoordeling: beoordeel(antwoorden) };
 }
 
 /** Eén regel voor de overzichtstabel. */
@@ -59,10 +51,8 @@ function overzichtsRij(rij) {
     onderdelen: {
       informatiewerk: beoordeling.onderdelen.informatiewerk.score,
       businesswaarde: beoordeling.onderdelen.businesswaarde.score,
-      usecase: beoordeling.onderdelen.usecase.score,
       volwassenheid: beoordeling.onderdelen.volwassenheid.score,
     },
-    handmatigBeoordeeld: beoordeling.onderdelen.usecase.handmatig !== null,
     besluit: rij.besluit || 'nieuw',
     beoordeeld_op: rij.beoordeeld_op,
   };
@@ -95,7 +85,6 @@ function detail(rij) {
     beoordeling,
     besluit: rij.besluit || 'nieuw',
     besluit_toelichting: rij.besluit_toelichting || '',
-    usecase_score_handmatig: getalOfNull(rij.usecase_score_handmatig),
     beoordeeld_door: rij.beoordeeld_door,
     beoordeeld_op: rij.beoordeeld_op,
   };
@@ -103,7 +92,7 @@ function detail(rij) {
 
 /** De waarden die bij een nieuwe inzending worden opgeslagen. */
 function nieuweRij(antwoorden, extra = {}) {
-  const beoordeling = beoordeel(antwoorden, null);
+  const beoordeling = beoordeel(antwoorden);
 
   const rij = {
     ingezonden_op: extra.ingezonden_op || new Date(),
@@ -116,13 +105,10 @@ function nieuweRij(antwoorden, extra = {}) {
 
     score_informatiewerk: beoordeling.onderdelen.informatiewerk.score,
     score_businesswaarde: beoordeling.onderdelen.businesswaarde.score,
-    score_usecase_automatisch: beoordeling.onderdelen.usecase.automatisch,
-    score_usecase: beoordeling.onderdelen.usecase.score,
     score_volwassenheid: beoordeling.onderdelen.volwassenheid.score,
     score_totaal: beoordeling.totaal,
     advies_categorie: beoordeling.categorie,
 
-    usecase_score_handmatig: null,
     besluit: 'nieuw',
     besluit_toelichting: null,
     beoordeeld_door: null,
@@ -138,25 +124,22 @@ function nieuweRij(antwoorden, extra = {}) {
   return rij;
 }
 
-/** De waarden die worden bijgewerkt als de beheerder een beoordeling opslaat. */
+/**
+ * De waarden die worden bijgewerkt als de beheerder een beoordeling opslaat.
+ * De score zelf komt volledig uit de meerkeuzeantwoorden en staat dus vast;
+ * de beheerder legt alleen het besluit en de toelichting vast.
+ */
 function beoordelingsUpdate(rij, invoer, beheerder) {
-  const handmatig = getalOfNull(invoer.usecase_score_handmatig);
-  if (handmatig !== null && (handmatig < 0 || handmatig > GEWICHTEN.usecase)) {
-    return { fout: `De handmatige score voor vraag 7 moet tussen 0 en ${GEWICHTEN.usecase} liggen.` };
-  }
-
   const gekozenBesluit = String(invoer.besluit || 'nieuw');
   if (!BESLUITEN.some((b) => b.waarde === gekozenBesluit)) {
     return { fout: 'Onbekend besluit.' };
   }
 
-  const beoordeling = beoordeel(antwoordenVan(rij), handmatig);
+  const beoordeling = beoordeel(antwoordenVan(rij));
 
   return {
     beoordeling,
     waarden: {
-      usecase_score_handmatig: handmatig === null ? null : Math.round(handmatig * 10) / 10,
-      score_usecase: beoordeling.onderdelen.usecase.score,
       score_totaal: beoordeling.totaal,
       advies_categorie: beoordeling.categorie,
       besluit: gekozenBesluit,
@@ -205,8 +188,6 @@ function csv(rijen) {
     'afdeling',
     'score_informatiewerk',
     'score_businesswaarde',
-    'score_usecase',
-    'score_usecase_automatisch',
     'score_volwassenheid',
     'score_totaal',
     'advies_categorie',
@@ -233,8 +214,6 @@ function csv(rijen) {
         rij.afdeling,
         beoordeling.onderdelen.informatiewerk.score,
         beoordeling.onderdelen.businesswaarde.score,
-        beoordeling.onderdelen.usecase.score,
-        beoordeling.onderdelen.usecase.automatisch,
         beoordeling.onderdelen.volwassenheid.score,
         beoordeling.totaal,
         beoordeling.categorieLabel,

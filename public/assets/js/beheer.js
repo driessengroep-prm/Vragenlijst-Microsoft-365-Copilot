@@ -92,7 +92,7 @@
         el('li', null, model.onderdeelLabels[sleutel] + ': maximaal ' + model.gewichten[sleutel] + ' punten')
       );
     });
-    uitleg.appendChild(el('p', null, 'De totaalscore van 100 punten is opgebouwd uit vier onderdelen:'));
+    uitleg.appendChild(el('p', null, 'De totaalscore van 100 punten is opgebouwd uit drie onderdelen:'));
     uitleg.appendChild(lijst);
     var categorieLijst = el('ul');
     model.categorieen.forEach(function (c) {
@@ -104,8 +104,8 @@
       el(
         'p',
         null,
-        'Het open antwoord bij vraag 7 krijgt een automatische indicatie. Die kun je per inzending handmatig ' +
-          'overschrijven; de totaalscore en de adviescategorie worden dan meteen opnieuw berekend.'
+        'De score wordt volledig berekend uit de meerkeuzeantwoorden en staat daarmee vast. Jij legt per ' +
+          'inzending vast welk besluit je op basis daarvan neemt.'
       )
     );
   }
@@ -168,14 +168,11 @@
       var balken = el('div', 'dg-balkjes');
       balken.appendChild(balkje(inzending.onderdelen.informatiewerk, model.gewichten.informatiewerk, 'Informatiewerk'));
       balken.appendChild(balkje(inzending.onderdelen.businesswaarde, model.gewichten.businesswaarde, 'Businesswaarde'));
-      balken.appendChild(balkje(inzending.onderdelen.usecase, model.gewichten.usecase, 'Use case'));
       balken.appendChild(balkje(inzending.onderdelen.volwassenheid, model.gewichten.volwassenheid, 'AI-volwassenheid'));
       balkenCel.appendChild(balken);
       rij.appendChild(balkenCel);
 
-      var scoreCel = el('td', 'dg-tabel__score', String(inzending.totaal));
-      if (inzending.handmatigBeoordeeld) scoreCel.title = 'Bevat een handmatig aangepaste score voor vraag 7.';
-      rij.appendChild(scoreCel);
+      rij.appendChild(el('td', 'dg-tabel__score', String(inzending.totaal)));
 
       var adviesCel = el('td');
       adviesCel.appendChild(el('span', 'dg-badge dg-badge--' + inzending.categorieKleur, inzending.categorieLabel));
@@ -216,13 +213,11 @@
     tabel.appendChild(thead);
 
     var tbody = el('tbody');
-    var volgorde = ['informatiewerk', 'businesswaarde', 'usecase', 'volwassenheid'];
+    var volgorde = ['informatiewerk', 'businesswaarde', 'volwassenheid'];
     volgorde.forEach(function (sleutel) {
       var onderdeel = beoordeling.onderdelen[sleutel];
       var rij = el('tr');
-      var naam = model.onderdeelLabels[sleutel];
-      if (sleutel === 'usecase' && onderdeel.handmatig !== null) naam += ' — handmatig beoordeeld';
-      rij.appendChild(el('td', null, naam));
+      rij.appendChild(el('td', null, model.onderdeelLabels[sleutel]));
       rij.appendChild(el('td', null, onderdeel.score + ' / ' + onderdeel.max));
       tbody.appendChild(rij);
     });
@@ -295,27 +290,6 @@
     detailEl.appendChild(el('h3', null, 'Profielkenmerken uit het beoordelingskader'));
     detailEl.appendChild(signalenLijst(data.beoordeling.signalen));
 
-    // Onderbouwing automatische use case-score
-    var usecase = data.beoordeling.onderdelen.usecase;
-    var uitklap = el('details', 'dg-uitklap');
-    uitklap.appendChild(
-      el('summary', null, 'Automatische indicatie vraag 7: ' + usecase.automatisch + ' / ' + usecase.max + ' punten')
-    );
-    var redenen = el('ul', 'dg-klein');
-    usecase.redenen.forEach(function (reden) {
-      redenen.appendChild(el('li', null, reden));
-    });
-    uitklap.appendChild(redenen);
-    uitklap.appendChild(
-      el(
-        'p',
-        'dg-klein',
-        'Een open antwoord laat zich niet volautomatisch beoordelen. Pas de score hieronder aan als jouw ' +
-          'oordeel afwijkt; de totaalscore en de adviescategorie volgen dan direct.'
-      )
-    );
-    detailEl.appendChild(uitklap);
-
     // Beoordelingsformulier
     detailEl.appendChild(bouwBeoordelingsformulier(data));
 
@@ -348,30 +322,14 @@
     var blok = el('div', 'dg-beoordeling');
     blok.appendChild(el('h3', null, 'Jouw beoordeling'));
 
-    // Handmatige score voor vraag 7
-    var scoreVraag = el('div', 'dg-vraag');
-    var scoreLabel = el('label', 'dg-vraag__label', 'Score voor het use case-voorbeeld (vraag 7)');
-    scoreLabel.setAttribute('for', 'handmatige-score');
-    scoreVraag.appendChild(scoreLabel);
-    scoreVraag.appendChild(
+    blok.appendChild(
       el(
         'p',
-        'dg-vraag__toelichting',
-        'Laat leeg om de automatische indicatie (' + data.beoordeling.onderdelen.usecase.automatisch + ' punten) te gebruiken.'
+        'dg-klein',
+        'De score komt volledig uit de meerkeuzeantwoorden en ligt daarmee vast. Leg hieronder vast ' +
+          'welk besluit je op basis daarvan neemt.'
       )
     );
-    var inline = el('div', 'dg-inline');
-    var scoreVeld = el('input', 'dg-veld');
-    scoreVeld.type = 'number';
-    scoreVeld.id = 'handmatige-score';
-    scoreVeld.min = '0';
-    scoreVeld.max = String(data.beoordeling.onderdelen.usecase.max);
-    scoreVeld.step = '0.5';
-    scoreVeld.value = data.usecase_score_handmatig === null ? '' : String(data.usecase_score_handmatig);
-    inline.appendChild(scoreVeld);
-    inline.appendChild(el('span', 'dg-klein', 'van maximaal ' + data.beoordeling.onderdelen.usecase.max + ' punten'));
-    scoreVraag.appendChild(inline);
-    blok.appendChild(scoreVraag);
 
     // Besluit
     var besluitVraag = el('div', 'dg-vraag');
@@ -433,7 +391,6 @@
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          usecase_score_handmatig: scoreVeld.value === '' ? null : scoreVeld.value,
           besluit: besluitSelect.value,
           besluit_toelichting: toelichting.value,
         }),

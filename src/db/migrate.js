@@ -27,14 +27,11 @@ const VASTE_KOLOMMEN = [
   // Berekende scores volgens het beoordelingsmodel.
   { naam: 'score_informatiewerk', soort: 'decimal' },
   { naam: 'score_businesswaarde', soort: 'decimal' },
-  { naam: 'score_usecase_automatisch', soort: 'decimal' },
-  { naam: 'score_usecase', soort: 'decimal' },
   { naam: 'score_volwassenheid', soort: 'decimal' },
   { naam: 'score_totaal', soort: 'decimal' },
   { naam: 'advies_categorie', soort: 'string', lengte: 40 },
 
-  // Handmatige beoordeling door de beheerder.
-  { naam: 'usecase_score_handmatig', soort: 'decimal' },
+  // Beoordeling door de beheerder.
   { naam: 'besluit', soort: 'string', lengte: 40 },
   { naam: 'besluit_toelichting', soort: 'text' },
   { naam: 'beoordeeld_door', soort: 'string', lengte: 120 },

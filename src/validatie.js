@@ -63,11 +63,6 @@ function valideer(invoer) {
     antwoorden[veld.id] = waarde;
   }
 
-  // Vraag 7 vragen we inhoudelijk om iets van substantie.
-  if (antwoorden.v7 && antwoorden.v7.length < 15) {
-    fouten.v7 = 'Beschrijf je voorbeeld iets uitgebreider (minimaal 15 tekens).';
-  }
-
   if (!invoer.akkoord_privacy) {
     fouten.akkoord_privacy = 'Je moet akkoord gaan om het formulier te kunnen versturen.';
   }

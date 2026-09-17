@@ -22,7 +22,10 @@
   var weergave = model.beheerweergave;
   var besluiten = model.besluiten;
 
-  var OPSLAGSLEUTEL = 'dg-copilot-demo-inzendingen';
+  // Het volgnummer in de sleutel loopt op zodra het beoordelingsmodel wijzigt,
+  // zodat terugkerende bezoekers verse voorbeelddata krijgen in plaats van
+  // voorbeelden die bij een ouder model horen.
+  var OPSLAGSLEUTEL = 'dg-copilot-demo-inzendingen-v2';
 
   // ------------------------------------------------------------- opslag ---
 
@@ -90,10 +93,6 @@
       v3: 'meer_dan_25',
       v5: ['samenvatten_email', 'samenvatten_teams', 'opstellen_documenten', 'zoeken_m365', 'voorbereiden_overleg'],
       v6: 'meer_dan_4_uur',
-      v7:
-        'Elke week bereid ik vier bestuursoverleggen voor. Ik zoek dan in Outlook en Teams naar eerdere ' +
-        'verslagen en combineer die in een nieuw document in Word. Dat kost mij structureel ongeveer 3 uur ' +
-        'per week aan zoeken en samenvatten van oude notulen.',
       v8: 'regelmatig',
       v9: 'gevorderd',
       v10: 'ja_en_delen',
@@ -110,14 +109,12 @@
       v3: '11_tot_25',
       v5: ['opstellen_documenten', 'analyse_excel', 'zoeken_m365'],
       v6: '1_tot_2_uur',
-      v7: 'Ik maak maandelijks voortgangsrapportages op basis van Excel-overzichten en mailwisselingen met klanten.',
       v8: 'af_en_toe',
       v9: 'basis',
       v10: 'ja',
       dagenGeleden: 6,
       besluit: 'pilot',
-      usecase_score_handmatig: 15,
-      besluit_toelichting: 'Voorbeeld is concreter dan de automatische indicatie suggereert. Drie maanden proefperiode.',
+      besluit_toelichting: 'Duidelijk profiel, maar de verwachte tijdwinst is nog beperkt. Drie maanden proefperiode.',
       beoordeeld_door: 'demo',
     },
     {
@@ -131,7 +128,6 @@
       v3: '6_tot_10',
       v5: ['samenvatten_email'],
       v6: '30_tot_60_min',
-      v7: 'Soms zou ik binnengekomen mails sneller willen samenvatten voordat ik ze doorzet naar een collega.',
       v8: 'nee',
       v9: 'beginner',
       v10: 'beperkt',
@@ -148,7 +144,6 @@
       v3: '1_tot_5',
       v5: [],
       v6: 'minder_dan_30_min',
-      v7: 'Ik zou het eigenlijk niet zo goed weten, ik werk weinig met documenten.',
       v8: 'nee',
       v9: 'beginner',
       v10: 'nee',
@@ -168,7 +163,6 @@
         v5: voorbeeld.v5,
         v5_anders: '',
         v6: voorbeeld.v6,
-        v7: voorbeeld.v7,
         v8: voorbeeld.v8,
         v9: voorbeeld.v9,
         v10: voorbeeld.v10,
@@ -196,7 +190,6 @@
         var bijwerking = weergave.beoordelingsUpdate(
           rij,
           {
-            usecase_score_handmatig: voorbeeld.usecase_score_handmatig,
             besluit: voorbeeld.besluit,
             besluit_toelichting: voorbeeld.besluit_toelichting,
           },
