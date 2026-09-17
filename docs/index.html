@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vragenlijst Microsoft 365 Copilot | Driessen Groep (testomgeving)</title>
+    <meta
+      name="description"
+      content="Vul de vragenlijst in en wij beoordelen of een Microsoft 365 Copilot-licentie voor jouw werk meerwaarde heeft."
+    />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/driessen.css" />
+      <link rel="stylesheet" href="assets/css/demo.css" />
+  </head>
+  <body>
+    <div class="dg-demobalk">
+      <div class="dg-demobalk__binnen">
+        <strong>Testomgeving</strong>
+        <span>Dit is een voorbeeldversie zonder database. Wat je invult blijft in je eigen browser en wordt nergens verstuurd.</span>
+        <a href="beheer.html">Naar de beheerderspagina &rarr;</a>
+      </div>
+    </div>
+    <div class="dg-voortgang" aria-hidden="true">
+      <div class="dg-voortgang__balk" id="voortgangsbalk"></div>
+    </div>
+
+    <header class="dg-header">
+      <div class="dg-header__binnen">
+        <a class="dg-logo" href="index.html">
+          <img src="assets/img/logo.svg" alt="Driessen Groep" />
+        </a>
+        <span class="dg-header__titel">Microsoft 365 Copilot</span>
+      </div>
+    </header>
+
+    <main class="dg-kader">
+      <div class="dg-kaart">
+        <!-- Introductie ------------------------------------------------- -->
+        <div id="intro">
+          <h1>Vragenlijst Microsoft&nbsp;365 Copilot</h1>
+          <p class="dg-inleiding">
+            Met deze vragenlijst brengen we in kaart of Microsoft&nbsp;365 Copilot jou in je dagelijkse werk
+            structureel verder helpt. Op basis van je antwoorden beoordelen wij of we een Copilot-licentie
+            voor je afsluiten, of dat we daar (nog) mee wachten. Je hoort altijd van ons wat we besluiten.
+          </p>
+          <p class="dg-klein">Invullen duurt ongeveer 5 minuten. Alle vragen met een <span class="dg-verplicht">*</span> zijn verplicht.</p>
+        </div>
+
+        <!-- Foutmelding boven het formulier ----------------------------- -->
+        <div class="dg-melding dg-melding--fout" id="formulierfout" role="alert" hidden></div>
+
+        <!-- Het formulier ----------------------------------------------- -->
+        <form id="vragenlijst" novalidate>
+          <!-- Honeypot tegen spambots: door mensen nooit ingevuld. -->
+          <div class="dg-verborgen" aria-hidden="true">
+            <label>Laat dit veld leeg<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+          </div>
+
+          <div id="secties">
+            <p class="dg-klein" id="laadmelding">De vragenlijst wordt geladen…</p>
+          </div>
+
+          <!-- Akkoordverklaringen --------------------------------------- -->
+          <div class="dg-sectie" id="akkoord-sectie" hidden>
+            <div class="dg-opties">
+              <label class="dg-optie">
+                <input type="checkbox" id="akkoord_privacy" name="akkoord_privacy" />
+                <span>
+                  Ik ga ermee akkoord dat Driessen Groep mijn antwoorden gebruikt om te beoordelen of een
+                  Microsoft&nbsp;365 Copilot-licentie voor mij wordt afgesloten.
+                  <span class="dg-verplicht">*</span>
+                </span>
+              </label>
+              <label class="dg-optie">
+                <input type="checkbox" id="akkoord_contact" name="akkoord_contact" />
+                <span>
+                  Driessen Groep mag mij benaderen om mijn antwoorden toe te lichten of om mee te doen aan een
+                  pilot.
+                </span>
+              </label>
+            </div>
+            <span class="dg-fout" id="fout-akkoord_privacy" hidden></span>
+          </div>
+
+          <div class="dg-versturen" id="versturen-blok" hidden>
+            <button type="submit" class="dg-knop" id="verstuurknop">Verzenden</button>
+            <span class="dg-versturen__hint"><span class="dg-verplicht">*</span> verplicht veld</span>
+          </div>
+        </form>
+
+        <!-- Bevestiging na verzenden ------------------------------------ -->
+        <div id="bedankt" hidden>
+          <h1>Bedankt voor het invullen</h1>
+          <p class="dg-inleiding">
+            Je antwoorden zijn ontvangen. We beoordelen je aanvraag aan de hand van ons beoordelingskader en
+            laten je weten of we een Microsoft&nbsp;365 Copilot-licentie voor je afsluiten.
+          </p>
+          <p class="dg-klein">Je kunt dit venster nu sluiten.</p>
+        </div>
+      </div>
+    </main>
+
+    <footer class="dg-footer">
+      <p>Driessen Groep &middot; Vragenlijst Microsoft 365 Copilot</p>
+    </footer>
+
+    <script src="assets/js/model.js"></script>
+
+    <script src="assets/js/demo-api.js"></script>
+
+    <script src="assets/js/formulier.js"></script>
+  </body>
+</html>

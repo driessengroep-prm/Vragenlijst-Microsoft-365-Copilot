@@ -1,0 +1,459 @@
+/* ==========================================================================
+   Beheerdersomgeving - aanvullend op driessen.css
+   ========================================================================== */
+
+.dg-beheer__kop {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+/* ------------------------------------------------------- Samenvattingen -- */
+
+.dg-tegels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.dg-tegel {
+  background: var(--dg-wit);
+  border: 1px solid var(--dg-rand-zacht);
+  border-top: 4px solid var(--dg-rand);
+  border-radius: var(--dg-radius);
+  padding: 14px 16px;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.dg-tegel:hover,
+.dg-tegel[aria-pressed='true'] {
+  box-shadow: var(--dg-schaduw);
+}
+
+.dg-tegel[aria-pressed='true'] {
+  border-color: var(--dg-goud);
+  border-top-color: var(--dg-goud);
+}
+
+.dg-tegel__aantal {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--dg-groen);
+  line-height: 1.1;
+}
+
+.dg-tegel__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dg-tekst-zacht);
+}
+
+.dg-tegel__bereik {
+  font-size: 12px;
+  color: var(--dg-tekst-zacht);
+}
+
+.dg-tegel--groen { border-top-color: var(--dg-status-groen); }
+.dg-tegel--blauw { border-top-color: var(--dg-status-blauw); }
+.dg-tegel--oranje { border-top-color: var(--dg-status-oranje); }
+.dg-tegel--rood { border-top-color: var(--dg-status-rood); }
+
+/* ---------------------------------------------------------- Filterbalk -- */
+
+.dg-filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--dg-wit);
+  border: 1px solid var(--dg-rand-zacht);
+  border-radius: var(--dg-radius);
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+
+.dg-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dg-filter label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dg-groen);
+}
+
+.dg-filter .dg-veld {
+  min-width: 190px;
+  padding: 7px 10px;
+  font-size: 14px;
+}
+
+.dg-filters__rechts {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* ------------------------------------------------------------- Tabel ----- */
+
+.dg-tabelwikkel {
+  background: var(--dg-wit);
+  border: 1px solid var(--dg-rand-zacht);
+  border-radius: var(--dg-radius);
+  overflow-x: auto;
+}
+
+.dg-tabel {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.dg-tabel th {
+  background: var(--dg-groen-licht);
+  color: var(--dg-groen);
+  font-size: 12.5px;
+  text-align: left;
+  font-weight: 600;
+  padding: 11px 14px;
+  white-space: nowrap;
+}
+
+.dg-tabel td {
+  padding: 11px 14px;
+  border-top: 1px solid var(--dg-rand-zacht);
+  vertical-align: middle;
+}
+
+.dg-tabel tbody tr {
+  cursor: pointer;
+}
+
+.dg-tabel tbody tr:hover {
+  background: #fbfaf7;
+}
+
+.dg-tabel tbody tr[aria-selected='true'] {
+  background: var(--dg-goud-licht);
+}
+
+.dg-tabel__naam {
+  font-weight: 600;
+  color: var(--dg-groen);
+}
+
+.dg-tabel__sub {
+  font-size: 12.5px;
+  color: var(--dg-tekst-zacht);
+}
+
+.dg-tabel__score {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--dg-groen);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.dg-leeg {
+  padding: 40px;
+  text-align: center;
+  color: var(--dg-tekst-zacht);
+}
+
+/* -------------------------------------------------------------- Badges --- */
+
+.dg-badge {
+  display: inline-block;
+  padding: 3px 11px;
+  border-radius: var(--dg-radius-knop);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.dg-badge--groen  { background: #e5f2eb; color: var(--dg-status-groen); border-color: #bfe0cf; }
+.dg-badge--blauw  { background: #e5eff5; color: var(--dg-status-blauw); border-color: #bfd8e6; }
+.dg-badge--oranje { background: #fbf0e2; color: var(--dg-status-oranje); border-color: #edd3ae; }
+.dg-badge--rood   { background: #fbeae8; color: var(--dg-status-rood);  border-color: #edc4c0; }
+.dg-badge--grijs  { background: #f0f0ee; color: var(--dg-tekst-zacht);  border-color: #e0e0dd; }
+
+/* ------------------------------------------------------- Scorebalkjes ---- */
+
+.dg-balkjes {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.dg-balkje {
+  width: 34px;
+  height: 7px;
+  border-radius: 4px;
+  background: var(--dg-rand-zacht);
+  overflow: hidden;
+}
+
+.dg-balkje span {
+  display: block;
+  height: 100%;
+  background: var(--dg-goud);
+}
+
+/* -------------------------------------------------------------- Detail --- */
+
+.dg-detail {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(640px, 100%);
+  background: var(--dg-wit);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
+  z-index: 40;
+  padding: 28px 32px 48px;
+}
+
+.dg-detail[hidden] {
+  display: none;
+}
+
+.dg-detail__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 56, 53, 0.4);
+  z-index: 30;
+}
+
+.dg-detail__overlay[hidden] {
+  display: none;
+}
+
+.dg-detail__kop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+
+.dg-sluit {
+  background: none;
+  border: 0;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--dg-tekst-zacht);
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.dg-sluit:hover {
+  color: var(--dg-groen);
+}
+
+.dg-totaalblok {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--dg-groen-licht);
+  border-radius: var(--dg-radius);
+  padding: 16px 18px;
+  margin: 16px 0 8px;
+}
+
+.dg-totaalblok__cijfer {
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--dg-groen);
+  line-height: 1;
+}
+
+.dg-totaalblok__max {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--dg-tekst-zacht);
+}
+
+.dg-advies {
+  font-size: 13.5px;
+  color: var(--dg-groen-donker);
+  margin: 0 0 20px;
+}
+
+/* Score-opbouw */
+.dg-opbouw {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  margin-bottom: 8px;
+}
+
+.dg-opbouw th,
+.dg-opbouw td {
+  padding: 7px 0;
+  border-bottom: 1px solid var(--dg-rand-zacht);
+  text-align: left;
+}
+
+.dg-opbouw th {
+  font-weight: 600;
+  color: var(--dg-groen);
+  font-size: 12px;
+}
+
+.dg-opbouw td:last-child,
+.dg-opbouw th:last-child {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.dg-opbouw tr:last-child td {
+  border-bottom: 0;
+  font-weight: 700;
+  color: var(--dg-groen);
+}
+
+/* Signalenlijst */
+.dg-signalen {
+  list-style: none;
+  margin: 0 0 22px;
+  padding: 0;
+  font-size: 13.5px;
+}
+
+.dg-signalen li {
+  display: flex;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--dg-rand-zacht);
+}
+
+.dg-signalen li:last-child {
+  border-bottom: 0;
+}
+
+.dg-signaal__vink {
+  flex: 0 0 auto;
+  font-weight: 700;
+  width: 18px;
+  text-align: center;
+}
+
+.dg-signaal__vink--ja { color: var(--dg-status-groen); }
+.dg-signaal__vink--nee { color: var(--dg-tekst-zacht); }
+
+.dg-signaal__toelichting {
+  display: block;
+  color: var(--dg-tekst-zacht);
+  font-size: 12.5px;
+}
+
+/* Antwoordenlijst */
+.dg-antwoorden {
+  font-size: 13.5px;
+}
+
+.dg-antwoord {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--dg-rand-zacht);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+}
+
+.dg-antwoord--lang {
+  grid-template-columns: 1fr;
+}
+
+.dg-antwoord__vraag {
+  color: var(--dg-tekst-zacht);
+}
+
+.dg-antwoord__waarde {
+  font-weight: 600;
+  color: var(--dg-groen);
+  text-align: right;
+}
+
+.dg-antwoord--lang .dg-antwoord__waarde {
+  text-align: left;
+  font-weight: 400;
+  color: var(--dg-tekst);
+  background: #fbfaf7;
+  border-left: 3px solid var(--dg-goud);
+  padding: 10px 12px;
+  border-radius: 0 var(--dg-radius) var(--dg-radius) 0;
+  white-space: pre-wrap;
+}
+
+/* Beoordelingsformulier */
+.dg-beoordeling {
+  background: #fbfaf7;
+  border: 1px solid var(--dg-rand-zacht);
+  border-radius: var(--dg-radius);
+  padding: 18px;
+  margin-top: 22px;
+}
+
+.dg-beoordeling h3 {
+  margin-top: 0;
+}
+
+.dg-beoordeling .dg-vraag {
+  margin-bottom: 16px;
+}
+
+.dg-inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dg-inline .dg-veld {
+  width: 90px;
+}
+
+.dg-opslag {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.dg-opslag__status {
+  font-size: 13px;
+  color: var(--dg-status-groen);
+  font-weight: 600;
+}
+
+details.dg-uitklap {
+  margin-bottom: 18px;
+}
+
+details.dg-uitklap summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--dg-groen);
+  font-size: 14px;
+  padding: 6px 0;
+}
+
+@media (max-width: 680px) {
+  .dg-detail {
+    padding: 20px 18px 40px;
+  }
+}

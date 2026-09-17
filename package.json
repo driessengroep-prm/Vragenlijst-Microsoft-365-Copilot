@@ -12,7 +12,8 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "migrate": "node src/db/migrate.js",
-    "test": "node --test test/*.test.js"
+    "test": "node --test test/*.test.js",
+    "build:static": "node tools/bouw-statisch.js"
   },
   "dependencies": {
     "better-sqlite3": "^11.5.0",

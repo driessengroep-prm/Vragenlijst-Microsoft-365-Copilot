@@ -1,0 +1,1216 @@
+/* ==========================================================================
+   AUTOMATISCH GEGENEREERD - NIET HANDMATIG AANPASSEN
+   Gegenereerd door tools/bouw-statisch.js uit:
+     src/vragenlijst.js
+     src/scoring.js
+     src/validatie.js
+     src/besluiten.js
+     src/beheerweergave.js
+   Pas de bron aan en draai `npm run build:static` opnieuw.
+   ========================================================================== */
+
+(function (global) {
+  'use strict';
+
+  var fabrieken = {};
+  var cache = {};
+
+  function definieer(naam, fabriek) {
+    fabrieken[naam] = fabriek;
+  }
+
+  function require(naam) {
+    var sleutel = String(naam).replace(/^\.\//, '').replace(/\.js$/, '');
+    if (cache[sleutel]) return cache[sleutel].exports;
+    if (!fabrieken[sleutel]) throw new Error('Onbekende module: ' + naam);
+    var module = { exports: {} };
+    cache[sleutel] = module;
+    fabrieken[sleutel](module, module.exports, require);
+    return module.exports;
+  }
+
+  definieer('vragenlijst', function (module, exports, require) {
+'use strict';
+
+/**
+ * Eén bron van waarheid voor de vragenlijst.
+ *
+ * Deze definitie wordt gebruikt door:
+ *  - de front-end (public/assets/js/formulier.js) om het formulier te renderen;
+ *  - de server om binnenkomende antwoorden te valideren;
+ *  - src/scoring.js om de puntenscore te berekenen;
+ *  - src/db/migrate.js om de databasekolommen aan te maken.
+ *
+ * Wil je een vraag toevoegen of wijzigen? Pas het hier aan en draai daarna
+ * `npm run migrate`. De rest van de applicatie volgt automatisch.
+ *
+ * Let op: elk antwoordveld krijgt een kolom in de database met exact dezelfde
+ * naam als het `id` hieronder.
+ */
+
+/** Antwoordschalen die we vaker gebruiken. `punten` bepaalt de score. */
+const SCHAAL_TIJD = [
+  { waarde: 'minder_dan_2_uur', label: 'Minder dan 2 uur', punten: 0 },
+  { waarde: '2_tot_5_uur', label: '2-5 uur', punten: 1 },
+  { waarde: '5_tot_10_uur', label: '5-10 uur', punten: 2 },
+  { waarde: 'meer_dan_10_uur', label: 'Meer dan 10 uur', punten: 3 },
+];
+
+const SCHAAL_FREQUENTIE = [
+  { waarde: 'nooit', label: 'Nooit', punten: 0 },
+  { waarde: 'soms', label: 'Soms', punten: 1 },
+  { waarde: 'regelmatig', label: 'Regelmatig', punten: 2 },
+  { waarde: 'zeer_vaak', label: 'Zeer vaak', punten: 3 },
+];
+
+const DELEN = [
+  {
+    nummer: 0,
+    titel: 'Jouw gegevens',
+    toelichting:
+      'We hebben je gegevens nodig om je aanvraag te kunnen beoordelen en om je te laten weten wat we besluiten.',
+  },
+  {
+    nummer: 1,
+    titel: 'Deel 1: Werkprofiel',
+    toelichting: null,
+  },
+  {
+    nummer: 2,
+    titel: 'Deel 2: Potentiële Copilot-toepassingen',
+    toelichting: null,
+  },
+  {
+    nummer: 3,
+    titel: 'Deel 3: Verwachte opbrengst',
+    toelichting: null,
+  },
+  {
+    nummer: 4,
+    titel: 'Deel 4: Digitale volwassenheid',
+    toelichting: null,
+  },
+];
+
+const VRAGEN = [
+  // ---------------------------------------------------------------- Deel 0 --
+  {
+    id: 'naam',
+    deel: 0,
+    type: 'tekst',
+    vraag: 'Naam',
+    verplicht: true,
+    maxLengte: 120,
+    kolom: 'naam',
+    scoort: false,
+  },
+  {
+    id: 'email',
+    deel: 0,
+    type: 'email',
+    vraag: 'E-mailadres',
+    verplicht: true,
+    maxLengte: 180,
+    kolom: 'email',
+    scoort: false,
+  },
+  {
+    id: 'functie',
+    deel: 0,
+    type: 'tekst',
+    vraag: 'Functie',
+    verplicht: false,
+    maxLengte: 120,
+    kolom: 'functie',
+    scoort: false,
+  },
+  {
+    id: 'afdeling',
+    deel: 0,
+    type: 'tekst',
+    vraag: 'Afdeling of organisatieonderdeel',
+    verplicht: false,
+    maxLengte: 120,
+    kolom: 'afdeling',
+    scoort: false,
+  },
+
+  // ---------------------------------------------------------------- Deel 1 --
+  {
+    id: 'v1',
+    deel: 1,
+    nummer: 1,
+    type: 'matrix',
+    vraag: 'Hoeveel tijd besteed je gemiddeld per week aan de volgende activiteiten?',
+    verplicht: true,
+    kolomkop: 'Activiteit',
+    opties: SCHAAL_TIJD,
+    rijen: [
+      { id: 'v1_email', label: 'E-mails verwerken' },
+      { id: 'v1_overleggen', label: 'Overleggen/vergaderingen' },
+      { id: 'v1_documenten', label: 'Documenten schrijven' },
+      { id: 'v1_presentaties', label: 'Presentaties maken' },
+      { id: 'v1_zoeken', label: 'Informatie zoeken in documenten, Teams of SharePoint' },
+    ],
+    onderdeel: 'informatiewerk',
+  },
+  {
+    id: 'v2',
+    deel: 1,
+    nummer: 2,
+    type: 'radio',
+    vraag: 'Werk je regelmatig met grote hoeveelheden informatie uit verschillende bronnen?',
+    verplicht: true,
+    opties: [
+      { waarde: 'nooit', label: 'Nooit', punten: 0 },
+      { waarde: 'soms', label: 'Soms', punten: 1 },
+      { waarde: 'regelmatig', label: 'Regelmatig', punten: 2 },
+      { waarde: 'dagelijks', label: 'Dagelijks', punten: 3 },
+    ],
+    onderdeel: 'informatiewerk',
+  },
+  {
+    id: 'v3',
+    deel: 1,
+    nummer: 3,
+    type: 'radio',
+    vraag: "Met hoeveel collega's werk je gemiddeld samen binnen Microsoft 365?",
+    verplicht: true,
+    opties: [
+      { waarde: '1_tot_5', label: '1-5', punten: 0 },
+      { waarde: '6_tot_10', label: '6-10', punten: 1 },
+      { waarde: '11_tot_25', label: '11-25', punten: 2 },
+      { waarde: 'meer_dan_25', label: 'Meer dan 25', punten: 3 },
+    ],
+    onderdeel: 'informatiewerk',
+  },
+
+  // ---------------------------------------------------------------- Deel 2 --
+  {
+    id: 'v4',
+    deel: 2,
+    nummer: 4,
+    type: 'matrix',
+    vraag: 'Hoe vaak herken je de volgende situaties?',
+    verplicht: true,
+    kolomkop: 'Situatie',
+    opties: SCHAAL_FREQUENTIE,
+    rijen: [
+      { id: 'v4_oude_mails', label: 'Ik zoek informatie in oude mails' },
+      { id: 'v4_documenten_kwijt', label: 'Ik zoek documenten waarvan ik niet meer weet waar ze staan' },
+      { id: 'v4_vergadering_voorbereiden', label: 'Ik moet vergaderingen voorbereiden' },
+      { id: 'v4_context_missen', label: 'Ik mis soms context omdat ik niet bij eerdere gesprekken aanwezig was' },
+      { id: 'v4_informatie_combineren', label: 'Ik moet informatie uit meerdere documenten combineren' },
+      { id: 'v4_samenvatten', label: 'Ik maak samenvattingen van lange documenten of overleggen' },
+    ],
+    onderdeel: 'informatiewerk',
+  },
+  {
+    id: 'v5',
+    deel: 2,
+    nummer: 5,
+    type: 'checkbox',
+    vraag:
+      'Welke van onderstaande werkzaamheden zouden volgens jou het meeste baat hebben bij AI-ondersteuning?',
+    toelichting: 'Meerdere antwoorden mogelijk.',
+    verplicht: false,
+    opties: [
+      { waarde: 'samenvatten_email', label: 'Samenvatten van e-mails' },
+      { waarde: 'samenvatten_teams', label: 'Samenvatten van Teams-vergaderingen' },
+      { waarde: 'opstellen_documenten', label: 'Opstellen van documenten' },
+      { waarde: 'opstellen_presentaties', label: 'Opstellen van presentaties' },
+      { waarde: 'analyse_excel', label: 'Analyse van Excel-data' },
+      { waarde: 'zoeken_m365', label: 'Zoeken naar informatie binnen Microsoft 365' },
+      { waarde: 'voorbereiden_overleg', label: 'Voorbereiden van overleggen' },
+      { waarde: 'opstellen_communicatie', label: 'Opstellen van communicaties' },
+      { waarde: 'anders', label: 'Anders, namelijk:', anders: true },
+    ],
+    andersVeld: 'v5_anders',
+    onderdeel: 'businesswaarde',
+  },
+
+  // ---------------------------------------------------------------- Deel 3 --
+  {
+    id: 'v6',
+    deel: 3,
+    nummer: 6,
+    type: 'radio',
+    vraag: 'Hoeveel tijd denk je wekelijks te kunnen besparen met Copilot?',
+    verplicht: true,
+    opties: [
+      { waarde: 'minder_dan_30_min', label: 'Minder dan 30 minuten', punten: 0 },
+      { waarde: '30_tot_60_min', label: '30-60 minuten', punten: 1 },
+      { waarde: '1_tot_2_uur', label: '1-2 uur', punten: 2 },
+      { waarde: '2_tot_4_uur', label: '2-4 uur', punten: 3 },
+      { waarde: 'meer_dan_4_uur', label: 'Meer dan 4 uur', punten: 4 },
+    ],
+    onderdeel: 'businesswaarde',
+  },
+  {
+    id: 'v7',
+    deel: 3,
+    nummer: 7,
+    type: 'tekstvlak',
+    vraag: 'Kun je één concreet voorbeeld beschrijven waarbij Copilot jou structureel zou helpen?',
+    toelichting:
+      'Beschrijf zo concreet mogelijk wát je doet, hoe vaak dat voorkomt en wat het je nu kost. Hoe concreter je voorbeeld, hoe beter we je aanvraag kunnen beoordelen.',
+    verplicht: true,
+    maxLengte: 2000,
+    onderdeel: 'usecase',
+  },
+
+  // ---------------------------------------------------------------- Deel 4 --
+  {
+    id: 'v8',
+    deel: 4,
+    nummer: 8,
+    type: 'radio',
+    vraag: 'Maak je al gebruik van Copilot Chat?',
+    verplicht: true,
+    opties: [
+      { waarde: 'nee', label: 'Nee', punten: 0 },
+      { waarde: 'af_en_toe', label: 'Af en toe', punten: 1 },
+      { waarde: 'regelmatig', label: 'Regelmatig', punten: 2 },
+      { waarde: 'dagelijks', label: 'Dagelijks', punten: 3 },
+    ],
+    onderdeel: 'volwassenheid',
+  },
+  {
+    id: 'v9',
+    deel: 4,
+    nummer: 9,
+    type: 'radio',
+    vraag: 'Hoe beoordeel je jouw vaardigheid in het werken met AI?',
+    verplicht: true,
+    opties: [
+      { waarde: 'beginner', label: 'Beginner', punten: 0 },
+      { waarde: 'basis', label: 'Basis', punten: 1 },
+      { waarde: 'gevorderd', label: 'Gevorderd', punten: 2 },
+      { waarde: 'expert', label: 'Expert', punten: 3 },
+    ],
+    onderdeel: 'volwassenheid',
+  },
+  {
+    id: 'v10',
+    deel: 4,
+    nummer: 10,
+    type: 'radio',
+    vraag: 'Ben je bereid tijd te investeren in het leren gebruiken van Microsoft 365 Copilot?',
+    verplicht: true,
+    opties: [
+      { waarde: 'nee', label: 'Nee', punten: 0 },
+      { waarde: 'beperkt', label: 'Beperkt', punten: 1 },
+      { waarde: 'ja', label: 'Ja', punten: 2 },
+      { waarde: 'ja_en_delen', label: 'Ja, en ik wil best practices delen met collega’s', punten: 3 },
+    ],
+    onderdeel: 'volwassenheid',
+  },
+];
+
+/**
+ * Alle antwoordvelden (= databasekolommen) die uit de vragen volgen.
+ * Een matrixvraag levert één veld per rij op.
+ */
+function antwoordVelden() {
+  const velden = [];
+  for (const vraag of VRAGEN) {
+    if (vraag.type === 'matrix') {
+      for (const rij of vraag.rijen) {
+        velden.push({
+          id: rij.id,
+          kolom: rij.id,
+          type: 'keuze',
+          vraagId: vraag.id,
+          label: rij.label,
+          opties: vraag.opties,
+          verplicht: vraag.verplicht,
+          onderdeel: vraag.onderdeel,
+        });
+      }
+    } else if (vraag.type === 'checkbox') {
+      velden.push({
+        id: vraag.id,
+        kolom: vraag.id,
+        type: 'meerkeuze',
+        vraagId: vraag.id,
+        label: vraag.vraag,
+        opties: vraag.opties,
+        verplicht: vraag.verplicht,
+        onderdeel: vraag.onderdeel,
+      });
+      velden.push({
+        id: vraag.andersVeld,
+        kolom: vraag.andersVeld,
+        type: 'tekst',
+        vraagId: vraag.id,
+        label: 'Anders, namelijk',
+        maxLengte: 200,
+        verplicht: false,
+      });
+    } else if (vraag.type === 'radio') {
+      velden.push({
+        id: vraag.id,
+        kolom: vraag.id,
+        type: 'keuze',
+        vraagId: vraag.id,
+        label: vraag.vraag,
+        opties: vraag.opties,
+        verplicht: vraag.verplicht,
+        onderdeel: vraag.onderdeel,
+      });
+    } else {
+      velden.push({
+        id: vraag.id,
+        kolom: vraag.kolom || vraag.id,
+        type: vraag.type === 'tekstvlak' ? 'lange_tekst' : 'tekst',
+        vraagId: vraag.id,
+        label: vraag.vraag,
+        maxLengte: vraag.maxLengte || 255,
+        verplicht: vraag.verplicht,
+        onderdeel: vraag.onderdeel,
+      });
+    }
+  }
+  return velden;
+}
+
+/** Zoek het puntenaantal dat bij een gekozen antwoordwaarde hoort. */
+function puntenVoor(opties, waarde) {
+  const optie = (opties || []).find((o) => o.waarde === waarde);
+  return optie && typeof optie.punten === 'number' ? optie.punten : 0;
+}
+
+/** Zoek het leesbare label dat bij een antwoordwaarde hoort. */
+function labelVoor(opties, waarde) {
+  const optie = (opties || []).find((o) => o.waarde === waarde);
+  return optie ? optie.label : waarde;
+}
+
+module.exports = {
+  DELEN,
+  VRAGEN,
+  antwoordVelden,
+  puntenVoor,
+  labelVoor,
+};
+
+  });
+
+  definieer('scoring', function (module, exports, require) {
+'use strict';
+
+/**
+ * Beoordelingsmodel Microsoft 365 Copilot.
+ *
+ * Gebaseerd op het beoordelingskader:
+ *
+ *   Onderdeel                              Gewicht
+ *   Informatiewerk (vragen 1 t/m 4)          40%
+ *   Verwachte businesswaarde (vragen 5 + 6)  30%
+ *   Concreet use case voorbeeld (vraag 7)    20%
+ *   AI-volwassenheid (vragen 8 t/m 10)       10%
+ *
+ *   80-100 punten : Direct kandidaat
+ *   60-79  punten : Pilotgroep
+ *   40-59  punten : Nog niet
+ *   < 40   punten : Geen businesscase
+ *
+ * Het kader geeft de gewichten; de puntentoekenning per antwoord staat in
+ * src/vragenlijst.js (`punten` per optie). Binnen elk onderdeel tellen we de
+ * ruwe punten op en schalen die naar het gewicht van het onderdeel. Zo blijft
+ * de verdeling kloppen, ook als je later een vraag toevoegt of weghaalt.
+ */
+
+const { VRAGEN, puntenVoor } = require('./vragenlijst');
+
+const GEWICHTEN = {
+  informatiewerk: 40,
+  businesswaarde: 30,
+  usecase: 20,
+  volwassenheid: 10,
+};
+
+const ONDERDEEL_LABELS = {
+  informatiewerk: 'Informatiewerk (vragen 1 t/m 4)',
+  businesswaarde: 'Verwachte businesswaarde (vragen 5 en 6)',
+  usecase: 'Concreet use case voorbeeld (vraag 7)',
+  volwassenheid: 'AI-volwassenheid (vragen 8 t/m 10)',
+};
+
+/**
+ * Binnen 'businesswaarde' weegt de verwachte tijdwinst (vraag 6) zwaarder dan
+ * de breedte van de genoemde toepassingen (vraag 5): 24 van de 30 punten.
+ */
+const BUSINESSWAARDE_VERDELING = {
+  v6_tijdwinst: 24,
+  v5_toepassingen: 6,
+  v5_max_meetellend: 4, // meer dan 4 aangevinkte toepassingen levert geen extra punten op
+};
+
+const CATEGORIEEN = [
+  {
+    sleutel: 'direct_kandidaat',
+    label: 'Direct kandidaat',
+    vanaf: 80,
+    tot: 100,
+    kleur: 'groen',
+    advies:
+      'Kenniswerker met veel vergaderingen, documenten en e-mails, een concreet gebruiksscenario ' +
+      'en een verwachte tijdwinst van meer dan 2 uur per week. Licentie toekennen.',
+  },
+  {
+    sleutel: 'pilotgroep',
+    label: 'Pilotgroep',
+    vanaf: 60,
+    tot: 79,
+    kleur: 'blauw',
+    advies:
+      'Waarschijnlijke meerwaarde. Toekennen met een proefperiode van 2-3 maanden en daarna evalueren.',
+  },
+  {
+    sleutel: 'nog_niet',
+    label: 'Nog niet',
+    vanaf: 40,
+    tot: 59,
+    kleur: 'oranje',
+    advies:
+      'Nog geen licentie. Eerst leren optimaal gebruik te maken van Copilot Chat binnen E5 en daarna opnieuw beoordelen.',
+  },
+  {
+    sleutel: 'geen_businesscase',
+    label: 'Geen businesscase',
+    vanaf: 0,
+    tot: 39,
+    kleur: 'rood',
+    advies: 'Geen duidelijke businesscase voor een aanvullende Copilot-licentie.',
+  },
+];
+
+/** Hulpfunctie: haal een vraagdefinitie op via het id. */
+function vraag(id) {
+  return VRAGEN.find((v) => v.id === id);
+}
+
+/** Rond af op één decimaal, zodat totalen netjes optellen zonder ruis. */
+function afronden(getal) {
+  return Math.round(getal * 10) / 10;
+}
+
+// ---------------------------------------------------------------------------
+// Onderdeel 1: informatiewerk (vragen 1 t/m 4) -> 40 punten
+// ---------------------------------------------------------------------------
+function scoreInformatiewerk(antwoorden) {
+  let ruw = 0;
+  let ruwMax = 0;
+  const detail = [];
+
+  for (const v of VRAGEN.filter((q) => q.onderdeel === 'informatiewerk')) {
+    if (v.type === 'matrix') {
+      for (const rij of v.rijen) {
+        const maxPunten = Math.max(...v.opties.map((o) => o.punten));
+        const punten = puntenVoor(v.opties, antwoorden[rij.id]);
+        ruw += punten;
+        ruwMax += maxPunten;
+        detail.push({ label: rij.label, punten, maxPunten });
+      }
+    } else {
+      const maxPunten = Math.max(...v.opties.map((o) => o.punten));
+      const punten = puntenVoor(v.opties, antwoorden[v.id]);
+      ruw += punten;
+      ruwMax += maxPunten;
+      detail.push({ label: `Vraag ${v.nummer}`, punten, maxPunten });
+    }
+  }
+
+  const score = ruwMax > 0 ? (ruw / ruwMax) * GEWICHTEN.informatiewerk : 0;
+  return { score: afronden(score), ruw, ruwMax, max: GEWICHTEN.informatiewerk, detail };
+}
+
+// ---------------------------------------------------------------------------
+// Onderdeel 2: verwachte businesswaarde (vragen 5 en 6) -> 30 punten
+// ---------------------------------------------------------------------------
+function scoreBusinesswaarde(antwoorden) {
+  const v6 = vraag('v6');
+  const v6Max = Math.max(...v6.opties.map((o) => o.punten));
+  const v6Punten = puntenVoor(v6.opties, antwoorden.v6);
+  const tijdwinstScore = v6Max > 0 ? (v6Punten / v6Max) * BUSINESSWAARDE_VERDELING.v6_tijdwinst : 0;
+
+  const gekozen = Array.isArray(antwoorden.v5) ? antwoorden.v5 : [];
+  const meetellend = Math.min(gekozen.length, BUSINESSWAARDE_VERDELING.v5_max_meetellend);
+  const toepassingenScore =
+    (meetellend / BUSINESSWAARDE_VERDELING.v5_max_meetellend) * BUSINESSWAARDE_VERDELING.v5_toepassingen;
+
+  const score = tijdwinstScore + toepassingenScore;
+  return {
+    score: afronden(score),
+    max: GEWICHTEN.businesswaarde,
+    detail: [
+      {
+        label: 'Verwachte tijdwinst per week (vraag 6)',
+        punten: afronden(tijdwinstScore),
+        maxPunten: BUSINESSWAARDE_VERDELING.v6_tijdwinst,
+      },
+      {
+        label: `Genoemde toepassingen (vraag 5): ${gekozen.length}`,
+        punten: afronden(toepassingenScore),
+        maxPunten: BUSINESSWAARDE_VERDELING.v5_toepassingen,
+      },
+    ],
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Onderdeel 3: concreet use case voorbeeld (vraag 7) -> 20 punten
+// ---------------------------------------------------------------------------
+
+/** Woorden die duiden op een concreet, herkenbaar werkproces. */
+const CONCREETHEID_SIGNALEN = [
+  'outlook', 'teams', 'excel', 'word', 'powerpoint', 'sharepoint', 'onenote', 'planner', 'copilot',
+  'mail', 'e-mail', 'email', 'vergader', 'overleg', 'notul', 'verslag', 'rapport', 'offerte',
+  'presentatie', 'dossier', 'contract', 'factuur', 'klant', 'analyse', 'samenvat', 'nieuwsbrief',
+  'agenda', 'actiepunt', 'bestuur', 'directie', 'jaarplan', 'evaluatie', 'sollicitat', 'personeel',
+];
+
+/** Duidt op meetbaarheid: een getal in combinatie met tijd of frequentie. */
+const MEETBAARHEID_PATROON =
+  /\b\d+([.,]\d+)?\s*(uur|uren|minuten|minuut|min|dag|dagen|week|weken|maand|maanden|keer|x|%)\b/i;
+
+const FREQUENTIE_PATROON =
+  /\b(elke|iedere|wekelijk|dagelijk|maandelijk|per week|per dag|per maand|structureel|steeds|telkens)/i;
+
+/**
+ * Automatische indicatie voor de kwaliteit van het use case-voorbeeld.
+ *
+ * Dit is nadrukkelijk een *indicatie*: een open antwoord laat zich niet
+ * volautomatisch beoordelen. De beheerder kan deze score in de
+ * beheerdersomgeving handmatig overschrijven; dan telt de handmatige score.
+ */
+function scoreUseCaseAutomatisch(tekst) {
+  const waarde = (tekst || '').trim();
+  const woorden = waarde ? waarde.split(/\s+/).length : 0;
+
+  const redenen = [];
+  if (woorden === 0) {
+    return { score: 0, max: GEWICHTEN.usecase, woorden, redenen: ['Geen voorbeeld ingevuld.'] };
+  }
+
+  // Basis: hoe uitgewerkt is het antwoord?
+  let score;
+  if (woorden < 8) {
+    score = 2;
+    redenen.push('Zeer kort antwoord (minder dan 8 woorden).');
+  } else if (woorden < 20) {
+    score = 7;
+    redenen.push('Kort antwoord (8-19 woorden).');
+  } else if (woorden < 40) {
+    score = 11;
+    redenen.push('Uitgewerkt antwoord (20-39 woorden).');
+  } else {
+    score = 14;
+    redenen.push('Uitgebreid antwoord (40 woorden of meer).');
+  }
+
+  // Bonus: benoemt de respondent een herkenbaar werkproces of hulpmiddel?
+  const kleineLetters = waarde.toLowerCase();
+  const gevonden = CONCREETHEID_SIGNALEN.filter((woord) => kleineLetters.includes(woord));
+  if (gevonden.length >= 2) {
+    score += 3;
+    redenen.push(`Benoemt meerdere concrete werkprocessen of toepassingen (${gevonden.slice(0, 4).join(', ')}).`);
+  } else if (gevonden.length === 1) {
+    score += 2;
+    redenen.push(`Benoemt een concreet werkproces of toepassing (${gevonden[0]}).`);
+  } else {
+    redenen.push('Benoemt geen herkenbaar werkproces of hulpmiddel.');
+  }
+
+  // Bonus: is het voorbeeld meetbaar of structureel van aard?
+  if (MEETBAARHEID_PATROON.test(waarde)) {
+    score += 2;
+    redenen.push('Bevat een meetbare omvang (aantal, tijd of percentage).');
+  }
+  if (FREQUENTIE_PATROON.test(waarde)) {
+    score += 1;
+    redenen.push('Beschrijft een terugkerende situatie.');
+  }
+
+  return {
+    score: Math.min(afronden(score), GEWICHTEN.usecase),
+    max: GEWICHTEN.usecase,
+    woorden,
+    redenen,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Onderdeel 4: AI-volwassenheid (vragen 8 t/m 10) -> 10 punten
+// ---------------------------------------------------------------------------
+function scoreVolwassenheid(antwoorden) {
+  let ruw = 0;
+  let ruwMax = 0;
+  const detail = [];
+
+  for (const v of VRAGEN.filter((q) => q.onderdeel === 'volwassenheid')) {
+    const maxPunten = Math.max(...v.opties.map((o) => o.punten));
+    const punten = puntenVoor(v.opties, antwoorden[v.id]);
+    ruw += punten;
+    ruwMax += maxPunten;
+    detail.push({ label: `Vraag ${v.nummer}`, punten, maxPunten });
+  }
+
+  const score = ruwMax > 0 ? (ruw / ruwMax) * GEWICHTEN.volwassenheid : 0;
+  return { score: afronden(score), ruw, ruwMax, max: GEWICHTEN.volwassenheid, detail };
+}
+
+// ---------------------------------------------------------------------------
+// Kwalitatieve signalen uit het beoordelingskader
+// ---------------------------------------------------------------------------
+
+/**
+ * Het kader noemt bij 'Direct kandidaat' vier kenmerken. Die tonen we apart,
+ * zodat je de berekende categorie kunt toetsen aan het profiel erachter.
+ */
+function signalen(antwoorden) {
+  const v1 = vraag('v1');
+  const v4 = vraag('v4');
+
+  const zwaarInformatiewerk = ['v1_email', 'v1_overleggen', 'v1_documenten'].filter(
+    (id) => puntenVoor(v1.opties, antwoorden[id]) >= 2
+  ).length;
+
+  const herkenbareSituaties = v4.rijen.filter(
+    (rij) => puntenVoor(v4.opties, antwoorden[rij.id]) >= 2
+  ).length;
+
+  const tijdwinstPunten = puntenVoor(vraag('v6').opties, antwoorden.v6);
+  const useCaseWoorden = (antwoorden.v7 || '').trim().split(/\s+/).filter(Boolean).length;
+
+  return [
+    {
+      label: 'Kenniswerker (informatiewerk is kern van het werk)',
+      voldaan: herkenbareSituaties >= 3,
+      toelichting: `${herkenbareSituaties} van de 6 situaties uit vraag 4 komen regelmatig of zeer vaak voor.`,
+    },
+    {
+      label: "Veel vergaderingen, documenten en e-mails",
+      voldaan: zwaarInformatiewerk >= 2,
+      toelichting: `${zwaarInformatiewerk} van de 3 kernactiviteiten kosten meer dan 5 uur per week.`,
+    },
+    {
+      label: 'Concreet gebruiksscenario',
+      voldaan: useCaseWoorden >= 20,
+      toelichting: `Het voorbeeld bij vraag 7 telt ${useCaseWoorden} woorden.`,
+    },
+    {
+      label: 'Verwachte tijdwinst groter dan 2 uur per week',
+      voldaan: tijdwinstPunten >= 3,
+      toelichting: `Opgegeven verwachting: ${
+        (vraag('v6').opties.find((o) => o.waarde === antwoorden.v6) || {}).label || 'onbekend'
+      }.`,
+    },
+  ];
+}
+
+/** Bepaal de adviescategorie bij een totaalscore. */
+function categorieVoor(totaal) {
+  return (
+    CATEGORIEEN.find((c) => totaal >= c.vanaf && totaal <= c.tot) ||
+    CATEGORIEEN[CATEGORIEEN.length - 1]
+  );
+}
+
+/**
+ * Bereken de volledige beoordeling.
+ *
+ * @param {object} antwoorden  De ingevulde antwoorden (sleutels = veld-id's).
+ * @param {number|null} handmatigeUseCaseScore  Optionele handmatige score (0-20)
+ *        die de automatische indicatie voor vraag 7 vervangt.
+ */
+function beoordeel(antwoorden, handmatigeUseCaseScore = null) {
+  const informatiewerk = scoreInformatiewerk(antwoorden);
+  const businesswaarde = scoreBusinesswaarde(antwoorden);
+  const useCaseAuto = scoreUseCaseAutomatisch(antwoorden.v7);
+  const volwassenheid = scoreVolwassenheid(antwoorden);
+
+  const handmatig =
+    handmatigeUseCaseScore === null || handmatigeUseCaseScore === undefined || handmatigeUseCaseScore === ''
+      ? null
+      : Math.max(0, Math.min(GEWICHTEN.usecase, Number(handmatigeUseCaseScore)));
+
+  const useCaseScore = handmatig === null ? useCaseAuto.score : handmatig;
+
+  const totaal = afronden(
+    informatiewerk.score + businesswaarde.score + useCaseScore + volwassenheid.score
+  );
+  const categorie = categorieVoor(totaal);
+
+  return {
+    onderdelen: {
+      informatiewerk,
+      businesswaarde,
+      usecase: {
+        score: useCaseScore,
+        max: GEWICHTEN.usecase,
+        automatisch: useCaseAuto.score,
+        handmatig,
+        woorden: useCaseAuto.woorden,
+        redenen: useCaseAuto.redenen,
+      },
+      volwassenheid,
+    },
+    totaal,
+    categorie: categorie.sleutel,
+    categorieLabel: categorie.label,
+    categorieKleur: categorie.kleur,
+    advies: categorie.advies,
+    signalen: signalen(antwoorden),
+  };
+}
+
+module.exports = {
+  GEWICHTEN,
+  ONDERDEEL_LABELS,
+  CATEGORIEEN,
+  beoordeel,
+  categorieVoor,
+  scoreUseCaseAutomatisch,
+};
+
+  });
+
+  definieer('validatie', function (module, exports, require) {
+'use strict';
+
+/**
+ * Validatie van een binnengekomen inzending.
+ *
+ * De front-end valideert ook, maar daar mag je nooit op vertrouwen: deze
+ * controle op de server is leidend.
+ */
+
+const { VRAGEN, antwoordVelden, labelVoor } = require('./vragenlijst');
+
+const EMAIL_PATROON = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+function valideer(invoer) {
+  const fouten = {};
+  const antwoorden = {};
+  const velden = antwoordVelden();
+
+  for (const veld of velden) {
+    const ruw = invoer[veld.id];
+
+    if (veld.type === 'meerkeuze') {
+      const lijst = Array.isArray(ruw) ? ruw : ruw ? [ruw] : [];
+      const geldig = lijst.filter((w) => veld.opties.some((o) => o.waarde === w));
+      if (geldig.length !== lijst.length) {
+        fouten[veld.id] = 'Er is een onbekende keuze meegestuurd.';
+      }
+      antwoorden[veld.id] = geldig;
+      continue;
+    }
+
+    if (veld.type === 'keuze') {
+      const waarde = typeof ruw === 'string' ? ruw.trim() : '';
+      if (!waarde) {
+        if (veld.verplicht) fouten[veld.id] = 'Maak een keuze.';
+        antwoorden[veld.id] = null;
+        continue;
+      }
+      if (!veld.opties.some((o) => o.waarde === waarde)) {
+        fouten[veld.id] = 'Onbekende keuze.';
+        antwoorden[veld.id] = null;
+        continue;
+      }
+      antwoorden[veld.id] = waarde;
+      continue;
+    }
+
+    // Tekstvelden
+    const waarde = typeof ruw === 'string' ? ruw.trim() : '';
+    if (!waarde) {
+      if (veld.verplicht) fouten[veld.id] = 'Dit veld is verplicht.';
+      antwoorden[veld.id] = null;
+      continue;
+    }
+    if (veld.maxLengte && waarde.length > veld.maxLengte) {
+      fouten[veld.id] = `Maximaal ${veld.maxLengte} tekens.`;
+      antwoorden[veld.id] = waarde.slice(0, veld.maxLengte);
+      continue;
+    }
+    if (veld.id === 'email' && !EMAIL_PATROON.test(waarde)) {
+      fouten[veld.id] = 'Vul een geldig e-mailadres in.';
+    }
+    antwoorden[veld.id] = waarde;
+  }
+
+  // Vraag 7 vragen we inhoudelijk om iets van substantie.
+  if (antwoorden.v7 && antwoorden.v7.length < 15) {
+    fouten.v7 = 'Beschrijf je voorbeeld iets uitgebreider (minimaal 15 tekens).';
+  }
+
+  if (!invoer.akkoord_privacy) {
+    fouten.akkoord_privacy = 'Je moet akkoord gaan om het formulier te kunnen versturen.';
+  }
+
+  return {
+    geldig: Object.keys(fouten).length === 0,
+    fouten,
+    antwoorden,
+    akkoordPrivacy: Boolean(invoer.akkoord_privacy),
+    akkoordContact: Boolean(invoer.akkoord_contact),
+  };
+}
+
+/**
+ * Zet de opgeslagen antwoorden om naar leesbare labels, voor de
+ * beheerdersomgeving en de CSV-export.
+ */
+function leesbaar(antwoorden) {
+  const uitkomst = [];
+  for (const vraag of VRAGEN) {
+    if (vraag.type === 'matrix') {
+      for (const rij of vraag.rijen) {
+        uitkomst.push({
+          vraag: `${vraag.nummer}. ${rij.label}`,
+          antwoord: antwoorden[rij.id] ? labelVoor(vraag.opties, antwoorden[rij.id]) : '-',
+          veld: rij.id,
+        });
+      }
+    } else if (vraag.type === 'checkbox') {
+      const gekozen = Array.isArray(antwoorden[vraag.id]) ? antwoorden[vraag.id] : [];
+      const labels = gekozen.map((w) => labelVoor(vraag.opties, w));
+      if (antwoorden[vraag.andersVeld]) {
+        const index = labels.findIndex((l) => l.startsWith('Anders'));
+        const tekst = `Anders: ${antwoorden[vraag.andersVeld]}`;
+        if (index >= 0) labels[index] = tekst;
+        else labels.push(tekst);
+      }
+      uitkomst.push({
+        vraag: `${vraag.nummer}. ${vraag.vraag}`,
+        antwoord: labels.length ? labels.join('; ') : '-',
+        veld: vraag.id,
+      });
+    } else if (vraag.type === 'radio') {
+      uitkomst.push({
+        vraag: `${vraag.nummer}. ${vraag.vraag}`,
+        antwoord: antwoorden[vraag.id] ? labelVoor(vraag.opties, antwoorden[vraag.id]) : '-',
+        veld: vraag.id,
+      });
+    } else if (vraag.deel > 0) {
+      uitkomst.push({
+        vraag: `${vraag.nummer}. ${vraag.vraag}`,
+        antwoord: antwoorden[vraag.id] || '-',
+        veld: vraag.id,
+        lang: vraag.type === 'tekstvlak',
+      });
+    }
+  }
+  return uitkomst;
+}
+
+module.exports = { valideer, leesbaar };
+
+  });
+
+  definieer('besluiten', function (module, exports, require) {
+'use strict';
+
+/**
+ * De besluiten die een beheerder kan vastleggen bij een inzending.
+ * Gedeeld door de beheerders-API en de statische demoversie.
+ */
+
+const BESLUITEN = [
+  { waarde: 'nieuw', label: 'Nog niet beoordeeld', kleur: 'grijs' },
+  { waarde: 'licentie_toekennen', label: 'Licentie toekennen', kleur: 'groen' },
+  { waarde: 'pilot', label: 'Opnemen in pilotgroep', kleur: 'blauw' },
+  { waarde: 'nog_niet', label: 'Nog niet toekennen', kleur: 'oranje' },
+  { waarde: 'afgewezen', label: 'Afgewezen', kleur: 'rood' },
+];
+
+function besluit(waarde) {
+  return BESLUITEN.find((b) => b.waarde === waarde) || BESLUITEN[0];
+}
+
+module.exports = { BESLUITEN, besluit };
+
+  });
+
+  definieer('beheerweergave', function (module, exports, require) {
+'use strict';
+
+/**
+ * Omzetting van opgeslagen rijen naar wat de beheerdersinterface toont.
+ *
+ * Deze module bevat geen database- of webservercode, zodat zowel de
+ * beheerders-API (src/routes/beheer.js) als de statische demoversie voor
+ * GitHub Pages er precies hetzelfde uit kan halen.
+ */
+
+const { beoordeel, CATEGORIEEN, GEWICHTEN } = require('./scoring');
+const { BESLUITEN, besluit } = require('./besluiten');
+const { leesbaar } = require('./validatie');
+const { VRAGEN } = require('./vragenlijst');
+
+/** Haal de antwoorden terug uit de opgeslagen JSON-kolom. */
+function antwoordenVan(rij) {
+  if (rij.antwoorden_json && typeof rij.antwoorden_json === 'object') return rij.antwoorden_json;
+  try {
+    return JSON.parse(rij.antwoorden_json || '{}');
+  } catch {
+    return {};
+  }
+}
+
+/** Boolean-waarden komen per database anders terug (0/1, true/false). */
+function jaNee(waarde) {
+  return waarde === true || waarde === 1 || waarde === '1';
+}
+
+/** Getallen komen bij sommige databases als tekst terug. */
+function getalOfNull(waarde) {
+  if (waarde === null || waarde === undefined || waarde === '') return null;
+  const getal = Number(waarde);
+  return Number.isFinite(getal) ? getal : null;
+}
+
+/** Verrijk een opgeslagen rij met de actuele berekening van het beoordelingsmodel. */
+function metBeoordeling(rij) {
+  const antwoorden = antwoordenVan(rij);
+  const beoordeling = beoordeel(antwoorden, getalOfNull(rij.usecase_score_handmatig));
+  return { antwoorden, beoordeling };
+}
+
+/** Eén regel voor de overzichtstabel. */
+function overzichtsRij(rij) {
+  const { beoordeling } = metBeoordeling(rij);
+  return {
+    id: rij.id,
+    naam: rij.naam,
+    email: rij.email,
+    functie: rij.functie,
+    afdeling: rij.afdeling,
+    ingezonden_op: rij.ingezonden_op,
+    totaal: beoordeling.totaal,
+    categorie: beoordeling.categorie,
+    categorieLabel: beoordeling.categorieLabel,
+    categorieKleur: beoordeling.categorieKleur,
+    onderdelen: {
+      informatiewerk: beoordeling.onderdelen.informatiewerk.score,
+      businesswaarde: beoordeling.onderdelen.businesswaarde.score,
+      usecase: beoordeling.onderdelen.usecase.score,
+      volwassenheid: beoordeling.onderdelen.volwassenheid.score,
+    },
+    handmatigBeoordeeld: beoordeling.onderdelen.usecase.handmatig !== null,
+    besluit: rij.besluit || 'nieuw',
+    beoordeeld_op: rij.beoordeeld_op,
+  };
+}
+
+/** Aantallen per adviescategorie, voor de tegels bovenaan het overzicht. */
+function samenvatting(inzendingen) {
+  return CATEGORIEEN.map((c) => ({
+    sleutel: c.sleutel,
+    label: c.label,
+    kleur: c.kleur,
+    aantal: inzendingen.filter((i) => i.categorie === c.sleutel).length,
+  }));
+}
+
+/** Alles wat het detailpaneel van één inzending laat zien. */
+function detail(rij) {
+  const { antwoorden, beoordeling } = metBeoordeling(rij);
+  return {
+    id: rij.id,
+    respondent: {
+      naam: rij.naam,
+      email: rij.email,
+      functie: rij.functie,
+      afdeling: rij.afdeling,
+    },
+    ingezonden_op: rij.ingezonden_op,
+    akkoord_contact: jaNee(rij.akkoord_contact),
+    antwoorden: leesbaar(antwoorden),
+    beoordeling,
+    besluit: rij.besluit || 'nieuw',
+    besluit_toelichting: rij.besluit_toelichting || '',
+    usecase_score_handmatig: getalOfNull(rij.usecase_score_handmatig),
+    beoordeeld_door: rij.beoordeeld_door,
+    beoordeeld_op: rij.beoordeeld_op,
+  };
+}
+
+/** De waarden die bij een nieuwe inzending worden opgeslagen. */
+function nieuweRij(antwoorden, extra = {}) {
+  const beoordeling = beoordeel(antwoorden, null);
+
+  const rij = {
+    ingezonden_op: extra.ingezonden_op || new Date(),
+    bron: extra.bron || 'webformulier',
+    ip_hash: extra.ip_hash || null,
+    user_agent: extra.user_agent || null,
+    akkoord_privacy: Boolean(extra.akkoord_privacy),
+    akkoord_contact: Boolean(extra.akkoord_contact),
+    antwoorden_json: JSON.stringify(antwoorden),
+
+    score_informatiewerk: beoordeling.onderdelen.informatiewerk.score,
+    score_businesswaarde: beoordeling.onderdelen.businesswaarde.score,
+    score_usecase_automatisch: beoordeling.onderdelen.usecase.automatisch,
+    score_usecase: beoordeling.onderdelen.usecase.score,
+    score_volwassenheid: beoordeling.onderdelen.volwassenheid.score,
+    score_totaal: beoordeling.totaal,
+    advies_categorie: beoordeling.categorie,
+
+    usecase_score_handmatig: null,
+    besluit: 'nieuw',
+    besluit_toelichting: null,
+    beoordeeld_door: null,
+    beoordeeld_op: null,
+  };
+
+  // Elk antwoord krijgt ook een eigen kolom, zodat je er direct in je eigen
+  // database op kunt filteren en rapporteren.
+  for (const [sleutel, waarde] of Object.entries(antwoorden)) {
+    rij[sleutel] = Array.isArray(waarde) ? waarde.join(',') : waarde;
+  }
+
+  return rij;
+}
+
+/** De waarden die worden bijgewerkt als de beheerder een beoordeling opslaat. */
+function beoordelingsUpdate(rij, invoer, beheerder) {
+  const handmatig = getalOfNull(invoer.usecase_score_handmatig);
+  if (handmatig !== null && (handmatig < 0 || handmatig > GEWICHTEN.usecase)) {
+    return { fout: `De handmatige score voor vraag 7 moet tussen 0 en ${GEWICHTEN.usecase} liggen.` };
+  }
+
+  const gekozenBesluit = String(invoer.besluit || 'nieuw');
+  if (!BESLUITEN.some((b) => b.waarde === gekozenBesluit)) {
+    return { fout: 'Onbekend besluit.' };
+  }
+
+  const beoordeling = beoordeel(antwoordenVan(rij), handmatig);
+
+  return {
+    beoordeling,
+    waarden: {
+      usecase_score_handmatig: handmatig === null ? null : Math.round(handmatig * 10) / 10,
+      score_usecase: beoordeling.onderdelen.usecase.score,
+      score_totaal: beoordeling.totaal,
+      advies_categorie: beoordeling.categorie,
+      besluit: gekozenBesluit,
+      besluit_toelichting: (invoer.besluit_toelichting || '').slice(0, 4000) || null,
+      beoordeeld_door: beheerder || null,
+      beoordeeld_op: gekozenBesluit === 'nieuw' ? null : new Date(),
+    },
+  };
+}
+
+/** Kolomkoppen voor de CSV-export, afgeleid van de vragenlijst. */
+function csvVraagKoppen() {
+  const koppen = [];
+  for (const vraag of VRAGEN) {
+    if (vraag.deel === 0) continue;
+    if (vraag.type === 'matrix') {
+      for (const rij of vraag.rijen) koppen.push({ sleutel: rij.id, kop: `${vraag.nummer}. ${rij.label}` });
+    } else {
+      koppen.push({ sleutel: vraag.id, kop: `${vraag.nummer}. ${vraag.vraag}` });
+      if (vraag.andersVeld) koppen.push({ sleutel: vraag.andersVeld, kop: `${vraag.nummer}. Anders, namelijk` });
+    }
+  }
+  return koppen;
+}
+
+function csvWaarde(waarde) {
+  if (waarde === null || waarde === undefined) return '';
+  const tekst = String(waarde).replace(/"/g, '""');
+  return /[";\n\r]/.test(tekst) ? `"${tekst}"` : tekst;
+}
+
+function alsTekst(waarde) {
+  if (waarde instanceof Date) return waarde.toISOString();
+  return waarde;
+}
+
+/** Volledige CSV-export, met puntkomma's zodat Excel hem direct goed opent. */
+function csv(rijen) {
+  const vraagKoppen = csvVraagKoppen();
+  const koppen = [
+    'id',
+    'ingezonden_op',
+    'naam',
+    'email',
+    'functie',
+    'afdeling',
+    'score_informatiewerk',
+    'score_businesswaarde',
+    'score_usecase',
+    'score_usecase_automatisch',
+    'score_volwassenheid',
+    'score_totaal',
+    'advies_categorie',
+    'advies',
+    'besluit',
+    'besluit_toelichting',
+    'beoordeeld_door',
+    'beoordeeld_op',
+    ...vraagKoppen.map((k) => k.kop),
+  ];
+
+  const regels = [koppen.map(csvWaarde).join(';')];
+
+  for (const rij of rijen) {
+    const { antwoorden, beoordeling } = metBeoordeling(rij);
+    const leesbareAntwoorden = new Map(leesbaar(antwoorden).map((a) => [a.veld, a.antwoord]));
+    regels.push(
+      [
+        rij.id,
+        alsTekst(rij.ingezonden_op),
+        rij.naam,
+        rij.email,
+        rij.functie,
+        rij.afdeling,
+        beoordeling.onderdelen.informatiewerk.score,
+        beoordeling.onderdelen.businesswaarde.score,
+        beoordeling.onderdelen.usecase.score,
+        beoordeling.onderdelen.usecase.automatisch,
+        beoordeling.onderdelen.volwassenheid.score,
+        beoordeling.totaal,
+        beoordeling.categorieLabel,
+        beoordeling.advies,
+        besluit(rij.besluit || 'nieuw').label,
+        rij.besluit_toelichting,
+        rij.beoordeeld_door,
+        alsTekst(rij.beoordeeld_op),
+        ...vraagKoppen.map((k) => leesbareAntwoorden.get(k.sleutel) ?? antwoorden[k.sleutel] ?? ''),
+      ]
+        .map(csvWaarde)
+        .join(';')
+    );
+  }
+
+  // BOM zodat Excel de accenten goed toont.
+  return '﻿' + regels.join('\r\n');
+}
+
+module.exports = {
+  antwoordenVan,
+  metBeoordeling,
+  overzichtsRij,
+  samenvatting,
+  detail,
+  nieuweRij,
+  beoordelingsUpdate,
+  csv,
+};
+
+  });
+
+  global.DGModel = {
+    vragenlijst: require('vragenlijst'),
+    scoring: require('scoring'),
+    validatie: require('validatie'),
+    besluiten: require('besluiten'),
+    beheerweergave: require('beheerweergave')
+  };
+})(window);

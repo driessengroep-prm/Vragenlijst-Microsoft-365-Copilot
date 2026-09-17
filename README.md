@@ -14,6 +14,9 @@ Alles staat in Driessen Groep-huisstijl: goud, donkergroen, witte kaart en afger
 | CSV-export | `/api/beheer/export.csv` |
 | Statuscontrole (voor monitoring) | `/gezondheid` |
 
+Wil je alleen even rondkijken zonder iets te installeren? Er is een statische testversie
+voor GitHub Pages, zie [hoofdstuk 2](#2-testversie-op-github-pages).
+
 ---
 
 ## 1. Snel starten
@@ -32,7 +35,57 @@ database, zie hieronder.
 
 ---
 
-## 2. Je eigen database koppelen
+## 2. Testversie op GitHub Pages
+
+Voor het doorkijken en doorklikken staat er een statische testversie in `docs/`. Die draait
+volledig in de browser: **geen server, geen database en geen inlog**. Inzendingen worden
+bewaard in de localStorage van de bezoeker en gaan nergens heen. Iedere bezoeker start met
+dezelfde vier voorbeeldinzendingen en ziet alleen zijn eigen invoer.
+
+| Pagina | Adres |
+| --- | --- |
+| Vragenlijst | `https://driessengroep-prm.github.io/Vragenlijst-Microsoft-365-Copilot/` |
+| Beheerderspagina | `https://driessengroep-prm.github.io/Vragenlijst-Microsoft-365-Copilot/beheer.html` |
+
+Bovenaan beide pagina's staat een balk die duidelijk maakt dat het om een testomgeving gaat.
+Op de beheerderspagina staat een knop om de voorbeelddata terug te zetten.
+
+### Eenmalig inschakelen
+
+GitHub Pages moet nog aangezet worden; dat kan alleen via de repository-instellingen:
+
+1. Ga naar **Settings** &rarr; **Pages** in de repository.
+2. Zet **Source** op *Deploy from a branch*.
+3. Kies bij **Branch** de branch `claude/friendly-fermat-k2x1ur` en de map **`/docs`**.
+4. Klik op **Save**. Na een minuut staat de site op bovenstaande adressen.
+
+Merge je de branch later naar `main`? Zet de branch in stap 3 dan om naar `main`.
+
+### Let op
+
+- De beheerderspagina is op GitHub Pages **openbaar**: iedereen met het adres kan hem
+  openen. Dat kan hier omdat er geen echte gegevens in staan — alleen verzonnen
+  voorbeelden en wat de bezoeker zelf invult, in zijn eigen browser. Vul er dus geen echte
+  aanvragen in.
+- In de echte applicatie zit de beheerdersomgeving wél achter een wachtwoord en schrijven de
+  inzendingen naar jouw database.
+
+### Bijwerken
+
+De inhoud van `docs/` wordt gegenereerd uit dezelfde bronbestanden als de echte applicatie:
+de vragenlijst, het beoordelingsmodel en de validatie worden letterlijk uit `src/`
+overgenomen, zodat de demo dezelfde scores berekent. Wijzig je iets, draai dan:
+
+```bash
+npm run build:static
+```
+
+en commit de gewijzigde `docs/`. `npm test` controleert of `docs/` nog gelijkloopt met de
+bron en geeft een duidelijke melding als dat niet zo is.
+
+---
+
+## 3. Je eigen database koppelen
 
 Alle databasegegevens staan in `.env`. Zodra je de gegevens van je lokale database hebt, vul
 je die daar in en draai je `npm run migrate` opnieuw. Verder hoeft er niets te veranderen.
@@ -90,7 +143,7 @@ gegevens blijven staan.
 
 ---
 
-## 3. Wat komt er in de database te staan?
+## 4. Wat komt er in de database te staan?
 
 Eén rij per inzending in de tabel `copilot_aanvragen` (naam instelbaar via `DB_TABLE`).
 Elk antwoord krijgt een eigen kolom, zodat je er in je eigen database direct op kunt
@@ -160,7 +213,7 @@ ORDER BY score_totaal DESC;
 
 ---
 
-## 4. Het beoordelingsmodel
+## 5. Het beoordelingsmodel
 
 De totaalscore van 100 punten is opgebouwd uit vier onderdelen, precies volgens het
 beoordelingskader:
@@ -184,7 +237,7 @@ De totaalscore bepaalt de adviescategorie:
 ### Hoe de punten binnen een onderdeel verdeeld zijn
 
 Het kader geeft de gewichten; de verdeling daarbinnen is als volgt ingevuld. Elke
-antwoordoptie heeft een puntenwaarde (zie de tabel in hoofdstuk 3). Binnen een onderdeel
+antwoordoptie heeft een puntenwaarde (zie de tabel in hoofdstuk 4). Binnen een onderdeel
 worden die punten opgeteld en daarna naar het gewicht van dat onderdeel geschaald.
 
 - **Informatiewerk (40 punten)** — de vijf activiteiten uit vraag 1, vraag 2, vraag 3 en de
@@ -221,7 +274,7 @@ profiel achter de score klopt met het beeld dat het kader schetst.
 
 ---
 
-## 5. De beheerdersomgeving
+## 6. De beheerdersomgeving
 
 Ga naar `/beheer` en log in met `ADMIN_USER` en `ADMIN_PASSWORD` uit je `.env`. Zonder
 `ADMIN_PASSWORD` is de beheerdersomgeving uitgeschakeld.
@@ -240,7 +293,7 @@ Je ziet daar:
 
 ---
 
-## 6. Huisstijl aanpassen
+## 7. Huisstijl aanpassen
 
 - **Logo** — `public/assets/img/logo.svg` is een plaatshouder. Vervang het bestand door het
   officiële logo; het formaat maakt niet uit, de hoogte wordt in de stylesheet geregeld.
@@ -254,7 +307,7 @@ Je ziet daar:
 
 ---
 
-## 7. Vragen toevoegen of wijzigen
+## 8. Vragen toevoegen of wijzigen
 
 De vragenlijst staat volledig in `src/vragenlijst.js`. Dat bestand is de enige bron van
 waarheid: het formulier, de validatie, de puntentelling, de databasekolommen en de
@@ -269,7 +322,7 @@ Een vraag toevoegen:
 
 ---
 
-## 8. Beveiliging en privacy
+## 9. Beveiliging en privacy
 
 - Het formulier is openbaar; de beheerdersomgeving en alle beheerders-API's zitten achter
   een wachtwoord.
@@ -290,7 +343,7 @@ optionele vraag of de medewerker benaderd mag worden.
 
 ---
 
-## 9. Bestandsindeling
+## 10. Bestandsindeling
 
 ```
 src/
@@ -315,12 +368,16 @@ public/
   assets/css/         Huisstijl
   assets/js/          Formulier- en beheerlogica
   assets/img/         Logo (plaatshouder) en favicon
-test/                 Tests op het model en de validatie
+test/                 Tests op het model, de validatie en de statische versie
+tools/
+  bouw-statisch.js    Genereert de testversie in docs/
+  statisch/demo-api.js  Demolaag die /api/ in de browser afhandelt
+docs/                 Gegenereerde testversie voor GitHub Pages
 ```
 
 ---
 
-## 10. In productie draaien
+## 11. In productie draaien
 
 Zet de applicatie achter een reverse proxy met HTTPS en houd het proces draaiend met
 bijvoorbeeld `systemd` of `pm2`:

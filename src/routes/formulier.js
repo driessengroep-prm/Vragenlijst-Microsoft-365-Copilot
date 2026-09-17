@@ -10,7 +10,7 @@ const config = require('../config');
 const { tabel } = require('../db');
 const { DELEN, VRAGEN } = require('../vragenlijst');
 const { valideer } = require('../validatie');
-const { beoordeel } = require('../scoring');
+const { nieuweRij } = require('../beheerweergave');
 
 const router = express.Router();
 
@@ -54,38 +54,12 @@ router.post('/inzendingen', inzendLimiet, async (req, res) => {
     });
   }
 
-  const { antwoorden } = resultaat;
-  const beoordeling = beoordeel(antwoorden, null);
-
-  const rij = {
-    ingezonden_op: new Date(),
-    bron: 'webformulier',
+  const rij = nieuweRij(resultaat.antwoorden, {
     ip_hash: ipHash(req.ip),
     user_agent: (req.get('user-agent') || '').slice(0, 255),
     akkoord_privacy: resultaat.akkoordPrivacy,
     akkoord_contact: resultaat.akkoordContact,
-    antwoorden_json: JSON.stringify(antwoorden),
-
-    score_informatiewerk: beoordeling.onderdelen.informatiewerk.score,
-    score_businesswaarde: beoordeling.onderdelen.businesswaarde.score,
-    score_usecase_automatisch: beoordeling.onderdelen.usecase.automatisch,
-    score_usecase: beoordeling.onderdelen.usecase.score,
-    score_volwassenheid: beoordeling.onderdelen.volwassenheid.score,
-    score_totaal: beoordeling.totaal,
-    advies_categorie: beoordeling.categorie,
-
-    usecase_score_handmatig: null,
-    besluit: 'nieuw',
-    besluit_toelichting: null,
-    beoordeeld_door: null,
-    beoordeeld_op: null,
-  };
-
-  // Elk antwoord krijgt ook een eigen kolom, zodat je er direct in je eigen
-  // database op kunt filteren en rapporteren.
-  for (const [sleutel, waarde] of Object.entries(antwoorden)) {
-    rij[sleutel] = Array.isArray(waarde) ? waarde.join(',') : waarde;
-  }
+  });
 
   try {
     await tabel().insert(rij);
