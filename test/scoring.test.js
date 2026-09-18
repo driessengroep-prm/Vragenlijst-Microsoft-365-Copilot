@@ -9,7 +9,7 @@
 const test = require('node:test');
 const assert = require('node:assert');
 
-const { beoordeel, GEWICHTEN, categorieVoor } = require('../src/scoring');
+const { beoordeel, GEWICHTEN, CATEGORIEEN, categorieVoor } = require('../src/scoring');
 
 const V1 = ['v1_email', 'v1_overleggen', 'v1_documenten', 'v1_presentaties', 'v1_zoeken'];
 const V4 = [
@@ -68,7 +68,7 @@ test('de gewichten tellen op tot 100 punten', () => {
 test('een maximaal profiel haalt 100 punten en is direct kandidaat', () => {
   const resultaat = beoordeel(maximaal());
   assert.strictEqual(resultaat.totaal, 100);
-  assert.strictEqual(resultaat.categorie, 'direct_kandidaat');
+  assert.strictEqual(resultaat.categorie, 'hoge_prioriteit');
   assert.strictEqual(resultaat.onderdelen.informatiewerk.score, 50);
   assert.strictEqual(resultaat.onderdelen.businesswaarde.score, 38);
   assert.strictEqual(resultaat.onderdelen.volwassenheid.score, 12);
@@ -77,7 +77,7 @@ test('een maximaal profiel haalt 100 punten en is direct kandidaat', () => {
 test('een minimaal profiel haalt 0 punten en heeft geen businesscase', () => {
   const resultaat = beoordeel(antwoorden());
   assert.strictEqual(resultaat.totaal, 0);
-  assert.strictEqual(resultaat.categorie, 'geen_businesscase');
+  assert.strictEqual(resultaat.categorie, 'geen_licentie');
 });
 
 test('geen enkel onderdeel kan boven zijn gewicht uitkomen', () => {
@@ -91,22 +91,34 @@ test('geen enkel onderdeel kan boven zijn gewicht uitkomen', () => {
 });
 
 test('de grenzen van de adviescategorieën sluiten op elkaar aan', () => {
-  assert.strictEqual(categorieVoor(100).sleutel, 'direct_kandidaat');
-  assert.strictEqual(categorieVoor(80).sleutel, 'direct_kandidaat');
-  assert.strictEqual(categorieVoor(79).sleutel, 'pilotgroep');
-  assert.strictEqual(categorieVoor(60).sleutel, 'pilotgroep');
-  assert.strictEqual(categorieVoor(59).sleutel, 'nog_niet');
-  assert.strictEqual(categorieVoor(40).sleutel, 'nog_niet');
-  assert.strictEqual(categorieVoor(39).sleutel, 'geen_businesscase');
-  assert.strictEqual(categorieVoor(0).sleutel, 'geen_businesscase');
+  assert.strictEqual(categorieVoor(100).sleutel, 'hoge_prioriteit');
+  assert.strictEqual(categorieVoor(75).sleutel, 'hoge_prioriteit');
+  assert.strictEqual(categorieVoor(74).sleutel, 'geschikt_mits');
+  assert.strictEqual(categorieVoor(60).sleutel, 'geschikt_mits');
+  assert.strictEqual(categorieVoor(59).sleutel, 'eerst_training');
+  assert.strictEqual(categorieVoor(45).sleutel, 'eerst_training');
+  assert.strictEqual(categorieVoor(44).sleutel, 'geen_licentie');
+  assert.strictEqual(categorieVoor(0).sleutel, 'geen_licentie');
+});
+
+test('geen enkele categorie belooft nog een proefperiode', () => {
+  // Licenties gaan per jaar; een pilot van 2-3 maanden kan niet meer worden
+  // toegezegd, dus die belofte mag nergens meer staan.
+  for (const categorie of CATEGORIEEN) {
+    assert.ok(
+      // \b voorkomt dat 'pilot' binnen 'Copilot' meetelt.
+      !/\bpilot|proefperiode|proefopstelling/i.test(`${categorie.advies} ${categorie.label}`),
+      `${categorie.sleutel} belooft nog een proefperiode`
+    );
+  }
 });
 
 test('scores met een decimaal vallen niet tussen twee categorieën in', () => {
   // Een score als 59,6 mag niet terugvallen naar de laagste categorie.
-  assert.strictEqual(categorieVoor(59.6).sleutel, 'nog_niet');
-  assert.strictEqual(categorieVoor(79.9).sleutel, 'pilotgroep');
-  assert.strictEqual(categorieVoor(39.4).sleutel, 'geen_businesscase');
-  assert.strictEqual(categorieVoor(99.9).sleutel, 'direct_kandidaat');
+  assert.strictEqual(categorieVoor(59.6).sleutel, 'eerst_training');
+  assert.strictEqual(categorieVoor(74.9).sleutel, 'geschikt_mits');
+  assert.strictEqual(categorieVoor(44.4).sleutel, 'geen_licentie');
+  assert.strictEqual(categorieVoor(99.9).sleutel, 'hoge_prioriteit');
 
   // Elke score van 0 tot 100, in stappen van een tiende, krijgt een categorie
   // die bij de ondergrens hoort.
@@ -160,4 +172,12 @@ test('de profielkenmerken uit het kader worden herkend', () => {
 test('ontbrekende antwoorden leiden niet tot een fout', () => {
   assert.doesNotThrow(() => beoordeel({}));
   assert.strictEqual(beoordeel({}).totaal, 0);
+});
+
+test('de vervolgvraag telt niet mee in de score', () => {
+  const zonder = beoordeel(antwoorden({ v6: '2_tot_4_uur' }));
+  const met = beoordeel(antwoorden({ v6: '2_tot_4_uur', use_case: 'Een uitgebreide beschrijving van een terugkerende situatie.' }));
+
+  assert.strictEqual(met.totaal, zonder.totaal);
+  assert.strictEqual(met.categorie, zonder.categorie);
 });

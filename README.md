@@ -3,7 +3,8 @@
 Webformulier waarmee medewerkers de vragenlijst *Microsoft 365 Copilot* invullen, plus een
 beheerdersomgeving waarin je per inzending ziet of je voor die persoon een Copilot-licentie
 zou moeten afsluiten. De score wordt volledig berekend uit de meerkeuzeantwoorden
-(50/38/12 met vier adviescategorieën).
+(50/38/12 met vier adviescategorieën). Valt iemand in de middelste categorie, dan vraagt het
+formulier zelf om een concrete use case.
 
 Alles staat in Driessen Groep-huisstijl: goud, donkergroen, witte kaart en afgeronde knoppen.
 
@@ -170,8 +171,8 @@ JSON, zodat er niets verloren gaat.
 | `score_businesswaarde` | Deelscore verwachte businesswaarde (max. 38) |
 | `score_volwassenheid` | Deelscore AI-volwassenheid (max. 12) |
 | `score_totaal` | Totaalscore (0-100) |
-| `advies_categorie` | `direct_kandidaat`, `pilotgroep`, `nog_niet` of `geen_businesscase` |
-| `besluit` | `nieuw`, `licentie_toekennen`, `pilot`, `nog_niet` of `afgewezen` |
+| `advies_categorie` | `hoge_prioriteit`, `geschikt_mits`, `eerst_training` of `geen_licentie` |
+| `besluit` | `nieuw`, `licentie_toekennen`, `training_eerst` of `afgewezen` |
 | `besluit_toelichting` | Jouw toelichting bij het besluit |
 | `beoordeeld_door` / `beoordeeld_op` | Wie er beoordeelde en wanneer |
 | `akkoord_privacy` / `akkoord_contact` | Gegeven toestemmingen |
@@ -193,20 +194,21 @@ aantal punten dat die keuze oplevert.
 | `v1_documenten` | 1. Documenten schrijven | minder_dan_2_uur (0), 2_tot_5_uur (1), 5_tot_10_uur (2), meer_dan_10_uur (3) |
 | `v1_presentaties` | 1. Presentaties maken | minder_dan_2_uur (0), 2_tot_5_uur (1), 5_tot_10_uur (2), meer_dan_10_uur (3) |
 | `v1_zoeken` | 1. Informatie zoeken in documenten, Teams of SharePoint | minder_dan_2_uur (0), 2_tot_5_uur (1), 5_tot_10_uur (2), meer_dan_10_uur (3) |
-| `v2` | 2. Werk je regelmatig met grote hoeveelheden informatie uit v | nooit (0), soms (1), regelmatig (2), dagelijks (3) |
-| `v3` | 3. Met hoeveel collega's werk je gemiddeld samen binnen Micro | 1_tot_5 (0), 6_tot_10 (1), 11_tot_25 (2), meer_dan_25 (3) |
+| `v2` | 2. Werk je regelmatig met grote hoeveelheden informatie uit ve | nooit (0), soms (1), regelmatig (2), dagelijks (3) |
+| `v3` | 3. Met hoeveel collega's werk je gemiddeld samen binnen Micros | 1_tot_5 (0), 6_tot_10 (1), 11_tot_25 (2), meer_dan_25 (3) |
 | `v4_oude_mails` | 4. Ik zoek informatie in oude mails | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_documenten_kwijt` | 4. Ik zoek documenten waarvan ik niet meer weet waar ze staan | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_vergadering_voorbereiden` | 4. Ik moet vergaderingen voorbereiden | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_context_missen` | 4. Ik mis soms context omdat ik niet bij eerdere gesprekken aanwezig was | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_informatie_combineren` | 4. Ik moet informatie uit meerdere documenten combineren | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_samenvatten` | 4. Ik maak samenvattingen van lange documenten of overleggen | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
-| `v5` | 5. Welke van onderstaande werkzaamheden zouden volgens jou he | kommagescheiden lijst van gekozen waarden |
+| `v5` | 5. Welke van onderstaande werkzaamheden zouden volgens jou het | kommagescheiden lijst van gekozen waarden |
 | `v5_anders` | Toelichting bij "Anders, namelijk" | vrije tekst |
-| `v6` | 6. Hoeveel tijd denk je wekelijks te kunnen besparen met Copi | minder_dan_30_min (0), 30_tot_60_min (1), 1_tot_2_uur (2), 2_tot_4_uur (3), meer_dan_4_uur (4) |
+| `v6` | 6. Hoeveel tijd denk je wekelijks te kunnen besparen met Copil | minder_dan_30_min (0), 30_tot_60_min (1), 1_tot_2_uur (2), 2_tot_4_uur (3), meer_dan_4_uur (4) |
 | `v8` | 7. Maak je al gebruik van Copilot Chat? | nee (0), af_en_toe (1), regelmatig (2), dagelijks (3) |
 | `v9` | 8. Hoe beoordeel je jouw vaardigheid in het werken met AI? | beginner (0), basis (1), gevorderd (2), expert (3) |
-| `v10` | 9. Ben je bereid tijd te investeren in het leren gebruiken va | nee (0), beperkt (1), ja (2), ja_en_delen (3) |
+| `v10` | 9. Ben je bereid tijd te investeren in het leren gebruiken van | nee (0), beperkt (1), ja (2), ja_en_delen (3) |
+| `use_case` | Beschrijf één concrete, terugkerende situatie waarin Microsoft *(alleen bij geschikt_mits)* | vrije tekst |
 
 De kolomnamen liggen vast en veranderen niet als de nummering van de vragen wijzigt. De
 oorspronkelijke vraag 7 (een open vraag) is vervallen; daardoor staan de vragen met kolomnaam
@@ -217,7 +219,7 @@ Handige query om te zien wie in aanmerking komt:
 ```sql
 SELECT naam, email, afdeling, score_totaal, advies_categorie, besluit
 FROM copilot_aanvragen
-WHERE advies_categorie IN ('direct_kandidaat', 'pilotgroep')
+WHERE advies_categorie IN ('hoge_prioriteit', 'geschikt_mits')
 ORDER BY score_totaal DESC;
 ```
 
@@ -236,17 +238,47 @@ onderdelen.
 | Concreet use case voorbeeld | (vervallen) | 20% | – |
 | AI-volwassenheid | 7 t/m 9 | 10% | **12 punten** |
 
-De totaalscore bepaalt de adviescategorie:
+De totaalscore bepaalt de adviescategorie. Microsoft 365 Copilot-licenties worden voor
+minimaal een jaar afgesloten, dus een proefperiode van 2-3 maanden kan niet worden toegezegd;
+de categorieën beschrijven daarom prioriteit en voorwaarden.
 
 | Score | Advies | Betekenis |
 | --- | --- | --- |
-| vanaf 80 | **Direct kandidaat** | Licentie toekennen |
-| 60 tot 80 | **Pilotgroep** | Toekennen met proefperiode van 2-3 maanden |
-| 40 tot 60 | **Nog niet** | Eerst optimaal leren werken met Copilot Chat binnen E5 |
-| onder 40 | **Geen businesscase** | Geen aanvullende Copilot-licentie |
+| vanaf 75 | **Hoge prioriteit voor jaarlicentie** | Als eerste in aanmerking |
+| 60 tot 75 | **Geschikt, mits** | Toekennen mits concrete use case en commitment |
+| 45 tot 60 | **Eerst training of begeleiding** | Eerst Copilot Chat binnen E5, daarna opnieuw beoordelen |
+| onder 45 | **Vooralsnog geen licentie** | Geen aanvullende Copilot-licentie |
 
 Een score kan een decimaal hebben, dus de categorie wordt bepaald op de ondergrens: 59,6
-punten valt onder *Nog niet*, 79,9 onder *Pilotgroep*.
+punten valt onder *Eerst training*, 74,9 onder *Geschikt, mits*.
+
+### De vervolgvraag bij "Geschikt, mits"
+
+Bij deze categorie is de score alleen niet genoeg: er moet een concrete, terugkerende use case
+tegenover staan. Die vragen we daarom bij de invuller zelf uit, direct bij het verzenden:
+
+1. De invuller vult de negen meerkeuzevragen in en klikt op **Verzenden**.
+2. De server berekent de score. Valt die tussen 60 en 75, dan wordt de inzending **nog niet
+   opgeslagen**, maar verschijnt er één extra vraag op het formulier.
+3. Pas als die is beantwoord, wordt de aanvraag opgeslagen.
+
+Bij alle andere categorieën verschijnt de vraag niet en wordt er meteen opgeslagen.
+
+Een paar keuzes die daarbij horen:
+
+- **De server beslist, niet de browser.** Het beoordelingsmodel en de puntenwaarden worden
+  niet naar de browser gestuurd. Een invuller kan dus niet terugrekenen welke antwoorden het
+  hoogst scoren, en de vervolgvraag niet omzeilen door hem leeg te laten.
+- **Het antwoord telt niet mee in de score.** Het is onderbouwing voor jou, geen punten.
+- **Afhaken betekent geen aanvraag.** Wie de vervolgvraag niet invult, staat niet in je
+  database. Dat is bewust: een aanvraag zonder onderbouwing kun je in deze categorie toch niet
+  beoordelen. Wil je die halve inzendingen wél bewaren, laat het weten — dat is een kleine
+  aanpassing.
+- **Het antwoord staat in de kolom `use_case`** en wordt in de beheerdersomgeving bovenaan het
+  detailpaneel getoond, direct onder het advies.
+
+Wil je ook bij een andere categorie om een toelichting vragen? Zet in `src/vragenlijst.js` de
+`voorwaarde` van de vraag op die categorie, of voeg een tweede voorwaardelijke vraag toe.
 
 ### Hoe de punten binnen een onderdeel verdeeld zijn
 
@@ -289,8 +321,8 @@ Je ziet daar:
 - een overzichtstabel gesorteerd op score, met per inzending de opbouw in vier balkjes;
 - filters op categorie, besluit, naam, e-mailadres en afdeling;
 - per inzending een detailpaneel met de score-opbouw, de profielkenmerken en alle
-  antwoorden;
-- een formulier om je besluit vast te leggen (licentie toekennen, pilotgroep, nog niet,
+  antwoorden, met bovenaan de onderbouwing als de invuller daarom is gevraagd;
+- een formulier om je besluit vast te leggen (jaarlicentie toekennen, eerst training,
   afgewezen) met toelichting;
 - een CSV-export van alles, met puntkomma's als scheidingsteken zodat Excel hem direct
   goed opent.
@@ -323,6 +355,24 @@ Een vraag toevoegen:
    het `onderdeel` waar hij bij hoort.
 2. Draai `npm run migrate` — de nieuwe kolom wordt toegevoegd.
 3. Draai `npm test` om te controleren of het model nog klopt.
+4. Draai `npm run build:static` als je de testversie op GitHub Pages wilt bijwerken.
+
+### Na een wijziging in de weging of de categorieën
+
+De beheerdersomgeving rekent altijd live door, dus op het scherm klopt alles meteen. In je
+eigen database staan `score_totaal` en `advies_categorie` dan echter nog op de oude waarden,
+en daar query je zelf op. Draai in dat geval:
+
+```bash
+npm run herbereken
+```
+
+Dat werkt alleen de berekende kolommen bij; besluiten, toelichtingen en de antwoorden zelf
+blijven ongemoeid. Het script laat per inzending zien wat er verandert.
+
+Let op: besluiten uit een eerdere versie (bijvoorbeeld het vervallen `pilot`) worden níét
+omgezet — die keuze is aan jou. In de beheerdersomgeving blijft zo'n waarde zichtbaar als
+"(vervallen keuze)", zodat opslaan hem niet ongemerkt vervangt.
 
 ---
 

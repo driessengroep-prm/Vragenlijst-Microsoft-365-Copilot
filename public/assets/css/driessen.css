@@ -485,6 +485,27 @@ textarea.dg-veld {
   font-size: 14px;
 }
 
+/* ----------------------------------------------------- Vervolgvraag ------ */
+
+/* Verschijnt pas nadat de server erom vraagt; mag dus opvallen. */
+.dg-vervolg {
+  background: var(--dg-groen-licht);
+  border-left: 4px solid var(--dg-goud);
+  border-radius: 0 var(--dg-radius) var(--dg-radius) 0;
+  padding: 22px 24px 4px;
+  margin-top: 32px;
+}
+
+.dg-vervolg .dg-sectie__toelichting {
+  color: var(--dg-groen-donker);
+}
+
+@media (max-width: 640px) {
+  .dg-vervolg {
+    padding: 18px 16px 2px;
+  }
+}
+
 /* --------------------------------------------------------------- Meldingen -- */
 
 .dg-melding {

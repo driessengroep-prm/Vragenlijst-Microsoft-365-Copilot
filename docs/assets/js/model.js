@@ -92,6 +92,11 @@ const DELEN = [
     titel: 'Deel 4: Digitale volwassenheid',
     toelichting: null,
   },
+  {
+    nummer: 5,
+    titel: 'Nog één vraag',
+    toelichting: null,
+  },
 ];
 
 const VRAGEN = [
@@ -294,7 +299,42 @@ const VRAGEN = [
     ],
     onderdeel: 'volwassenheid',
   },
+
+  // ------------------------------------------------------ Vervolgvraag --
+  // Deze vraag staat niet standaard op het formulier. Hij verschijnt pas
+  // nadat de antwoorden zijn ingestuurd en de server heeft vastgesteld dat
+  // de score in de categorie valt die om een onderbouwing vraagt. Het
+  // antwoord telt niet mee in de score (er is geen `onderdeel`); het is
+  // bedoeld als onderbouwing voor de beheerder.
+  {
+    id: 'use_case',
+    deel: 5,
+    type: 'tekstvlak',
+    vraag:
+      'Beschrijf één concrete, terugkerende situatie waarin Microsoft 365 Copilot je zou helpen.',
+    toelichting:
+      'Noem wat je doet, hoe vaak dat voorkomt en wat het je nu aan tijd kost. Geef ook aan of je ' +
+      'bereid bent hier de komende maanden mee aan de slag te gaan.',
+    verplicht: false, // alleen verplicht binnen de categorie hieronder
+    maxLengte: 2000,
+    voorwaarde: { categorie: 'geschikt_mits' },
+  },
 ];
+
+/** De vraagkop zoals hij op het formulier en in exports wordt getoond. */
+function vraagKop(vraag) {
+  return vraag.nummer ? `${vraag.nummer}. ${vraag.vraag}` : vraag.vraag;
+}
+
+/** Vragen die alleen bij een bepaalde adviescategorie worden gesteld. */
+function vervolgvragenVoor(categorie) {
+  return VRAGEN.filter((v) => v.voorwaarde && v.voorwaarde.categorie === categorie);
+}
+
+/** Vragen die standaard op het formulier staan (dus zonder voorwaarde). */
+function basisvragen() {
+  return VRAGEN.filter((v) => !v.voorwaarde);
+}
 
 /**
  * Alle antwoordvelden (= databasekolommen) die uit de vragen volgen.
@@ -378,6 +418,9 @@ function labelVoor(opties, waarde) {
 module.exports = {
   DELEN,
   VRAGEN,
+  basisvragen,
+  vervolgvragenVoor,
+  vraagKop,
   antwoordVelden,
   puntenVoor,
   labelVoor,
@@ -402,10 +445,10 @@ module.exports = {
  *   Concreet use case voorbeeld                 20%          -
  *   AI-volwassenheid (vragen 7 t/m 9)           10%         12
  *
- *   80-100 punten : Direct kandidaat
- *   60-79  punten : Pilotgroep
- *   40-59  punten : Nog niet
- *   < 40   punten : Geen businesscase
+ *   75-100 punten : Hoge prioriteit voor jaarlicentie
+ *   60-74  punten : Geschikt, mits (er wordt een use case uitgevraagd)
+ *   45-59  punten : Eerst training of begeleiding
+ *   < 45   punten : Vooralsnog geen licentie
  *
  * De puntentoekenning per antwoord staat in src/vragenlijst.js (`punten` per
  * optie). Binnen elk onderdeel tellen we de ruwe punten op en schalen die naar
@@ -437,42 +480,59 @@ const BUSINESSWAARDE_VERDELING = {
   v5_max_meetellend: 4, // meer dan 4 aangevinkte toepassingen levert geen extra punten op
 };
 
+/**
+ * Adviescategorieën.
+ *
+ * Microsoft 365 Copilot-licenties worden voor minimaal een jaar afgesloten,
+ * dus een proefperiode van 2-3 maanden is niet mogelijk. De categorieën
+ * beschrijven daarom prioriteit en voorwaarden, niet een proefopstelling.
+ *
+ * `vanaf` bepaalt de indeling; `tot` dient alleen om het bereik leesbaar te
+ * tonen ("60-74 punten").
+ */
 const CATEGORIEEN = [
   {
-    sleutel: 'direct_kandidaat',
-    label: 'Direct kandidaat',
-    vanaf: 80,
+    sleutel: 'hoge_prioriteit',
+    label: 'Hoge prioriteit voor jaarlicentie',
+    kort: 'Hoge prioriteit',
+    vanaf: 75,
     tot: 100,
     kleur: 'groen',
     advies:
-      'Kenniswerker met veel vergaderingen, documenten en e-mails, en een verwachte tijdwinst van ' +
-      'meer dan 2 uur per week. Licentie toekennen.',
+      'Kenniswerker met veel vergaderingen, documenten en e-mails, en een substantiële verwachte ' +
+      'tijdwinst. Als eerste in aanmerking voor een jaarlicentie.',
   },
   {
-    sleutel: 'pilotgroep',
-    label: 'Pilotgroep',
+    sleutel: 'geschikt_mits',
+    label: 'Geschikt, mits',
+    kort: 'Geschikt, mits',
     vanaf: 60,
-    tot: 79,
+    tot: 74,
     kleur: 'blauw',
     advies:
-      'Waarschijnlijke meerwaarde. Toekennen met een proefperiode van 2-3 maanden en daarna evalueren.',
+      'Toekennen als de beschreven use case concreet en terugkerend is en de medewerker bereid is ' +
+      'tijd te investeren. De onderbouwing is bij deze aanvraag uitgevraagd; beoordeel die en leg ' +
+      'je afweging vast in de toelichting bij het besluit.',
   },
   {
-    sleutel: 'nog_niet',
-    label: 'Nog niet',
-    vanaf: 40,
+    sleutel: 'eerst_training',
+    label: 'Eerst training of begeleiding',
+    kort: 'Eerst training',
+    vanaf: 45,
     tot: 59,
     kleur: 'oranje',
     advies:
-      'Nog geen licentie. Eerst leren optimaal gebruik te maken van Copilot Chat binnen E5 en daarna opnieuw beoordelen.',
+      'Nog geen jaarlicentie. Eerst leren werken met Copilot Chat binnen E5, met training of ' +
+      'begeleiding, en daarna opnieuw beoordelen.',
   },
   {
-    sleutel: 'geen_businesscase',
-    label: 'Geen businesscase',
+    sleutel: 'geen_licentie',
+    label: 'Vooralsnog geen licentie',
+    kort: 'Geen licentie',
     vanaf: 0,
-    tot: 39,
+    tot: 44,
     kleur: 'rood',
-    advies: 'Geen duidelijke businesscase voor een aanvullende Copilot-licentie.',
+    advies: 'Vooralsnog geen aanvullende Microsoft 365 Copilot-licentie.',
   },
 ];
 
@@ -649,6 +709,7 @@ function beoordeel(antwoorden) {
     totaal,
     categorie: categorie.sleutel,
     categorieLabel: categorie.label,
+    categorieKort: categorie.kort || categorie.label,
     categorieKleur: categorie.kleur,
     advies: categorie.advies,
     signalen: signalen(antwoorden),
@@ -675,7 +736,7 @@ module.exports = {
  * controle op de server is leidend.
  */
 
-const { VRAGEN, antwoordVelden, labelVoor } = require('./vragenlijst');
+const { VRAGEN, antwoordVelden, labelVoor, vraagKop } = require('./vragenlijst');
 
 const EMAIL_PATROON = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -769,19 +830,21 @@ function leesbaar(antwoorden) {
         else labels.push(tekst);
       }
       uitkomst.push({
-        vraag: `${vraag.nummer}. ${vraag.vraag}`,
+        vraag: vraagKop(vraag),
         antwoord: labels.length ? labels.join('; ') : '-',
         veld: vraag.id,
       });
     } else if (vraag.type === 'radio') {
       uitkomst.push({
-        vraag: `${vraag.nummer}. ${vraag.vraag}`,
+        vraag: vraagKop(vraag),
         antwoord: antwoorden[vraag.id] ? labelVoor(vraag.opties, antwoorden[vraag.id]) : '-',
         veld: vraag.id,
       });
     } else if (vraag.deel > 0) {
+      // Een voorwaardelijke vraag die niet gesteld is, laten we weg.
+      if (vraag.voorwaarde && !antwoorden[vraag.id]) continue;
       uitkomst.push({
-        vraag: `${vraag.nummer}. ${vraag.vraag}`,
+        vraag: vraagKop(vraag),
         antwoord: antwoorden[vraag.id] || '-',
         veld: vraag.id,
         lang: vraag.type === 'tekstvlak',
@@ -801,18 +864,32 @@ module.exports = { valideer, leesbaar };
 /**
  * De besluiten die een beheerder kan vastleggen bij een inzending.
  * Gedeeld door de beheerders-API en de statische demoversie.
+ *
+ * Copilot-licenties worden voor minimaal een jaar afgesloten, dus er is geen
+ * besluit voor een proefperiode: het is toekennen, eerst opleiden, of niet.
  */
 
 const BESLUITEN = [
   { waarde: 'nieuw', label: 'Nog niet beoordeeld', kleur: 'grijs' },
-  { waarde: 'licentie_toekennen', label: 'Licentie toekennen', kleur: 'groen' },
-  { waarde: 'pilot', label: 'Opnemen in pilotgroep', kleur: 'blauw' },
-  { waarde: 'nog_niet', label: 'Nog niet toekennen', kleur: 'oranje' },
+  { waarde: 'licentie_toekennen', label: 'Jaarlicentie toekennen', kleur: 'groen' },
+  { waarde: 'training_eerst', label: 'Eerst training, daarna opnieuw beoordelen', kleur: 'oranje' },
   { waarde: 'afgewezen', label: 'Afgewezen', kleur: 'rood' },
 ];
 
+/**
+ * Zoek een besluit op. Een waarde die niet (meer) in de lijst staat — denk aan
+ * een besluit uit een eerdere versie van het model — geven we ongewijzigd
+ * terug, zodat oude gegevens niet stilzwijgend een ander label krijgen.
+ */
 function besluit(waarde) {
-  return BESLUITEN.find((b) => b.waarde === waarde) || BESLUITEN[0];
+  return (
+    BESLUITEN.find((b) => b.waarde === waarde) || {
+      waarde: waarde,
+      label: waarde ? `${waarde} (vervallen)` : 'Onbekend',
+      kleur: 'grijs',
+      vervallen: true,
+    }
+  );
 }
 
 module.exports = { BESLUITEN, besluit };
@@ -833,7 +910,7 @@ module.exports = { BESLUITEN, besluit };
 const { beoordeel, CATEGORIEEN } = require('./scoring');
 const { BESLUITEN, besluit } = require('./besluiten');
 const { leesbaar } = require('./validatie');
-const { VRAGEN } = require('./vragenlijst');
+const { VRAGEN, vraagKop } = require('./vragenlijst');
 
 /** Haal de antwoorden terug uit de opgeslagen JSON-kolom. */
 function antwoordenVan(rij) {
@@ -869,6 +946,7 @@ function overzichtsRij(rij) {
     totaal: beoordeling.totaal,
     categorie: beoordeling.categorie,
     categorieLabel: beoordeling.categorieLabel,
+    categorieKort: beoordeling.categorieKort,
     categorieKleur: beoordeling.categorieKleur,
     onderdelen: {
       informatiewerk: beoordeling.onderdelen.informatiewerk.score,
@@ -885,6 +963,7 @@ function samenvatting(inzendingen) {
   return CATEGORIEEN.map((c) => ({
     sleutel: c.sleutel,
     label: c.label,
+    kort: c.kort || c.label,
     kleur: c.kleur,
     aantal: inzendingen.filter((i) => i.categorie === c.sleutel).length,
   }));
@@ -980,7 +1059,7 @@ function csvVraagKoppen() {
     if (vraag.type === 'matrix') {
       for (const rij of vraag.rijen) koppen.push({ sleutel: rij.id, kop: `${vraag.nummer}. ${rij.label}` });
     } else {
-      koppen.push({ sleutel: vraag.id, kop: `${vraag.nummer}. ${vraag.vraag}` });
+      koppen.push({ sleutel: vraag.id, kop: vraagKop(vraag) });
       if (vraag.andersVeld) koppen.push({ sleutel: vraag.andersVeld, kop: `${vraag.nummer}. Anders, namelijk` });
     }
   }

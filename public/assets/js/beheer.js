@@ -133,7 +133,7 @@
       tegel.type = 'button';
       tegel.setAttribute('aria-pressed', filterCategorie.value === rij.sleutel);
       tegel.appendChild(el('div', 'dg-tegel__aantal', String(rij.aantal)));
-      tegel.appendChild(el('div', 'dg-tegel__label', rij.label));
+      tegel.appendChild(el('div', 'dg-tegel__label', rij.kort || rij.label));
       tegel.appendChild(el('div', 'dg-tegel__bereik', categorie.vanaf + '-' + categorie.tot + ' punten'));
       tegel.addEventListener('click', function () {
         filterCategorie.value = filterCategorie.value === rij.sleutel ? '' : rij.sleutel;
@@ -175,15 +175,26 @@
       rij.appendChild(el('td', 'dg-tabel__score', String(inzending.totaal)));
 
       var adviesCel = el('td');
-      adviesCel.appendChild(el('span', 'dg-badge dg-badge--' + inzending.categorieKleur, inzending.categorieLabel));
+      var adviesBadge = el(
+        'span',
+        'dg-badge dg-badge--' + inzending.categorieKleur,
+        inzending.categorieKort || inzending.categorieLabel
+      );
+      adviesBadge.title = inzending.categorieLabel;
+      adviesCel.appendChild(adviesBadge);
       rij.appendChild(adviesCel);
 
       var besluitCel = el('td');
-      var besluitKleur = inzending.besluit === 'nieuw' ? 'grijs' : 'blauw';
-      if (inzending.besluit === 'licentie_toekennen') besluitKleur = 'groen';
-      if (inzending.besluit === 'afgewezen') besluitKleur = 'rood';
-      if (inzending.besluit === 'nog_niet') besluitKleur = 'oranje';
-      besluitCel.appendChild(el('span', 'dg-badge dg-badge--' + besluitKleur, besluitLabel(inzending.besluit)));
+      var gekozenBesluit = (model.besluiten || []).find(function (b) {
+        return b.waarde === inzending.besluit;
+      });
+      besluitCel.appendChild(
+        el(
+          'span',
+          'dg-badge dg-badge--' + ((gekozenBesluit && gekozenBesluit.kleur) || 'grijs'),
+          besluitLabel(inzending.besluit)
+        )
+      );
       rij.appendChild(besluitCel);
 
       function open() {
@@ -282,6 +293,16 @@
     detailEl.appendChild(totaalBlok);
     detailEl.appendChild(el('p', 'dg-advies', data.beoordeling.advies));
 
+    // Onderbouwing door de invuller. Die wordt alleen uitgevraagd bij de
+    // categorie die erom vraagt, dus als hij er is, is hij relevant.
+    var onderbouwing = (data.antwoorden || []).find(function (antwoord) {
+      return antwoord.veld === 'use_case';
+    });
+    if (onderbouwing) {
+      detailEl.appendChild(el('h3', null, 'Onderbouwing door de medewerker'));
+      detailEl.appendChild(el('blockquote', 'dg-citaat', onderbouwing.antwoord));
+    }
+
     // Score-opbouw
     detailEl.appendChild(el('h3', null, 'Score-opbouw'));
     detailEl.appendChild(scoreOpbouwTabel(data.beoordeling));
@@ -338,6 +359,19 @@
     besluitVraag.appendChild(besluitLabelEl);
     var besluitSelect = el('select', 'dg-veld');
     besluitSelect.id = 'besluit';
+
+    // Een besluit uit een eerdere versie van het model staat niet meer in de
+    // lijst. Dat tonen we apart, zodat opslaan het niet ongemerkt vervangt.
+    var bekend = model.besluiten.some(function (b) {
+      return b.waarde === data.besluit;
+    });
+    if (!bekend && data.besluit) {
+      var vervallen = el('option', null, data.besluit + ' (vervallen keuze)');
+      vervallen.value = data.besluit;
+      vervallen.selected = true;
+      besluitSelect.appendChild(vervallen);
+    }
+
     model.besluiten.forEach(function (b) {
       var optie = el('option', null, b.label);
       optie.value = b.waarde;

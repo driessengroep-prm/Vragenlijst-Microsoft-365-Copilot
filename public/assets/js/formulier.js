@@ -17,6 +17,8 @@
   var voortgangsbalk = document.getElementById('voortgangsbalk');
 
   var definitie = null;
+  // Vervolgvragen die de server heeft teruggestuurd omdat de score erom vraagt.
+  var vervolgvragen = [];
 
   // ------------------------------------------------------------- helpers --
 
@@ -225,6 +227,44 @@
     werkVoortgangBij();
   }
 
+  // ------------------------------------------------------- vervolgvraag ---
+
+  /**
+   * De server bepaalt of er een vervolgvraag nodig is. Die tonen we hier
+   * onder het formulier, met de al ingevulde antwoorden gewoon op hun plek.
+   */
+  function toonVervolgvragen(vragen, toelichting) {
+    vervolgvragen = vragen;
+
+    var bestaand = document.getElementById('vervolgsectie');
+    if (bestaand) bestaand.parentNode.removeChild(bestaand);
+
+    var sectie = el('section', 'dg-sectie dg-vervolg');
+    sectie.id = 'vervolgsectie';
+
+    var titelrij = el('div', 'dg-sectie__titel');
+    titelrij.appendChild(el('h2', null, 'Nog \u00e9\u00e9n vraag'));
+    sectie.appendChild(titelrij);
+
+    if (toelichting) sectie.appendChild(el('p', 'dg-sectie__toelichting', toelichting));
+
+    vragen.forEach(function (vraag) {
+      var blok = tekstvraag(vraag);
+      // Binnen deze categorie is de vraag wel verplicht.
+      var ster = el('span', 'dg-verplicht', '*');
+      ster.setAttribute('aria-hidden', 'true');
+      blok.querySelector('.dg-vraag__label').appendChild(ster);
+      sectie.appendChild(blok);
+    });
+
+    sectiesEl.appendChild(sectie);
+    verstuurKnop.textContent = 'Aanvraag afronden';
+
+    sectie.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    var eersteVeld = sectie.querySelector('.dg-veld');
+    if (eersteVeld) eersteVeld.focus({ preventScroll: true });
+  }
+
   // ---------------------------------------------------------- voortgang ---
 
   function verplichteVelden() {
@@ -290,6 +330,10 @@
         antwoorden[vraag.id] = veld ? veld.value.trim() : '';
       }
     });
+    vervolgvragen.forEach(function (vraag) {
+      var veld = document.getElementById(vraag.id);
+      antwoorden[vraag.id] = veld ? veld.value.trim() : '';
+    });
     antwoorden.akkoord_privacy = document.getElementById('akkoord_privacy').checked;
     antwoorden.akkoord_contact = document.getElementById('akkoord_contact').checked;
     antwoorden.website = (form.elements.website && form.elements.website.value) || '';
@@ -347,6 +391,12 @@
       }
     });
 
+    vervolgvragen.forEach(function (vraag) {
+      var waarde = antwoorden[vraag.id] || '';
+      if (!waarde) fouten[vraag.id] = 'Dit veld is verplicht.';
+      else if (waarde.length < 25) fouten[vraag.id] = 'Beschrijf je voorbeeld iets uitgebreider.';
+    });
+
     if (antwoorden.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(antwoorden.email)) {
       fouten.email = 'Vul een geldig e-mailadres in.';
     }
@@ -386,6 +436,11 @@
         });
       })
       .then(function (resultaat) {
+        // De server vraagt om een onderbouwing voordat hij de aanvraag opslaat.
+        if (resultaat.status === 200 && resultaat.data.vervolgvragen) {
+          toonVervolgvragen(resultaat.data.vervolgvragen, resultaat.data.toelichting);
+          return;
+        }
         if (resultaat.status === 201 || resultaat.status === 202) {
           document.getElementById('intro').hidden = true;
           form.hidden = true;
@@ -404,7 +459,7 @@
       })
       .then(function () {
         verstuurKnop.disabled = false;
-        verstuurKnop.textContent = 'Verzenden';
+        verstuurKnop.textContent = vervolgvragen.length ? 'Aanvraag afronden' : 'Verzenden';
       });
   });
 

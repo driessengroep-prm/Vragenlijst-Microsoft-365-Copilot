@@ -11,7 +11,7 @@
 const { beoordeel, CATEGORIEEN } = require('./scoring');
 const { BESLUITEN, besluit } = require('./besluiten');
 const { leesbaar } = require('./validatie');
-const { VRAGEN } = require('./vragenlijst');
+const { VRAGEN, vraagKop } = require('./vragenlijst');
 
 /** Haal de antwoorden terug uit de opgeslagen JSON-kolom. */
 function antwoordenVan(rij) {
@@ -47,6 +47,7 @@ function overzichtsRij(rij) {
     totaal: beoordeling.totaal,
     categorie: beoordeling.categorie,
     categorieLabel: beoordeling.categorieLabel,
+    categorieKort: beoordeling.categorieKort,
     categorieKleur: beoordeling.categorieKleur,
     onderdelen: {
       informatiewerk: beoordeling.onderdelen.informatiewerk.score,
@@ -63,6 +64,7 @@ function samenvatting(inzendingen) {
   return CATEGORIEEN.map((c) => ({
     sleutel: c.sleutel,
     label: c.label,
+    kort: c.kort || c.label,
     kleur: c.kleur,
     aantal: inzendingen.filter((i) => i.categorie === c.sleutel).length,
   }));
@@ -158,7 +160,7 @@ function csvVraagKoppen() {
     if (vraag.type === 'matrix') {
       for (const rij of vraag.rijen) koppen.push({ sleutel: rij.id, kop: `${vraag.nummer}. ${rij.label}` });
     } else {
-      koppen.push({ sleutel: vraag.id, kop: `${vraag.nummer}. ${vraag.vraag}` });
+      koppen.push({ sleutel: vraag.id, kop: vraagKop(vraag) });
       if (vraag.andersVeld) koppen.push({ sleutel: vraag.andersVeld, kop: `${vraag.nummer}. Anders, namelijk` });
     }
   }

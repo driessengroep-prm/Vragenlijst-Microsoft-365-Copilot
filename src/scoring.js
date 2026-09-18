@@ -14,10 +14,10 @@
  *   Concreet use case voorbeeld                 20%          -
  *   AI-volwassenheid (vragen 7 t/m 9)           10%         12
  *
- *   80-100 punten : Direct kandidaat
- *   60-79  punten : Pilotgroep
- *   40-59  punten : Nog niet
- *   < 40   punten : Geen businesscase
+ *   75-100 punten : Hoge prioriteit voor jaarlicentie
+ *   60-74  punten : Geschikt, mits (er wordt een use case uitgevraagd)
+ *   45-59  punten : Eerst training of begeleiding
+ *   < 45   punten : Vooralsnog geen licentie
  *
  * De puntentoekenning per antwoord staat in src/vragenlijst.js (`punten` per
  * optie). Binnen elk onderdeel tellen we de ruwe punten op en schalen die naar
@@ -49,42 +49,59 @@ const BUSINESSWAARDE_VERDELING = {
   v5_max_meetellend: 4, // meer dan 4 aangevinkte toepassingen levert geen extra punten op
 };
 
+/**
+ * Adviescategorieën.
+ *
+ * Microsoft 365 Copilot-licenties worden voor minimaal een jaar afgesloten,
+ * dus een proefperiode van 2-3 maanden is niet mogelijk. De categorieën
+ * beschrijven daarom prioriteit en voorwaarden, niet een proefopstelling.
+ *
+ * `vanaf` bepaalt de indeling; `tot` dient alleen om het bereik leesbaar te
+ * tonen ("60-74 punten").
+ */
 const CATEGORIEEN = [
   {
-    sleutel: 'direct_kandidaat',
-    label: 'Direct kandidaat',
-    vanaf: 80,
+    sleutel: 'hoge_prioriteit',
+    label: 'Hoge prioriteit voor jaarlicentie',
+    kort: 'Hoge prioriteit',
+    vanaf: 75,
     tot: 100,
     kleur: 'groen',
     advies:
-      'Kenniswerker met veel vergaderingen, documenten en e-mails, en een verwachte tijdwinst van ' +
-      'meer dan 2 uur per week. Licentie toekennen.',
+      'Kenniswerker met veel vergaderingen, documenten en e-mails, en een substantiële verwachte ' +
+      'tijdwinst. Als eerste in aanmerking voor een jaarlicentie.',
   },
   {
-    sleutel: 'pilotgroep',
-    label: 'Pilotgroep',
+    sleutel: 'geschikt_mits',
+    label: 'Geschikt, mits',
+    kort: 'Geschikt, mits',
     vanaf: 60,
-    tot: 79,
+    tot: 74,
     kleur: 'blauw',
     advies:
-      'Waarschijnlijke meerwaarde. Toekennen met een proefperiode van 2-3 maanden en daarna evalueren.',
+      'Toekennen als de beschreven use case concreet en terugkerend is en de medewerker bereid is ' +
+      'tijd te investeren. De onderbouwing is bij deze aanvraag uitgevraagd; beoordeel die en leg ' +
+      'je afweging vast in de toelichting bij het besluit.',
   },
   {
-    sleutel: 'nog_niet',
-    label: 'Nog niet',
-    vanaf: 40,
+    sleutel: 'eerst_training',
+    label: 'Eerst training of begeleiding',
+    kort: 'Eerst training',
+    vanaf: 45,
     tot: 59,
     kleur: 'oranje',
     advies:
-      'Nog geen licentie. Eerst leren optimaal gebruik te maken van Copilot Chat binnen E5 en daarna opnieuw beoordelen.',
+      'Nog geen jaarlicentie. Eerst leren werken met Copilot Chat binnen E5, met training of ' +
+      'begeleiding, en daarna opnieuw beoordelen.',
   },
   {
-    sleutel: 'geen_businesscase',
-    label: 'Geen businesscase',
+    sleutel: 'geen_licentie',
+    label: 'Vooralsnog geen licentie',
+    kort: 'Geen licentie',
     vanaf: 0,
-    tot: 39,
+    tot: 44,
     kleur: 'rood',
-    advies: 'Geen duidelijke businesscase voor een aanvullende Copilot-licentie.',
+    advies: 'Vooralsnog geen aanvullende Microsoft 365 Copilot-licentie.',
   },
 ];
 
@@ -261,6 +278,7 @@ function beoordeel(antwoorden) {
     totaal,
     categorie: categorie.sleutel,
     categorieLabel: categorie.label,
+    categorieKort: categorie.kort || categorie.label,
     categorieKleur: categorie.kleur,
     advies: categorie.advies,
     signalen: signalen(antwoorden),

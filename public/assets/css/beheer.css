@@ -457,3 +457,16 @@ details.dg-uitklap summary {
     padding: 20px 18px 40px;
   }
 }
+
+/* Onderbouwing die de medewerker zelf heeft aangeleverd. */
+.dg-citaat {
+  margin: 0 0 22px;
+  padding: 14px 16px;
+  background: #fbfaf7;
+  border-left: 4px solid var(--dg-goud);
+  border-radius: 0 var(--dg-radius) var(--dg-radius) 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--dg-tekst);
+  white-space: pre-wrap;
+}

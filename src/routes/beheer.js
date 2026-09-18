@@ -27,9 +27,8 @@ router.get('/model', (req, res) => {
 /** Overzicht van alle inzendingen, inclusief score en adviescategorie. */
 router.get('/inzendingen', async (req, res, next) => {
   try {
-    const query = tabel().select('*').orderBy('score_totaal', 'desc').orderBy('id', 'desc');
+    const query = tabel().select('*');
 
-    if (req.query.categorie) query.where('advies_categorie', req.query.categorie);
     if (req.query.besluit) query.where('besluit', req.query.besluit);
     if (req.query.zoek) {
       const term = `%${String(req.query.zoek).toLowerCase()}%`;
@@ -42,7 +41,15 @@ router.get('/inzendingen', async (req, res, next) => {
     }
 
     const rijen = await query;
-    const inzendingen = rijen.map(weergave.overzichtsRij);
+
+    // Op de categorie filteren we ná het herberekenen, niet in de database.
+    // De opgeslagen kolom kan namelijk van een oudere versie van het model
+    // zijn; zo komt het filter altijd overeen met wat er op het scherm staat.
+    let inzendingen = rijen.map(weergave.overzichtsRij);
+    if (req.query.categorie) {
+      inzendingen = inzendingen.filter((i) => i.categorie === req.query.categorie);
+    }
+    inzendingen.sort((a, b) => b.totaal - a.totaal || b.id - a.id);
 
     res.json({
       inzendingen,

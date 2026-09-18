@@ -7,7 +7,7 @@
  * controle op de server is leidend.
  */
 
-const { VRAGEN, antwoordVelden, labelVoor } = require('./vragenlijst');
+const { VRAGEN, antwoordVelden, labelVoor, vraagKop } = require('./vragenlijst');
 
 const EMAIL_PATROON = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -101,19 +101,21 @@ function leesbaar(antwoorden) {
         else labels.push(tekst);
       }
       uitkomst.push({
-        vraag: `${vraag.nummer}. ${vraag.vraag}`,
+        vraag: vraagKop(vraag),
         antwoord: labels.length ? labels.join('; ') : '-',
         veld: vraag.id,
       });
     } else if (vraag.type === 'radio') {
       uitkomst.push({
-        vraag: `${vraag.nummer}. ${vraag.vraag}`,
+        vraag: vraagKop(vraag),
         antwoord: antwoorden[vraag.id] ? labelVoor(vraag.opties, antwoorden[vraag.id]) : '-',
         veld: vraag.id,
       });
     } else if (vraag.deel > 0) {
+      // Een voorwaardelijke vraag die niet gesteld is, laten we weg.
+      if (vraag.voorwaarde && !antwoorden[vraag.id]) continue;
       uitkomst.push({
-        vraag: `${vraag.nummer}. ${vraag.vraag}`,
+        vraag: vraagKop(vraag),
         antwoord: antwoorden[vraag.id] || '-',
         veld: vraag.id,
         lang: vraag.type === 'tekstvlak',

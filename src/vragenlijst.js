@@ -60,6 +60,11 @@ const DELEN = [
     titel: 'Deel 4: Digitale volwassenheid',
     toelichting: null,
   },
+  {
+    nummer: 5,
+    titel: 'Nog één vraag',
+    toelichting: null,
+  },
 ];
 
 const VRAGEN = [
@@ -262,7 +267,42 @@ const VRAGEN = [
     ],
     onderdeel: 'volwassenheid',
   },
+
+  // ------------------------------------------------------ Vervolgvraag --
+  // Deze vraag staat niet standaard op het formulier. Hij verschijnt pas
+  // nadat de antwoorden zijn ingestuurd en de server heeft vastgesteld dat
+  // de score in de categorie valt die om een onderbouwing vraagt. Het
+  // antwoord telt niet mee in de score (er is geen `onderdeel`); het is
+  // bedoeld als onderbouwing voor de beheerder.
+  {
+    id: 'use_case',
+    deel: 5,
+    type: 'tekstvlak',
+    vraag:
+      'Beschrijf één concrete, terugkerende situatie waarin Microsoft 365 Copilot je zou helpen.',
+    toelichting:
+      'Noem wat je doet, hoe vaak dat voorkomt en wat het je nu aan tijd kost. Geef ook aan of je ' +
+      'bereid bent hier de komende maanden mee aan de slag te gaan.',
+    verplicht: false, // alleen verplicht binnen de categorie hieronder
+    maxLengte: 2000,
+    voorwaarde: { categorie: 'geschikt_mits' },
+  },
 ];
+
+/** De vraagkop zoals hij op het formulier en in exports wordt getoond. */
+function vraagKop(vraag) {
+  return vraag.nummer ? `${vraag.nummer}. ${vraag.vraag}` : vraag.vraag;
+}
+
+/** Vragen die alleen bij een bepaalde adviescategorie worden gesteld. */
+function vervolgvragenVoor(categorie) {
+  return VRAGEN.filter((v) => v.voorwaarde && v.voorwaarde.categorie === categorie);
+}
+
+/** Vragen die standaard op het formulier staan (dus zonder voorwaarde). */
+function basisvragen() {
+  return VRAGEN.filter((v) => !v.voorwaarde);
+}
 
 /**
  * Alle antwoordvelden (= databasekolommen) die uit de vragen volgen.
@@ -346,6 +386,9 @@ function labelVoor(opties, waarde) {
 module.exports = {
   DELEN,
   VRAGEN,
+  basisvragen,
+  vervolgvragenVoor,
+  vraagKop,
   antwoordVelden,
   puntenVoor,
   labelVoor,

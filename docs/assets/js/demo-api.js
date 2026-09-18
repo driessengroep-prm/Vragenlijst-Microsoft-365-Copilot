@@ -107,14 +107,20 @@
       v4: 'regelmatig',
       v2: 'regelmatig',
       v3: '11_tot_25',
-      v5: ['opstellen_documenten', 'analyse_excel', 'zoeken_m365'],
-      v6: '1_tot_2_uur',
+      v5: ['opstellen_documenten', 'analyse_excel', 'zoeken_m365', 'samenvatten_teams'],
+      v6: '2_tot_4_uur',
+      use_case:
+        'Ik stel elke maand voortgangsrapportages op voor vier lopende implementaties. Daarvoor ' +
+        'verzamel ik gegevens uit Excel-overzichten en uit mailwisselingen met de klant. Dat kost ' +
+        'mij ongeveer een dagdeel per maand aan verzamelen en samenvatten. Ik wil hier zeker tijd ' +
+        'in steken; ik gebruik Copilot Chat nu al af en toe.',
       v8: 'af_en_toe',
       v9: 'basis',
       v10: 'ja',
       dagenGeleden: 6,
-      besluit: 'pilot',
-      besluit_toelichting: 'Duidelijk profiel, maar de verwachte tijdwinst is nog beperkt. Drie maanden proefperiode.',
+      besluit: 'licentie_toekennen',
+      besluit_toelichting:
+        'Use case is concreet en terugkerend, en de bereidheid om te investeren is er. Jaarlicentie toegekend.',
       beoordeeld_door: 'demo',
     },
     {
@@ -163,6 +169,7 @@
         v5: voorbeeld.v5,
         v5_anders: '',
         v6: voorbeeld.v6,
+        use_case: voorbeeld.use_case || '',
         v8: voorbeeld.v8,
         v9: voorbeeld.v9,
         v10: voorbeeld.v10,
@@ -213,6 +220,24 @@
 
   // -------------------------------------------------------- antwoorden ----
 
+  /** Zelfde opschoning als de echte server: geen puntenwaarden naar de browser. */
+  function zonderPunten(vraag) {
+    var kopie = {};
+    Object.keys(vraag).forEach(function (sleutel) {
+      if (sleutel !== 'onderdeel') kopie[sleutel] = vraag[sleutel];
+    });
+    if (Array.isArray(vraag.opties)) {
+      kopie.opties = vraag.opties.map(function (optie) {
+        var schoon = {};
+        Object.keys(optie).forEach(function (sleutel) {
+          if (sleutel !== 'punten') schoon[sleutel] = optie[sleutel];
+        });
+        return schoon;
+      });
+    }
+    return kopie;
+  }
+
   function json(inhoud, status) {
     return Promise.resolve(
       new Response(JSON.stringify(inhoud), {
@@ -230,13 +255,6 @@
 
   function overzicht(parameters) {
     var gefilterd = rijen().slice();
-
-    var categorie = parameters.get('categorie');
-    if (categorie) {
-      gefilterd = gefilterd.filter(function (rij) {
-        return rij.advies_categorie === categorie;
-      });
-    }
 
     var besluit = parameters.get('besluit');
     if (besluit) {
@@ -256,7 +274,17 @@
       });
     }
 
-    var inzendingen = gefilterd.map(weergave.overzichtsRij).sort(function (a, b) {
+    var inzendingen = gefilterd.map(weergave.overzichtsRij);
+
+    // Net als de echte server filteren we op de herberekende categorie.
+    var categorie = parameters.get('categorie');
+    if (categorie) {
+      inzendingen = inzendingen.filter(function (i) {
+        return i.categorie === categorie;
+      });
+    }
+
+    inzendingen.sort(function (a, b) {
       return b.totaal - a.totaal || b.id - a.id;
     });
 
@@ -279,7 +307,9 @@
     var lichaam = opties && opties.body ? JSON.parse(opties.body) : {};
 
     if (pad === '/api/vragenlijst') {
-      return json({ delen: vragenlijst.DELEN, vragen: vragenlijst.VRAGEN });
+      // Net als de echte server sturen we de puntenwaarden en de
+      // voorwaardelijke vervolgvragen niet mee.
+      return json({ delen: vragenlijst.DELEN, vragen: vragenlijst.basisvragen().map(zonderPunten) });
     }
 
     if (pad === '/api/inzendingen' && methode === 'POST') {
@@ -288,6 +318,20 @@
       var resultaat = validatie.valideer(lichaam);
       if (!resultaat.geldig) {
         return json({ fout: 'Niet alle vragen zijn (juist) ingevuld.', velden: resultaat.fouten }, 422);
+      }
+
+      // De score bepaalt of er nog een onderbouwing nodig is.
+      var beoordeling = scoring.beoordeel(resultaat.antwoorden);
+      var openstaand = vragenlijst.vervolgvragenVoor(beoordeling.categorie).filter(function (vraag) {
+        return !resultaat.antwoorden[vraag.id];
+      });
+      if (openstaand.length > 0) {
+        return json({
+          vervolgvragen: openstaand.map(zonderPunten),
+          toelichting:
+            'Op basis van je antwoorden kan Microsoft 365 Copilot je werk waarschijnlijk ondersteunen. ' +
+            'Om je aanvraag goed te kunnen beoordelen, vragen we je nog \u00e9\u00e9n ding toe te lichten.',
+        });
       }
 
       var rij = weergave.nieuweRij(resultaat.antwoorden, {
