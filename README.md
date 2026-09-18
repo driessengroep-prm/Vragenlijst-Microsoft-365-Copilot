@@ -203,7 +203,7 @@ aantal punten dat die keuze oplevert.
 | `v4_context_missen` | 3. Ik mis soms context omdat ik niet bij eerdere gesprekken aanwezig was | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_informatie_combineren` | 3. Ik moet informatie uit meerdere documenten combineren | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_samenvatten` | 3. Ik maak samenvattingen van lange documenten of overleggen | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
-| `v5` | 4. Welke van onderstaande werkzaamheden zouden volgens *(telt niet mee in de score)* | kommagescheiden lijst |
+| `v5` | 4. Bij welke van onderstaande werkzaamheden denk je vo *(telt niet mee in de score)* | kommagescheiden lijst | kommagescheiden lijst |
 | `v5_anders` | Toelichting bij "Anders, namelijk" | vrije tekst |
 | `v6` | 5. Hoeveel tijd denk je wekelijks te kunnen besparen m | minder_dan_30_min (0), 30_tot_60_min (1), 1_tot_2_uur (2), 2_tot_4_uur (3), meer_dan_4_uur (4) |
 | `v8` | 6. Maak je al gebruik van Copilot Chat? | nee (0), af_en_toe (1), regelmatig (2), dagelijks (3) |

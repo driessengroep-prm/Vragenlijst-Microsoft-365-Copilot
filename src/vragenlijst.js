@@ -187,8 +187,8 @@ const VRAGEN = [
     nummer: 4,
     type: 'checkbox',
     vraag:
-      'Welke van onderstaande werkzaamheden zouden volgens jou het meeste baat hebben bij AI-ondersteuning?',
-    toelichting: 'Meerdere antwoorden mogelijk.',
+      'Bij welke van onderstaande werkzaamheden denk je voordeel te kunnen behalen met AI-ondersteuning?',
+    toelichting: 'Meerdere antwoorden mogelijk. Vink alles aan waar je voordeel ziet, niet alleen het grootste.',
     verplicht: false,
     opties: [
       { waarde: 'samenvatten_email', label: 'Samenvatten van e-mails' },
