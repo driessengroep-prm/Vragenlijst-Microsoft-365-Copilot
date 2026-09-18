@@ -414,6 +414,17 @@ als iemand belt met "ik heb niets gehoord".
   plek, pas de `<img>`-verwijzing aan in `public/index.html` en `src/views/beheer.html`, en
   draai `npm run build:static`. Het formaat maakt niet uit: de hoogte wordt in de stylesheet
   geregeld (`.dg-logo img`) en de breedte schaalt mee.
+- **Favicon** — de pictogrammen in `public/assets/img/` (`favicon-16.png`, `favicon-32.png`,
+  `favicon.png` en `apple-touch-icon.png`) zijn uit het beeldmerk van het logo gesneden.
+  Vervang je het logo, draai dan:
+
+  ```bash
+  npm run favicon
+  npm run build:static
+  ```
+
+  Het script zoekt zelf het ronde beeldmerk links van het woordmerk en schaalt dat naar de
+  maten die browsers gebruiken.
 - **Kleuren en vormen** — staan bovenaan `public/assets/css/driessen.css` als variabelen
   onder `:root`. Wijzig je daar een waarde, dan volgen beide pagina's automatisch.
 - **Lettertype** — Poppins wordt geladen via Google Fonts. Draait de applicatie in een
@@ -507,6 +518,7 @@ public/
 test/                 Tests op het model, de validatie en de statische versie
 tools/
   bouw-statisch.js    Genereert de testversie in docs/
+  favicon-maken.js    Snijdt de favicons uit het beeldmerk van het logo
   herbereken.js       Werkt opgeslagen scores bij na een modelwijziging
   mail-instellen.js   Vraag-en-antwoord-hulp voor de mailinstellingen
   mail-testen.js      Stuurt een testmail om de instellingen te controleren

@@ -16,7 +16,8 @@
     "build:static": "node tools/bouw-statisch.js",
     "herbereken": "node tools/herbereken.js",
     "mail:instellen": "node tools/mail-instellen.js",
-    "mail:test": "node tools/mail-testen.js"
+    "mail:test": "node tools/mail-testen.js",
+    "favicon": "node tools/favicon-maken.js"
   },
   "dependencies": {
     "better-sqlite3": "^11.5.0",
@@ -29,6 +30,7 @@
     "pg": "^8.13.1"
   },
   "devDependencies": {
+    "pngjs": "^7.0.0",
     "smtp-server": "^3.19.13"
   }
 }

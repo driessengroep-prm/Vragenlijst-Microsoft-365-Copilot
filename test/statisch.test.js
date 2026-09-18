@@ -52,10 +52,28 @@ test('de gekopieerde bestanden zijn gelijk aan hun bron', () => {
   }
 });
 
-test('het logo is meegekopieerd naar de statische versie', () => {
-  const bron = fs.readFileSync(path.join(WORTEL, 'public/assets/img/DriessenGroep.png'));
-  const doel = fs.readFileSync(path.join(DOCS, 'assets/img/DriessenGroep.png'));
-  assert.ok(bron.equals(doel), `het logo in docs/ wijkt af van de bron. ${HERBOUW}`);
+test('het logo en de favicons zijn meegekopieerd naar de statische versie', () => {
+  const afbeeldingen = [
+    'DriessenGroep.png',
+    'favicon-16.png',
+    'favicon-32.png',
+    'favicon.png',
+    'apple-touch-icon.png',
+  ];
+  for (const naam of afbeeldingen) {
+    const bron = fs.readFileSync(path.join(WORTEL, 'public/assets/img', naam));
+    const doel = fs.readFileSync(path.join(DOCS, 'assets/img', naam));
+    assert.ok(bron.equals(doel), `${naam} in docs/ wijkt af van de bron. ${HERBOUW}`);
+  }
+});
+
+test('de favicons zijn uit het logo gemaakt en niet leeg', () => {
+  for (const naam of ['favicon-16.png', 'favicon-32.png', 'favicon.png', 'apple-touch-icon.png']) {
+    const bestand = fs.readFileSync(path.join(WORTEL, 'public/assets/img', naam));
+    assert.ok(bestand.length > 200, `${naam} is verdacht klein`);
+    // PNG-handtekening
+    assert.ok(bestand.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])), `${naam} is geen PNG`);
+  }
 });
 
 test('beide pagina\u2019s tonen het logo', () => {
@@ -66,6 +84,8 @@ test('beide pagina\u2019s tonen het logo', () => {
       `${bestand} verwijst niet naar het logo. ${HERBOUW}`
     );
     assert.ok(!html.includes('logo.svg'), `${bestand} verwijst nog naar het oude plaatshouderlogo.`);
+    assert.ok(!html.includes('favicon.svg'), `${bestand} verwijst nog naar de oude plaatshouder-favicon.`);
+    assert.ok(html.includes('assets/img/favicon-32.png'), `${bestand} verwijst niet naar de favicon. ${HERBOUW}`);
   }
 });
 
