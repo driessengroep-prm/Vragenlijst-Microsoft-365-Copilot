@@ -143,9 +143,9 @@ Controleer de verbinding met `curl http://localhost:3000/gezondheid`.
 aangemaakt. Bestaat hij al, dan worden alleen ontbrekende kolommen toegevoegd — bestaande
 gegevens blijven staan.
 
-Het script verwijdert nooit kolommen. Heb je de tabel aangemaakt toen de vragenlijst nog een
-open vraag 7 bevatte, dan blijven `v7`, `score_usecase`, `score_usecase_automatisch` en
-`usecase_score_handmatig` bestaan. Ze worden niet meer gevuld en mogen weg; dat doe je
+Het script verwijdert nooit kolommen. Uit eerdere versies van de vragenlijst kunnen `v7`
+(de vervallen open vraag), `v3` (de vervallen vraag naar het aantal collega's),
+`score_usecase`, `score_usecase_automatisch` en `usecase_score_handmatig` blijven staan. Ze worden niet meer gevuld en mogen weg; dat doe je
 desgewenst zelf, bijvoorbeeld met `ALTER TABLE copilot_aanvragen DROP COLUMN v7;`.
 
 Scores van eerdere inzendingen worden bij het openen van de beheerdersomgeving opnieuw
@@ -195,21 +195,21 @@ aantal punten dat die keuze oplevert.
 | `v1_documenten` | 1. Documenten schrijven | minder_dan_2_uur (0), 2_tot_5_uur (1), 5_tot_10_uur (2), meer_dan_10_uur (3) |
 | `v1_presentaties` | 1. Presentaties maken | minder_dan_2_uur (0), 2_tot_5_uur (1), 5_tot_10_uur (2), meer_dan_10_uur (3) |
 | `v1_zoeken` | 1. Informatie zoeken in documenten, Teams of SharePoint | minder_dan_2_uur (0), 2_tot_5_uur (1), 5_tot_10_uur (2), meer_dan_10_uur (3) |
-| `v2` | 2. Werk je regelmatig met grote hoeveelheden informatie uit ve | nooit (0), soms (1), regelmatig (2), dagelijks (3) |
-| `v3` | 3. Met hoeveel collega's werk je gemiddeld samen binnen Micros | 1_tot_5 (0), 6_tot_10 (1), 11_tot_25 (2), meer_dan_25 (3) |
+| `v2` | 2. Werk je regelmatig met grote hoeveelheden informatie ui | nooit (0), soms (1), regelmatig (2), dagelijks (3) |
+| `v3_m365` | 3. Welk deel van je werkdag speelt zich af in Microsoft 36 | minder_dan_kwart (0), ongeveer_helft (1), grootste_deel (2), vrijwel_alles (3) |
 | `v4_oude_mails` | 4. Ik zoek informatie in oude mails | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_documenten_kwijt` | 4. Ik zoek documenten waarvan ik niet meer weet waar ze staan | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_vergadering_voorbereiden` | 4. Ik moet vergaderingen voorbereiden | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_context_missen` | 4. Ik mis soms context omdat ik niet bij eerdere gesprekken aanwezig was | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_informatie_combineren` | 4. Ik moet informatie uit meerdere documenten combineren | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_samenvatten` | 4. Ik maak samenvattingen van lange documenten of overleggen | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
-| `v5` | 5. Welke van onderstaande werkzaamheden zouden volgens jou het | kommagescheiden lijst van gekozen waarden |
+| `v5` | 5. Welke van onderstaande werkzaamheden zouden volgens jou | kommagescheiden lijst van gekozen waarden |
 | `v5_anders` | Toelichting bij "Anders, namelijk" | vrije tekst |
-| `v6` | 6. Hoeveel tijd denk je wekelijks te kunnen besparen met Copil | minder_dan_30_min (0), 30_tot_60_min (1), 1_tot_2_uur (2), 2_tot_4_uur (3), meer_dan_4_uur (4) |
+| `v6` | 6. Hoeveel tijd denk je wekelijks te kunnen besparen met C | minder_dan_30_min (0), 30_tot_60_min (1), 1_tot_2_uur (2), 2_tot_4_uur (3), meer_dan_4_uur (4) |
 | `v8` | 7. Maak je al gebruik van Copilot Chat? | nee (0), af_en_toe (1), regelmatig (2), dagelijks (3) |
 | `v9` | 8. Hoe beoordeel je jouw vaardigheid in het werken met AI? | beginner (0), basis (1), gevorderd (2), expert (3) |
-| `v10` | 9. Ben je bereid tijd te investeren in het leren gebruiken van | nee (0), beperkt (1), ja (2), ja_en_delen (3) |
-| `use_case` | Beschrijf één concrete, terugkerende situatie waarin Microsoft *(alleen bij geschikt_mits)* | vrije tekst |
+| `v10` | 9. Ben je bereid tijd te investeren in het leren gebruiken | nee (0), beperkt (1), ja (2), ja_en_delen (3) |
+| `use_case` | Beschrijf één concrete, terugkerende situatie waarin Micro *(alleen bij geschikt_mits)* | vrije tekst |
 
 De kolomnamen liggen vast en veranderen niet als de nummering van de vragen wijzigt. De
 oorspronkelijke vraag 7 (een open vraag) is vervallen; daardoor staan de vragen met kolomnaam

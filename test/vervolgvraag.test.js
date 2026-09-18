@@ -51,7 +51,7 @@ test('de vervolgvraag blokkeert een gewone inzending niet', () => {
     naam: 'Test Persoon',
     email: 'test@example.nl',
     v2: 'regelmatig',
-    v3: '11_tot_25',
+    v3_m365: 'grootste_deel',
     v5: ['samenvatten_email'],
     v6: '2_tot_4_uur',
     v8: 'af_en_toe',

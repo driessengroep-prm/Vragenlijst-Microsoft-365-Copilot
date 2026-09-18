@@ -14,7 +14,7 @@ function geldigeInvoer(overschrijf = {}) {
     functie: 'Adviseur',
     afdeling: 'Staf',
     v2: 'regelmatig',
-    v3: '11_tot_25',
+    v3_m365: 'grootste_deel',
     v5: ['samenvatten_email'],
     v5_anders: '',
     v6: '2_tot_4_uur',

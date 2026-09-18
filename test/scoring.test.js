@@ -28,7 +28,7 @@ function antwoorden(overschrijf = {}) {
   V4.forEach((id) => (basis[id] = 'nooit'));
   Object.assign(basis, {
     v2: 'nooit',
-    v3: '1_tot_5',
+    v3_m365: 'minder_dan_kwart',
     v5: [],
     v6: 'minder_dan_30_min',
     v8: 'nee',
@@ -45,7 +45,7 @@ function maximaal() {
   return antwoorden(
     Object.assign(hoog, {
       v2: 'dagelijks',
-      v3: 'meer_dan_25',
+      v3_m365: 'vrijwel_alles',
       v5: ['samenvatten_email', 'samenvatten_teams', 'opstellen_documenten', 'analyse_excel'],
       v6: 'meer_dan_4_uur',
       v8: 'dagelijks',

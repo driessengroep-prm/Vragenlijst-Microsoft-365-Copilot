@@ -145,17 +145,26 @@ const VRAGEN = [
     onderdeel: 'informatiewerk',
   },
   {
-    id: 'v3',
+    // Vervangt de oude vraag naar het aantal collega's. Die mat netwerkomvang
+    // in plaats van informatielast en overlapte met vraag 4. Deze vraag meet
+    // waar het model geen zicht op had: Copilot kan alleen redeneren over wat
+    // ín Microsoft 365 staat, dus werk in vakapplicaties telt niet mee.
+    // Het antwoord komt in de nieuwe kolom v3_m365; de oude kolom v3 blijft
+    // bestaan maar wordt niet meer gevuld.
+    id: 'v3_m365',
     deel: 1,
     nummer: 3,
     type: 'radio',
-    vraag: "Met hoeveel collega's werk je gemiddeld samen binnen Microsoft 365?",
+    vraag:
+      'Welk deel van je werkdag speelt zich af in Microsoft\u00a0365 (Outlook, Teams, Word, Excel, SharePoint) in plaats van in andere systemen?',
+    toelichting:
+      'Denk aan vakapplicaties zoals salaris- of HR-systemen: werk dat daar gebeurt, kan Copilot niet ondersteunen.',
     verplicht: true,
     opties: [
-      { waarde: '1_tot_5', label: '1-5', punten: 0 },
-      { waarde: '6_tot_10', label: '6-10', punten: 1 },
-      { waarde: '11_tot_25', label: '11-25', punten: 2 },
-      { waarde: 'meer_dan_25', label: 'Meer dan 25', punten: 3 },
+      { waarde: 'minder_dan_kwart', label: 'Minder dan een kwart', punten: 0 },
+      { waarde: 'ongeveer_helft', label: 'Ongeveer de helft', punten: 1 },
+      { waarde: 'grootste_deel', label: 'Het grootste deel', punten: 2 },
+      { waarde: 'vrijwel_alles', label: 'Vrijwel alles', punten: 3 },
     ],
     onderdeel: 'informatiewerk',
   },
