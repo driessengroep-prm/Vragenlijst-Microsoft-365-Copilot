@@ -27,7 +27,6 @@ const GEKOPIEERD = [
   ['public/assets/css/beheer.css', 'assets/css/beheer.css'],
   ['public/assets/js/formulier.js', 'assets/js/formulier.js'],
   ['public/assets/js/beheer.js', 'assets/js/beheer.js'],
-  ['public/assets/img/logo.svg', 'assets/img/logo.svg'],
   ['tools/statisch/demo-api.js', 'assets/js/demo-api.js'],
 ];
 
@@ -50,6 +49,23 @@ test('de gekopieerde bestanden zijn gelijk aan hun bron', () => {
     const bronInhoud = fs.readFileSync(path.join(WORTEL, bron), 'utf8');
     const doelInhoud = fs.readFileSync(path.join(DOCS, doel), 'utf8');
     assert.strictEqual(doelInhoud, bronInhoud, `${doel} wijkt af van ${bron}. ${HERBOUW}`);
+  }
+});
+
+test('het logo is meegekopieerd naar de statische versie', () => {
+  const bron = fs.readFileSync(path.join(WORTEL, 'public/assets/img/DriessenGroep.png'));
+  const doel = fs.readFileSync(path.join(DOCS, 'assets/img/DriessenGroep.png'));
+  assert.ok(bron.equals(doel), `het logo in docs/ wijkt af van de bron. ${HERBOUW}`);
+});
+
+test('beide pagina\u2019s tonen het logo', () => {
+  for (const bestand of ['index.html', 'beheer.html']) {
+    const html = fs.readFileSync(path.join(DOCS, bestand), 'utf8');
+    assert.ok(
+      html.includes('src="assets/img/DriessenGroep.png"'),
+      `${bestand} verwijst niet naar het logo. ${HERBOUW}`
+    );
+    assert.ok(!html.includes('logo.svg'), `${bestand} verwijst nog naar het oude plaatshouderlogo.`);
   }
 });
 

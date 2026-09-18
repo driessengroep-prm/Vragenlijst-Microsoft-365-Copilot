@@ -410,8 +410,10 @@ als iemand belt met "ik heb niets gehoord".
 
 ## 8. Huisstijl aanpassen
 
-- **Logo** — `public/assets/img/logo.svg` is een plaatshouder. Vervang het bestand door het
-  officiële logo; het formaat maakt niet uit, de hoogte wordt in de stylesheet geregeld.
+- **Logo** — `public/assets/img/DriessenGroep.png`. Wil je een ander bestand? Zet het op die
+  plek, pas de `<img>`-verwijzing aan in `public/index.html` en `src/views/beheer.html`, en
+  draai `npm run build:static`. Het formaat maakt niet uit: de hoogte wordt in de stylesheet
+  geregeld (`.dg-logo img`) en de breedte schaalt mee.
 - **Kleuren en vormen** — staan bovenaan `public/assets/css/driessen.css` als variabelen
   onder `:root`. Wijzig je daar een waarde, dan volgen beide pagina's automatisch.
 - **Lettertype** — Poppins wordt geladen via Google Fonts. Draait de applicatie in een
