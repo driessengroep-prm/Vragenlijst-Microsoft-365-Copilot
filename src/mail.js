@@ -199,6 +199,21 @@ function bouwBericht(antwoorden, verzondenOp = new Date()) {
 }
 
 /**
+ * Controleer of de mailserver bereikbaar is en de inloggegevens kloppen,
+ * zonder een mail te versturen. Gebruikt door `npm run mail:test`.
+ */
+async function controleerVerbinding() {
+  if (!ingeschakeld()) throw new Error('Er is geen mailserver ingesteld (MAIL_HOST ontbreekt).');
+  await verbinding().verify();
+  return true;
+}
+
+/** Verstuur een willekeurig bericht. Alleen bedoeld voor de testopdracht. */
+async function verstuur(bericht) {
+  return verbinding().sendMail(bericht);
+}
+
+/**
  * Verstuur de bevestiging. Geeft `true` terug als de mail is aangeboden aan de
  * mailserver. Een mislukking is nooit reden om de inzending te laten mislukken:
  * de aanvraag is op dat moment al opgeslagen.
@@ -218,4 +233,4 @@ async function verstuurBevestiging(antwoorden) {
   }
 }
 
-module.exports = { ingeschakeld, bouwBericht, verstuurBevestiging };
+module.exports = { ingeschakeld, bouwBericht, verstuurBevestiging, controleerVerbinding, verstuur };

@@ -342,7 +342,27 @@ ongeluk verandert.
 
 ### Inschakelen
 
-Vul de `MAIL_`-regels in `.env` in:
+Draai op de server waar de applicatie staat:
+
+```bash
+npm run mail:instellen
+```
+
+Dat stelt een paar vragen (welke mailserver, welk afzendadres) en schrijft de `MAIL_`-regels
+in `.env`. Je hoeft dus niet zelf op te zoeken welke variabelen er zijn. Het wachtwoord wordt
+tijdens het typen afgeschermd en komt nergens in beeld of in de samenvatting.
+
+Controleer daarna of het werkt, zonder eerst de vragenlijst in te vullen:
+
+```bash
+npm run mail:test -- jouw.adres@driessen.nl
+```
+
+Die opdracht maakt eerst verbinding, stuurt dan een testmail met `[TEST]` in het onderwerp, en
+vertaalt veelvoorkomende fouten naar iets waar je wat mee kunt. Er wordt niets in de database
+gezet. Herstart de applicatie als alles klopt.
+
+Liever met de hand? Dit zijn de regels in `.env`:
 
 ```ini
 MAIL_HOST=smtp.driessen.nl
@@ -354,12 +374,20 @@ MAIL_FROM=Driessen Groep <noreply@driessen.nl>
 MAIL_REPLY_TO=copilot@driessen.nl
 ```
 
-Zonder `MAIL_HOST` wordt er geen mail verstuurd en werkt de vragenlijst gewoon door. Gebruikt
-je interne mailserver een eigen certificaat dat niet door een publieke CA is uitgegeven, zet
-dan `MAIL_TLS_ONVEILIG=true`. Doe dat alleen voor een server op je eigen netwerk.
-
-`MAIL_REPLY_TO` is het adres waar antwoorden van medewerkers naartoe gaan. Laat je het leeg,
+Zonder `MAIL_HOST` wordt er geen mail verstuurd en werkt de vragenlijst gewoon door.
+`MAIL_REPLY_TO` is het adres waar antwoorden van medewerkers naartoe gaan; laat je het leeg,
 dan komen die bij het afzendadres terecht.
+
+### Aandachtspunten per soort mailserver
+
+| Route | Waar je op moet letten |
+| --- | --- |
+| **Microsoft 365 / Exchange Online** | `smtp.office365.com`, poort 587. Microsoft zet SMTP AUTH standaard uit; laat dat aanzetten voor de postbus die je gebruikt, of gebruik een relay-connector. Staat er MFA op het account, dan heb je een app-wachtwoord nodig. |
+| **Interne mailserver of relay** | Vaak poort 25 zonder inloggegevens, omdat de relay het IP-adres van de server vertrouwt. Gebruikt die een eigen certificaat dat niet door een publieke CA is uitgegeven, zet dan `MAIL_TLS_ONVEILIG=true`. Doe dat alleen voor een server op je eigen netwerk. |
+| **Externe maildienst** | Gebruikersnaam is vaak letterlijk `apikey`, wachtwoord is de API-sleutel. Regel SPF en DKIM voor het domein in `MAIL_FROM`, anders komt de mail in de ongewenste post terecht. |
+
+Komt het versturen wél goed door maar arriveert de mail niet, dan zit het aan de ontvangende
+kant: controleer SPF en DKIM voor het domein in `MAIL_FROM`.
 
 ### Als het versturen mislukt
 
@@ -477,6 +505,9 @@ public/
 test/                 Tests op het model, de validatie en de statische versie
 tools/
   bouw-statisch.js    Genereert de testversie in docs/
+  herbereken.js       Werkt opgeslagen scores bij na een modelwijziging
+  mail-instellen.js   Vraag-en-antwoord-hulp voor de mailinstellingen
+  mail-testen.js      Stuurt een testmail om de instellingen te controleren
   statisch/demo-api.js  Demolaag die /api/ in de browser afhandelt
 docs/                 Gegenereerde testversie voor GitHub Pages
 ```

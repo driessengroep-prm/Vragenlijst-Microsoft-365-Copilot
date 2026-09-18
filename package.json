@@ -14,7 +14,9 @@
     "migrate": "node src/db/migrate.js",
     "test": "node --test test/*.test.js",
     "build:static": "node tools/bouw-statisch.js",
-    "herbereken": "node tools/herbereken.js"
+    "herbereken": "node tools/herbereken.js",
+    "mail:instellen": "node tools/mail-instellen.js",
+    "mail:test": "node tools/mail-testen.js"
   },
   "dependencies": {
     "better-sqlite3": "^11.5.0",
