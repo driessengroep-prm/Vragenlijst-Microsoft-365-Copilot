@@ -23,6 +23,7 @@ const VASTE_KOLOMMEN = [
   { naam: 'akkoord_privacy', soort: 'boolean' },
   { naam: 'akkoord_contact', soort: 'boolean' },
   { naam: 'antwoorden_json', soort: 'text' },
+  { naam: 'bevestiging_verzonden', soort: 'boolean' },
 
   // Berekende scores volgens het beoordelingsmodel.
   { naam: 'score_informatiewerk', soort: 'decimal' },

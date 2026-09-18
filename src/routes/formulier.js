@@ -12,6 +12,7 @@ const { DELEN, basisvragen, vervolgvragenVoor } = require('../vragenlijst');
 const { valideer } = require('../validatie');
 const { beoordeel } = require('../scoring');
 const { nieuweRij } = require('../beheerweergave');
+const mail = require('../mail');
 
 const router = express.Router();
 
@@ -98,8 +99,11 @@ router.post('/inzendingen', inzendLimiet, async (req, res) => {
     akkoord_contact: resultaat.akkoordContact,
   });
 
+  let id;
   try {
-    await tabel().insert(rij);
+    const ingevoegd = await tabel().insert(rij).returning('id');
+    id = Array.isArray(ingevoegd) ? ingevoegd[0] : ingevoegd;
+    if (id && typeof id === 'object') id = id.id;
   } catch (fout) {
     console.error('Wegschrijven van een inzending mislukt:', fout);
     return res.status(500).json({
@@ -108,7 +112,17 @@ router.post('/inzendingen', inzendLimiet, async (req, res) => {
     });
   }
 
-  res.status(201).json({ ok: true });
+  // De aanvraag staat nu veilig in de database. Of de bevestigingsmail
+  // aankomt, mag het antwoord aan de invuller niet meer tegenhouden.
+  const bevestigd = await mail.verstuurBevestiging(antwoorden);
+  if (id !== undefined && id !== null) {
+    await tabel()
+      .where('id', id)
+      .update({ bevestiging_verzonden: bevestigd })
+      .catch((fout) => console.error('Bijwerken van de mailstatus mislukt:', fout.message));
+  }
+
+  res.status(201).json({ ok: true, bevestigingsmail: bevestigd });
 });
 
 module.exports = router;

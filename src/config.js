@@ -87,6 +87,26 @@ module.exports = {
     wachtwoord: process.env.ADMIN_PASSWORD || '',
   },
 
+  /**
+   * Bevestigingsmail aan de invuller. Zonder MAIL_HOST wordt er geen mail
+   * verstuurd; de vragenlijst blijft dan gewoon werken.
+   */
+  mail: {
+    ingeschakeld: Boolean(process.env.MAIL_HOST),
+    host: process.env.MAIL_HOST || '',
+    poort: Number(process.env.MAIL_PORT || 587),
+    beveiligd: bool(process.env.MAIL_SECURE, false),
+    gebruiker: process.env.MAIL_USER || '',
+    wachtwoord: process.env.MAIL_PASSWORD || '',
+    afzender: process.env.MAIL_FROM || 'Driessen Groep <noreply@example.nl>',
+    antwoordAdres: process.env.MAIL_REPLY_TO || '',
+    onderwerp:
+      process.env.MAIL_SUBJECT || 'Bevestiging van je aanvraag voor Microsoft 365 Copilot',
+    // Laat TLS-certificaten toe die niet door een publieke CA zijn uitgegeven.
+    // Alleen aanzetten voor een interne mailserver met een eigen certificaat.
+    negeerCertificaat: bool(process.env.MAIL_TLS_ONVEILIG, false),
+  },
+
   formulier: {
     // Maximaal aantal inzendingen per IP-adres per kwartier.
     maxInzendingenPerKwartier: Number(process.env.RATE_LIMIT || 5),

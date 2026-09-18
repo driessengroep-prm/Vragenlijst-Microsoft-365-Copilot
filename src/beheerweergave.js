@@ -83,6 +83,9 @@ function detail(rij) {
     },
     ingezonden_op: rij.ingezonden_op,
     akkoord_contact: jaNee(rij.akkoord_contact),
+    bevestiging_verzonden: rij.bevestiging_verzonden === null || rij.bevestiging_verzonden === undefined
+      ? null
+      : jaNee(rij.bevestiging_verzonden),
     antwoorden: leesbaar(antwoorden),
     beoordeling,
     besluit: rij.besluit || 'nieuw',

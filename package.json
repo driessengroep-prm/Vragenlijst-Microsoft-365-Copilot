@@ -23,6 +23,10 @@
     "express-rate-limit": "^7.4.1",
     "knex": "^3.1.0",
     "mysql2": "^3.11.5",
+    "nodemailer": "^10.0.10",
     "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "smtp-server": "^3.19.13"
   }
 }

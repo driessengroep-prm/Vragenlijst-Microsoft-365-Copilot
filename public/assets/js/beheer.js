@@ -337,6 +337,20 @@
           : 'Deze persoon heeft geen toestemming gegeven om benaderd te worden voor toelichting.'
       )
     );
+
+    // Of de bevestigingsmail is aangekomen, is voor jou relevant als iemand
+    // belt met "ik heb niets gehoord".
+    if (data.bevestiging_verzonden !== null && data.bevestiging_verzonden !== undefined) {
+      detailEl.appendChild(
+        el(
+          'p',
+          'dg-klein',
+          data.bevestiging_verzonden
+            ? 'Er is een bevestiging per e-mail verstuurd.'
+            : 'De bevestigingsmail is niet verstuurd. Controleer het logboek van de server.'
+        )
+      );
+    }
   }
 
   function bouwBeoordelingsformulier(data) {

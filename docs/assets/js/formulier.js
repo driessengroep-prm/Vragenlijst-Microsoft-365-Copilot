@@ -442,6 +442,10 @@
           return;
         }
         if (resultaat.status === 201 || resultaat.status === 202) {
+          if (resultaat.data && resultaat.data.bevestigingsmail) {
+            var mailregel = document.getElementById('bedankt-mail');
+            if (mailregel) mailregel.hidden = false;
+          }
           document.getElementById('intro').hidden = true;
           form.hidden = true;
           document.getElementById('bedankt').hidden = false;

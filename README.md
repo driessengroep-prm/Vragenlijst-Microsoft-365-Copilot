@@ -176,6 +176,7 @@ JSON, zodat er niets verloren gaat.
 | `besluit_toelichting` | Jouw toelichting bij het besluit |
 | `beoordeeld_door` / `beoordeeld_op` | Wie er beoordeelde en wanneer |
 | `akkoord_privacy` / `akkoord_contact` | Gegeven toestemmingen |
+| `bevestiging_verzonden` | Of de bevestigingsmail is verstuurd |
 | `ip_hash` / `user_agent` | Alleen voor misbruikdetectie; het IP-adres zelf wordt niet bewaard |
 
 ### Kolommen met de antwoorden
@@ -329,7 +330,57 @@ Je ziet daar:
 
 ---
 
-## 7. Huisstijl aanpassen
+## 7. Bevestigingsmail aan de invuller
+
+Wie de vragenlijst volledig verstuurt, krijgt een bevestiging per e-mail in de huisstijl. De
+mail bevestigt alleen de ontvangst en herhaalt naam, functie, afdeling, de datum en — als die
+is uitgevraagd — de eigen toelichting.
+
+**De mail bevat bewust geen score, categorie of advies.** Dat is informatie voor jou als
+beheerder, niet voor de invuller. Er is een test die daarop controleert, zodat dat niet per
+ongeluk verandert.
+
+### Inschakelen
+
+Vul de `MAIL_`-regels in `.env` in:
+
+```ini
+MAIL_HOST=smtp.driessen.nl
+MAIL_PORT=587
+MAIL_SECURE=false            # true voor SMTPS op poort 465
+MAIL_USER=
+MAIL_PASSWORD=
+MAIL_FROM=Driessen Groep <noreply@driessen.nl>
+MAIL_REPLY_TO=copilot@driessen.nl
+```
+
+Zonder `MAIL_HOST` wordt er geen mail verstuurd en werkt de vragenlijst gewoon door. Gebruikt
+je interne mailserver een eigen certificaat dat niet door een publieke CA is uitgegeven, zet
+dan `MAIL_TLS_ONVEILIG=true`. Doe dat alleen voor een server op je eigen netwerk.
+
+`MAIL_REPLY_TO` is het adres waar antwoorden van medewerkers naartoe gaan. Laat je het leeg,
+dan komen die bij het afzendadres terecht.
+
+### Als het versturen mislukt
+
+Het versturen gebeurt ná het opslaan. Gaat er iets mis met de mailserver, dan is de aanvraag
+dus nog steeds bewaard en krijgt de invuller gewoon het bedankscherm te zien. De fout komt in
+het logboek van de server, en in de kolom `bevestiging_verzonden` staat `false`. In de
+beheerdersomgeving zie je onderaan het detailpaneel of de bevestiging is verstuurd — handig
+als iemand belt met "ik heb niets gehoord".
+
+### Let op
+
+- Wie de vervolgvraag bij *Geschikt, mits* niet invult, verstuurt geen volledige aanvraag en
+  krijgt dus ook geen bevestiging. De mail is een bevestiging van ontvangst, geen redmiddel
+  voor afhakers.
+- Het e-mailadres wordt niet geverifieerd. Een typefout betekent dat de bevestiging niet
+  aankomt; de aanvraag staat er dan wel gewoon in.
+- In de testversie op GitHub Pages wordt geen mail verstuurd — daar draait immers geen server.
+
+---
+
+## 8. Huisstijl aanpassen
 
 - **Logo** — `public/assets/img/logo.svg` is een plaatshouder. Vervang het bestand door het
   officiële logo; het formaat maakt niet uit, de hoogte wordt in de stylesheet geregeld.
@@ -343,7 +394,7 @@ Je ziet daar:
 
 ---
 
-## 8. Vragen toevoegen of wijzigen
+## 9. Vragen toevoegen of wijzigen
 
 De vragenlijst staat volledig in `src/vragenlijst.js`. Dat bestand is de enige bron van
 waarheid: het formulier, de validatie, de puntentelling, de databasekolommen en de
@@ -376,7 +427,7 @@ omgezet — die keuze is aan jou. In de beheerdersomgeving blijft zo'n waarde zi
 
 ---
 
-## 9. Beveiliging en privacy
+## 10. Beveiliging en privacy
 
 - Het formulier is openbaar; de beheerdersomgeving en alle beheerders-API's zitten achter
   een wachtwoord.
@@ -397,7 +448,7 @@ optionele vraag of de medewerker benaderd mag worden.
 
 ---
 
-## 10. Bestandsindeling
+## 11. Bestandsindeling
 
 ```
 src/
@@ -406,6 +457,7 @@ src/
   vragenlijst.js      De vragenlijst: vragen, antwoorden en punten
   scoring.js          Het beoordelingsmodel
   validatie.js        Controle van inzendingen
+  mail.js             Bevestigingsmail aan de invuller
   db/
     index.js          Databaseverbinding
     migrate.js        Tabel aanmaken en bijwerken
@@ -431,7 +483,7 @@ docs/                 Gegenereerde testversie voor GitHub Pages
 
 ---
 
-## 11. In productie draaien
+## 12. In productie draaien
 
 Zet de applicatie achter een reverse proxy met HTTPS en houd het proces draaiend met
 bijvoorbeeld `systemd` of `pm2`:
