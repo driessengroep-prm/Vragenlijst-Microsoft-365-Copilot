@@ -9,10 +9,16 @@
  * overgebleven onderdelen:
  *
  *   Onderdeel                              Oorspronkelijk   Nu
- *   Informatiewerk (vragen 1 t/m 4)             40%         50
- *   Verwachte businesswaarde (vragen 5 en 6)    30%         38
+ *   Informatiewerk (vragen 1 t/m 3)             40%         75
+ *   Verwachte businesswaarde (vraag 5)          30%         13
  *   Concreet use case voorbeeld                 20%          -
- *   AI-volwassenheid (vragen 7 t/m 9)           10%         12
+ *   AI-volwassenheid (vragen 6 en 7)            10%         12
+ *
+ * Het zwaartepunt is verschoven van wat iemand vérwacht naar wat iemand
+ * doet. De verwachte tijdwinst is een voorspelling over een product dat de
+ * invuller meestal nog niet gebruikt, en bepaalde als enige vraag bij vrijwel
+ * elk profiel de adviescategorie. De vragen naar tijdsbesteding en naar
+ * herkenbare situaties meten gedrag en zijn moeilijker te overdrijven.
  *
  *   75-100 punten : Hoge prioriteit voor jaarlicentie
  *   60-74  punten : Geschikt, mits (er wordt een use case uitgevraagd)
@@ -28,25 +34,15 @@
 const { VRAGEN, puntenVoor } = require('./vragenlijst');
 
 const GEWICHTEN = {
-  informatiewerk: 50,
-  businesswaarde: 38,
+  informatiewerk: 75,
+  businesswaarde: 13,
   volwassenheid: 12,
 };
 
 const ONDERDEEL_LABELS = {
-  informatiewerk: 'Informatiewerk (vragen 1 t/m 4)',
-  businesswaarde: 'Verwachte businesswaarde (vragen 5 en 6)',
-  volwassenheid: 'AI-volwassenheid (vragen 7 t/m 9)',
-};
-
-/**
- * Binnen 'businesswaarde' weegt de verwachte tijdwinst (vraag 6) zwaarder dan
- * de breedte van de genoemde toepassingen (vraag 5): 30 van de 38 punten.
- */
-const BUSINESSWAARDE_VERDELING = {
-  v6_tijdwinst: 30,
-  v5_toepassingen: 8,
-  v5_max_meetellend: 4, // meer dan 4 aangevinkte toepassingen levert geen extra punten op
+  informatiewerk: 'Informatiewerk (vragen 1 t/m 3)',
+  businesswaarde: 'Verwachte businesswaarde (vraag 5)',
+  volwassenheid: 'AI-volwassenheid (vragen 6 en 7)',
 };
 
 /**
@@ -116,24 +112,31 @@ function afronden(getal) {
 }
 
 // ---------------------------------------------------------------------------
-// Onderdeel 1: informatiewerk (vragen 1 t/m 4) -> 50 punten
+// Score per onderdeel
 // ---------------------------------------------------------------------------
-function scoreInformatiewerk(antwoorden) {
+
+/**
+ * Tel de punten van alle vragen binnen een onderdeel op en schaal die naar het
+ * gewicht van dat onderdeel. Elke vraag weegt dus mee naar rato van het aantal
+ * punten dat erop te behalen valt; voeg je een vraag toe of haal je er een weg,
+ * dan blijft het onderdeel op zijn gewicht uitkomen.
+ */
+function scoreOnderdeel(antwoorden, onderdeel) {
   let ruw = 0;
   let ruwMax = 0;
   const detail = [];
 
-  for (const v of VRAGEN.filter((q) => q.onderdeel === 'informatiewerk')) {
+  for (const v of VRAGEN.filter((q) => q.onderdeel === onderdeel)) {
+    const maxPunten = Math.max(...v.opties.map((o) => o.punten));
+
     if (v.type === 'matrix') {
       for (const rij of v.rijen) {
-        const maxPunten = Math.max(...v.opties.map((o) => o.punten));
         const punten = puntenVoor(v.opties, antwoorden[rij.id]);
         ruw += punten;
         ruwMax += maxPunten;
         detail.push({ label: rij.label, punten, maxPunten });
       }
     } else {
-      const maxPunten = Math.max(...v.opties.map((o) => o.punten));
       const punten = puntenVoor(v.opties, antwoorden[v.id]);
       ruw += punten;
       ruwMax += maxPunten;
@@ -141,61 +144,8 @@ function scoreInformatiewerk(antwoorden) {
     }
   }
 
-  const score = ruwMax > 0 ? (ruw / ruwMax) * GEWICHTEN.informatiewerk : 0;
-  return { score: afronden(score), ruw, ruwMax, max: GEWICHTEN.informatiewerk, detail };
-}
-
-// ---------------------------------------------------------------------------
-// Onderdeel 2: verwachte businesswaarde (vragen 5 en 6) -> 38 punten
-// ---------------------------------------------------------------------------
-function scoreBusinesswaarde(antwoorden) {
-  const v6 = vraag('v6');
-  const v6Max = Math.max(...v6.opties.map((o) => o.punten));
-  const v6Punten = puntenVoor(v6.opties, antwoorden.v6);
-  const tijdwinstScore = v6Max > 0 ? (v6Punten / v6Max) * BUSINESSWAARDE_VERDELING.v6_tijdwinst : 0;
-
-  const gekozen = Array.isArray(antwoorden.v5) ? antwoorden.v5 : [];
-  const meetellend = Math.min(gekozen.length, BUSINESSWAARDE_VERDELING.v5_max_meetellend);
-  const toepassingenScore =
-    (meetellend / BUSINESSWAARDE_VERDELING.v5_max_meetellend) * BUSINESSWAARDE_VERDELING.v5_toepassingen;
-
-  const score = tijdwinstScore + toepassingenScore;
-  return {
-    score: afronden(score),
-    max: GEWICHTEN.businesswaarde,
-    detail: [
-      {
-        label: 'Verwachte tijdwinst per week (vraag 6)',
-        punten: afronden(tijdwinstScore),
-        maxPunten: BUSINESSWAARDE_VERDELING.v6_tijdwinst,
-      },
-      {
-        label: `Genoemde toepassingen (vraag 5): ${gekozen.length}`,
-        punten: afronden(toepassingenScore),
-        maxPunten: BUSINESSWAARDE_VERDELING.v5_toepassingen,
-      },
-    ],
-  };
-}
-
-// ---------------------------------------------------------------------------
-// Onderdeel 3: AI-volwassenheid (vragen 7 t/m 9) -> 12 punten
-// ---------------------------------------------------------------------------
-function scoreVolwassenheid(antwoorden) {
-  let ruw = 0;
-  let ruwMax = 0;
-  const detail = [];
-
-  for (const v of VRAGEN.filter((q) => q.onderdeel === 'volwassenheid')) {
-    const maxPunten = Math.max(...v.opties.map((o) => o.punten));
-    const punten = puntenVoor(v.opties, antwoorden[v.id]);
-    ruw += punten;
-    ruwMax += maxPunten;
-    detail.push({ label: `Vraag ${v.nummer}`, punten, maxPunten });
-  }
-
-  const score = ruwMax > 0 ? (ruw / ruwMax) * GEWICHTEN.volwassenheid : 0;
-  return { score: afronden(score), ruw, ruwMax, max: GEWICHTEN.volwassenheid, detail };
+  const max = GEWICHTEN[onderdeel];
+  return { score: afronden(ruwMax > 0 ? (ruw / ruwMax) * max : 0), ruw, ruwMax, max, detail };
 }
 
 // ---------------------------------------------------------------------------
@@ -214,6 +164,8 @@ function signalen(antwoorden) {
     (id) => puntenVoor(v1.opties, antwoorden[id]) >= 2
   ).length;
 
+  const aandeelM365 = puntenVoor(vraag('v3_m365').opties, antwoorden.v3_m365);
+
   const herkenbareSituaties = v4.rijen.filter(
     (rij) => puntenVoor(v4.opties, antwoorden[rij.id]) >= 2
   ).length;
@@ -225,17 +177,26 @@ function signalen(antwoorden) {
     {
       label: 'Kenniswerker (informatiewerk is kern van het werk)',
       voldaan: herkenbareSituaties >= 3,
-      toelichting: `${herkenbareSituaties} van de 6 situaties uit vraag 4 komen regelmatig of zeer vaak voor.`,
+      toelichting: `${herkenbareSituaties} van de ${v4.rijen.length} situaties uit vraag ${v4.nummer} komen regelmatig of zeer vaak voor.`,
     },
     {
       label: 'Veel vergaderingen, documenten en e-mails',
       voldaan: zwaarInformatiewerk >= 2,
-      toelichting: `${zwaarInformatiewerk} van de 3 kernactiviteiten kosten meer dan 5 uur per week.`,
+      toelichting: `${zwaarInformatiewerk} van de 3 kernactiviteiten uit vraag ${v1.nummer} kosten een aanzienlijk deel van de werktijd.`,
+    },
+    {
+      label: 'Werkt hoofdzakelijk binnen Microsoft 365',
+      voldaan: aandeelM365 >= 2,
+      toelichting: `Opgegeven aandeel: ${
+        (vraag('v3_m365').opties.find((o) => o.waarde === antwoorden.v3_m365) || {}).label || 'onbekend'
+      }. Copilot kan alleen ondersteunen wat zich binnen Microsoft 365 afspeelt.`,
     },
     {
       label: 'Meerdere concrete toepassingen genoemd',
       voldaan: genoemdeToepassingen >= 3,
-      toelichting: `${genoemdeToepassingen} van de 9 werkzaamheden uit vraag 5 aangevinkt.`,
+      toelichting: `${genoemdeToepassingen} van de ${vraag('v5').opties.length} werkzaamheden uit vraag ${
+        vraag('v5').nummer
+      } aangevinkt.`,
     },
     {
       label: 'Verwachte tijdwinst groter dan 2 uur per week',
@@ -266,9 +227,9 @@ function categorieVoor(totaal) {
  * @param {object} antwoorden  De ingevulde antwoorden (sleutels = veld-id's).
  */
 function beoordeel(antwoorden) {
-  const informatiewerk = scoreInformatiewerk(antwoorden);
-  const businesswaarde = scoreBusinesswaarde(antwoorden);
-  const volwassenheid = scoreVolwassenheid(antwoorden);
+  const informatiewerk = scoreOnderdeel(antwoorden, 'informatiewerk');
+  const businesswaarde = scoreOnderdeel(antwoorden, 'businesswaarde');
+  const volwassenheid = scoreOnderdeel(antwoorden, 'volwassenheid');
 
   const totaal = afronden(informatiewerk.score + businesswaarde.score + volwassenheid.score);
   const categorie = categorieVoor(totaal);

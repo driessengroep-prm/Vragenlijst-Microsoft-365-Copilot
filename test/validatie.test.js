@@ -13,18 +13,16 @@ function geldigeInvoer(overschrijf = {}) {
     email: 'test@example.nl',
     functie: 'Adviseur',
     afdeling: 'Staf',
-    v2: 'regelmatig',
     v3_m365: 'grootste_deel',
     v5: ['samenvatten_email'],
     v5_anders: '',
     v6: '2_tot_4_uur',
     v8: 'af_en_toe',
-    v9: 'basis',
     v10: 'ja',
     akkoord_privacy: true,
   };
   ['v1_email', 'v1_overleggen', 'v1_documenten', 'v1_presentaties', 'v1_zoeken'].forEach(
-    (id) => (invoer[id] = '5_tot_10_uur')
+    (id) => (invoer[id] = 'aanzienlijk_deel')
   );
   [
     'v4_oude_mails',
@@ -94,5 +92,5 @@ test('antwoorden worden omgezet naar leesbare labels', () => {
   assert.ok(vraag5.antwoord.includes('Anders: Notuleren'));
 
   const eersteMatrixrij = regels.find((r) => r.veld === 'v1_email');
-  assert.strictEqual(eersteMatrixrij.antwoord, '5-10 uur');
+  assert.strictEqual(eersteMatrixrij.antwoord, 'Een aanzienlijk deel van mijn tijd');
 });

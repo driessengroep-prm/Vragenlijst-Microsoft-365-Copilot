@@ -24,15 +24,13 @@ const V4 = [
 /** Bouwt een set antwoorden met overal dezelfde keuze. */
 function antwoorden(overschrijf = {}) {
   const basis = {};
-  V1.forEach((id) => (basis[id] = 'minder_dan_2_uur'));
+  V1.forEach((id) => (basis[id] = 'vrijwel_geen'));
   V4.forEach((id) => (basis[id] = 'nooit'));
   Object.assign(basis, {
-    v2: 'nooit',
     v3_m365: 'minder_dan_kwart',
     v5: [],
     v6: 'minder_dan_30_min',
     v8: 'nee',
-    v9: 'beginner',
     v10: 'nee',
   });
   return Object.assign(basis, overschrijf);
@@ -40,16 +38,14 @@ function antwoorden(overschrijf = {}) {
 
 function maximaal() {
   const hoog = {};
-  V1.forEach((id) => (hoog[id] = 'meer_dan_10_uur'));
+  V1.forEach((id) => (hoog[id] = 'groot_deel'));
   V4.forEach((id) => (hoog[id] = 'zeer_vaak'));
   return antwoorden(
     Object.assign(hoog, {
-      v2: 'dagelijks',
       v3_m365: 'vrijwel_alles',
       v5: ['samenvatten_email', 'samenvatten_teams', 'opstellen_documenten', 'analyse_excel'],
       v6: 'meer_dan_4_uur',
       v8: 'dagelijks',
-      v9: 'expert',
       v10: 'ja_en_delen',
     })
   );
@@ -59,8 +55,8 @@ test('de gewichten tellen op tot 100 punten', () => {
   const som = Object.values(GEWICHTEN).reduce((a, b) => a + b, 0);
   assert.strictEqual(som, 100);
   assert.deepStrictEqual(GEWICHTEN, {
-    informatiewerk: 50,
-    businesswaarde: 38,
+    informatiewerk: 75,
+    businesswaarde: 13,
     volwassenheid: 12,
   });
 });
@@ -69,8 +65,8 @@ test('een maximaal profiel haalt 100 punten en is direct kandidaat', () => {
   const resultaat = beoordeel(maximaal());
   assert.strictEqual(resultaat.totaal, 100);
   assert.strictEqual(resultaat.categorie, 'hoge_prioriteit');
-  assert.strictEqual(resultaat.onderdelen.informatiewerk.score, 50);
-  assert.strictEqual(resultaat.onderdelen.businesswaarde.score, 38);
+  assert.strictEqual(resultaat.onderdelen.informatiewerk.score, 75);
+  assert.strictEqual(resultaat.onderdelen.businesswaarde.score, 13);
   assert.strictEqual(resultaat.onderdelen.volwassenheid.score, 12);
 });
 
@@ -149,20 +145,26 @@ test('dezelfde antwoorden leveren altijd dezelfde score op', () => {
   assert.strictEqual(beoordeel(invoer).categorie, beoordeel(Object.assign({}, invoer)).categorie);
 });
 
-test('de verwachte tijdwinst weegt zwaarder dan het aantal genoemde toepassingen', () => {
-  const veelTijdwinst = beoordeel(antwoorden({ v6: 'meer_dan_4_uur', v5: [] }));
-  const veelToepassingen = beoordeel(
-    antwoorden({
-      v6: 'minder_dan_30_min',
-      v5: ['samenvatten_email', 'samenvatten_teams', 'opstellen_documenten', 'analyse_excel', 'zoeken_m365'],
-    })
+test('de aangevinkte werkzaamheden leveren geen punten meer op', () => {
+  const zonder = beoordeel(antwoorden({ v5: [] }));
+  const met = beoordeel(
+    antwoorden({ v5: ['samenvatten_email', 'samenvatten_teams', 'opstellen_documenten', 'analyse_excel'] })
   );
-  assert.ok(veelTijdwinst.onderdelen.businesswaarde.score > veelToepassingen.onderdelen.businesswaarde.score);
+
+  assert.strictEqual(met.totaal, zonder.totaal, 'vraag 4 hoort de score niet te bepalen');
+});
+
+test('geen enkele vraag zonder onderdeel telt mee in de score', () => {
+  const { VRAGEN } = require('../src/vragenlijst');
+  const scorend = VRAGEN.filter((v) => v.onderdeel).map((v) => v.onderdeel);
+  for (const onderdeel of scorend) {
+    assert.ok(GEWICHTEN[onderdeel] !== undefined, `onbekend onderdeel: ${onderdeel}`);
+  }
 });
 
 test('de profielkenmerken uit het kader worden herkend', () => {
   const resultaat = beoordeel(maximaal());
-  assert.strictEqual(resultaat.signalen.length, 4);
+  assert.strictEqual(resultaat.signalen.length, 5);
   assert.ok(resultaat.signalen.every((s) => s.voldaan), 'alle kenmerken horen te kloppen bij een maximaal profiel');
 
   const laag = beoordeel(antwoorden());

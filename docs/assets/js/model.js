@@ -51,11 +51,18 @@
  */
 
 /** Antwoordschalen die we vaker gebruiken. `punten` bepaalt de score. */
-const SCHAAL_TIJD = [
-  { waarde: 'minder_dan_2_uur', label: 'Minder dan 2 uur', punten: 0 },
-  { waarde: '2_tot_5_uur', label: '2-5 uur', punten: 1 },
-  { waarde: '5_tot_10_uur', label: '5-10 uur', punten: 2 },
-  { waarde: 'meer_dan_10_uur', label: 'Meer dan 10 uur', punten: 3 },
+/**
+ * Bewust een verhoudingsschaal en geen aantal uren. Met absolute uren kon
+ * iemand met een deeltijdcontract de bovenkant van de schaal niet bereiken,
+ * hoe informatie-intensief het werk ook was: vijf activiteiten van meer dan
+ * tien uur vraagt een werkweek van meer dan vijftig uur. Nu meet de vraag
+ * intensiteit in plaats van contractomvang.
+ */
+const SCHAAL_AANDEEL = [
+  { waarde: 'vrijwel_geen', label: 'Vrijwel geen tijd', punten: 0 },
+  { waarde: 'klein_deel', label: 'Een klein deel van mijn tijd', punten: 1 },
+  { waarde: 'aanzienlijk_deel', label: 'Een aanzienlijk deel van mijn tijd', punten: 2 },
+  { waarde: 'groot_deel', label: 'Een groot deel van mijn tijd', punten: 3 },
 ];
 
 const SCHAAL_FREQUENTIE = [
@@ -148,31 +155,16 @@ const VRAGEN = [
     deel: 1,
     nummer: 1,
     type: 'matrix',
-    vraag: 'Hoeveel tijd besteed je gemiddeld per week aan de volgende activiteiten?',
+    vraag: 'Welk deel van je werktijd gaat naar de volgende activiteiten?',
     verplicht: true,
     kolomkop: 'Activiteit',
-    opties: SCHAAL_TIJD,
+    opties: SCHAAL_AANDEEL,
     rijen: [
       { id: 'v1_email', label: 'E-mails verwerken' },
       { id: 'v1_overleggen', label: 'Overleggen/vergaderingen' },
       { id: 'v1_documenten', label: 'Documenten schrijven' },
       { id: 'v1_presentaties', label: 'Presentaties maken' },
       { id: 'v1_zoeken', label: 'Informatie zoeken in documenten, Teams of SharePoint' },
-    ],
-    onderdeel: 'informatiewerk',
-  },
-  {
-    id: 'v2',
-    deel: 1,
-    nummer: 2,
-    type: 'radio',
-    vraag: 'Werk je regelmatig met grote hoeveelheden informatie uit verschillende bronnen?',
-    verplicht: true,
-    opties: [
-      { waarde: 'nooit', label: 'Nooit', punten: 0 },
-      { waarde: 'soms', label: 'Soms', punten: 1 },
-      { waarde: 'regelmatig', label: 'Regelmatig', punten: 2 },
-      { waarde: 'dagelijks', label: 'Dagelijks', punten: 3 },
     ],
     onderdeel: 'informatiewerk',
   },
@@ -185,7 +177,7 @@ const VRAGEN = [
     // bestaan maar wordt niet meer gevuld.
     id: 'v3_m365',
     deel: 1,
-    nummer: 3,
+    nummer: 2,
     type: 'radio',
     vraag:
       'Welk deel van je werkdag speelt zich af in Microsoft\u00a0365 (Outlook, Teams, Word, Excel, SharePoint) in plaats van in andere systemen?',
@@ -205,7 +197,7 @@ const VRAGEN = [
   {
     id: 'v4',
     deel: 2,
-    nummer: 4,
+    nummer: 3,
     type: 'matrix',
     vraag: 'Hoe vaak herken je de volgende situaties?',
     verplicht: true,
@@ -224,7 +216,7 @@ const VRAGEN = [
   {
     id: 'v5',
     deel: 2,
-    nummer: 5,
+    nummer: 4,
     type: 'checkbox',
     vraag:
       'Welke van onderstaande werkzaamheden zouden volgens jou het meeste baat hebben bij AI-ondersteuning?',
@@ -242,14 +234,17 @@ const VRAGEN = [
       { waarde: 'anders', label: 'Anders, namelijk:', anders: true },
     ],
     andersVeld: 'v5_anders',
-    onderdeel: 'businesswaarde',
+    // Geen `onderdeel`, dus deze vraag levert geen punten op. Hij telde
+    // alleen het aantal vinkjes, ongeacht welke taken je aankruiste, en was
+    // daarmee de makkelijkst verdiende score in het model. De antwoorden
+    // blijven wel zichtbaar voor de beoordelaar en voeden een profielkenmerk.
   },
 
   // ---------------------------------------------------------------- Deel 3 --
   {
     id: 'v6',
     deel: 3,
-    nummer: 6,
+    nummer: 5,
     type: 'radio',
     vraag: 'Hoeveel tijd denk je wekelijks te kunnen besparen met Copilot?',
     verplicht: true,
@@ -266,7 +261,7 @@ const VRAGEN = [
   {
     id: 'v8',
     deel: 4,
-    nummer: 7,
+    nummer: 6,
     type: 'radio',
     vraag: 'Maak je al gebruik van Copilot Chat?',
     verplicht: true,
@@ -279,24 +274,9 @@ const VRAGEN = [
     onderdeel: 'volwassenheid',
   },
   {
-    id: 'v9',
-    deel: 4,
-    nummer: 8,
-    type: 'radio',
-    vraag: 'Hoe beoordeel je jouw vaardigheid in het werken met AI?',
-    verplicht: true,
-    opties: [
-      { waarde: 'beginner', label: 'Beginner', punten: 0 },
-      { waarde: 'basis', label: 'Basis', punten: 1 },
-      { waarde: 'gevorderd', label: 'Gevorderd', punten: 2 },
-      { waarde: 'expert', label: 'Expert', punten: 3 },
-    ],
-    onderdeel: 'volwassenheid',
-  },
-  {
     id: 'v10',
     deel: 4,
-    nummer: 9,
+    nummer: 7,
     type: 'radio',
     vraag: 'Ben je bereid tijd te investeren in het leren gebruiken van Microsoft 365 Copilot?',
     verplicht: true,
@@ -449,10 +429,16 @@ module.exports = {
  * overgebleven onderdelen:
  *
  *   Onderdeel                              Oorspronkelijk   Nu
- *   Informatiewerk (vragen 1 t/m 4)             40%         50
- *   Verwachte businesswaarde (vragen 5 en 6)    30%         38
+ *   Informatiewerk (vragen 1 t/m 3)             40%         75
+ *   Verwachte businesswaarde (vraag 5)          30%         13
  *   Concreet use case voorbeeld                 20%          -
- *   AI-volwassenheid (vragen 7 t/m 9)           10%         12
+ *   AI-volwassenheid (vragen 6 en 7)            10%         12
+ *
+ * Het zwaartepunt is verschoven van wat iemand vérwacht naar wat iemand
+ * doet. De verwachte tijdwinst is een voorspelling over een product dat de
+ * invuller meestal nog niet gebruikt, en bepaalde als enige vraag bij vrijwel
+ * elk profiel de adviescategorie. De vragen naar tijdsbesteding en naar
+ * herkenbare situaties meten gedrag en zijn moeilijker te overdrijven.
  *
  *   75-100 punten : Hoge prioriteit voor jaarlicentie
  *   60-74  punten : Geschikt, mits (er wordt een use case uitgevraagd)
@@ -468,25 +454,15 @@ module.exports = {
 const { VRAGEN, puntenVoor } = require('./vragenlijst');
 
 const GEWICHTEN = {
-  informatiewerk: 50,
-  businesswaarde: 38,
+  informatiewerk: 75,
+  businesswaarde: 13,
   volwassenheid: 12,
 };
 
 const ONDERDEEL_LABELS = {
-  informatiewerk: 'Informatiewerk (vragen 1 t/m 4)',
-  businesswaarde: 'Verwachte businesswaarde (vragen 5 en 6)',
-  volwassenheid: 'AI-volwassenheid (vragen 7 t/m 9)',
-};
-
-/**
- * Binnen 'businesswaarde' weegt de verwachte tijdwinst (vraag 6) zwaarder dan
- * de breedte van de genoemde toepassingen (vraag 5): 30 van de 38 punten.
- */
-const BUSINESSWAARDE_VERDELING = {
-  v6_tijdwinst: 30,
-  v5_toepassingen: 8,
-  v5_max_meetellend: 4, // meer dan 4 aangevinkte toepassingen levert geen extra punten op
+  informatiewerk: 'Informatiewerk (vragen 1 t/m 3)',
+  businesswaarde: 'Verwachte businesswaarde (vraag 5)',
+  volwassenheid: 'AI-volwassenheid (vragen 6 en 7)',
 };
 
 /**
@@ -556,24 +532,31 @@ function afronden(getal) {
 }
 
 // ---------------------------------------------------------------------------
-// Onderdeel 1: informatiewerk (vragen 1 t/m 4) -> 50 punten
+// Score per onderdeel
 // ---------------------------------------------------------------------------
-function scoreInformatiewerk(antwoorden) {
+
+/**
+ * Tel de punten van alle vragen binnen een onderdeel op en schaal die naar het
+ * gewicht van dat onderdeel. Elke vraag weegt dus mee naar rato van het aantal
+ * punten dat erop te behalen valt; voeg je een vraag toe of haal je er een weg,
+ * dan blijft het onderdeel op zijn gewicht uitkomen.
+ */
+function scoreOnderdeel(antwoorden, onderdeel) {
   let ruw = 0;
   let ruwMax = 0;
   const detail = [];
 
-  for (const v of VRAGEN.filter((q) => q.onderdeel === 'informatiewerk')) {
+  for (const v of VRAGEN.filter((q) => q.onderdeel === onderdeel)) {
+    const maxPunten = Math.max(...v.opties.map((o) => o.punten));
+
     if (v.type === 'matrix') {
       for (const rij of v.rijen) {
-        const maxPunten = Math.max(...v.opties.map((o) => o.punten));
         const punten = puntenVoor(v.opties, antwoorden[rij.id]);
         ruw += punten;
         ruwMax += maxPunten;
         detail.push({ label: rij.label, punten, maxPunten });
       }
     } else {
-      const maxPunten = Math.max(...v.opties.map((o) => o.punten));
       const punten = puntenVoor(v.opties, antwoorden[v.id]);
       ruw += punten;
       ruwMax += maxPunten;
@@ -581,61 +564,8 @@ function scoreInformatiewerk(antwoorden) {
     }
   }
 
-  const score = ruwMax > 0 ? (ruw / ruwMax) * GEWICHTEN.informatiewerk : 0;
-  return { score: afronden(score), ruw, ruwMax, max: GEWICHTEN.informatiewerk, detail };
-}
-
-// ---------------------------------------------------------------------------
-// Onderdeel 2: verwachte businesswaarde (vragen 5 en 6) -> 38 punten
-// ---------------------------------------------------------------------------
-function scoreBusinesswaarde(antwoorden) {
-  const v6 = vraag('v6');
-  const v6Max = Math.max(...v6.opties.map((o) => o.punten));
-  const v6Punten = puntenVoor(v6.opties, antwoorden.v6);
-  const tijdwinstScore = v6Max > 0 ? (v6Punten / v6Max) * BUSINESSWAARDE_VERDELING.v6_tijdwinst : 0;
-
-  const gekozen = Array.isArray(antwoorden.v5) ? antwoorden.v5 : [];
-  const meetellend = Math.min(gekozen.length, BUSINESSWAARDE_VERDELING.v5_max_meetellend);
-  const toepassingenScore =
-    (meetellend / BUSINESSWAARDE_VERDELING.v5_max_meetellend) * BUSINESSWAARDE_VERDELING.v5_toepassingen;
-
-  const score = tijdwinstScore + toepassingenScore;
-  return {
-    score: afronden(score),
-    max: GEWICHTEN.businesswaarde,
-    detail: [
-      {
-        label: 'Verwachte tijdwinst per week (vraag 6)',
-        punten: afronden(tijdwinstScore),
-        maxPunten: BUSINESSWAARDE_VERDELING.v6_tijdwinst,
-      },
-      {
-        label: `Genoemde toepassingen (vraag 5): ${gekozen.length}`,
-        punten: afronden(toepassingenScore),
-        maxPunten: BUSINESSWAARDE_VERDELING.v5_toepassingen,
-      },
-    ],
-  };
-}
-
-// ---------------------------------------------------------------------------
-// Onderdeel 3: AI-volwassenheid (vragen 7 t/m 9) -> 12 punten
-// ---------------------------------------------------------------------------
-function scoreVolwassenheid(antwoorden) {
-  let ruw = 0;
-  let ruwMax = 0;
-  const detail = [];
-
-  for (const v of VRAGEN.filter((q) => q.onderdeel === 'volwassenheid')) {
-    const maxPunten = Math.max(...v.opties.map((o) => o.punten));
-    const punten = puntenVoor(v.opties, antwoorden[v.id]);
-    ruw += punten;
-    ruwMax += maxPunten;
-    detail.push({ label: `Vraag ${v.nummer}`, punten, maxPunten });
-  }
-
-  const score = ruwMax > 0 ? (ruw / ruwMax) * GEWICHTEN.volwassenheid : 0;
-  return { score: afronden(score), ruw, ruwMax, max: GEWICHTEN.volwassenheid, detail };
+  const max = GEWICHTEN[onderdeel];
+  return { score: afronden(ruwMax > 0 ? (ruw / ruwMax) * max : 0), ruw, ruwMax, max, detail };
 }
 
 // ---------------------------------------------------------------------------
@@ -654,6 +584,8 @@ function signalen(antwoorden) {
     (id) => puntenVoor(v1.opties, antwoorden[id]) >= 2
   ).length;
 
+  const aandeelM365 = puntenVoor(vraag('v3_m365').opties, antwoorden.v3_m365);
+
   const herkenbareSituaties = v4.rijen.filter(
     (rij) => puntenVoor(v4.opties, antwoorden[rij.id]) >= 2
   ).length;
@@ -665,17 +597,26 @@ function signalen(antwoorden) {
     {
       label: 'Kenniswerker (informatiewerk is kern van het werk)',
       voldaan: herkenbareSituaties >= 3,
-      toelichting: `${herkenbareSituaties} van de 6 situaties uit vraag 4 komen regelmatig of zeer vaak voor.`,
+      toelichting: `${herkenbareSituaties} van de ${v4.rijen.length} situaties uit vraag ${v4.nummer} komen regelmatig of zeer vaak voor.`,
     },
     {
       label: 'Veel vergaderingen, documenten en e-mails',
       voldaan: zwaarInformatiewerk >= 2,
-      toelichting: `${zwaarInformatiewerk} van de 3 kernactiviteiten kosten meer dan 5 uur per week.`,
+      toelichting: `${zwaarInformatiewerk} van de 3 kernactiviteiten uit vraag ${v1.nummer} kosten een aanzienlijk deel van de werktijd.`,
+    },
+    {
+      label: 'Werkt hoofdzakelijk binnen Microsoft 365',
+      voldaan: aandeelM365 >= 2,
+      toelichting: `Opgegeven aandeel: ${
+        (vraag('v3_m365').opties.find((o) => o.waarde === antwoorden.v3_m365) || {}).label || 'onbekend'
+      }. Copilot kan alleen ondersteunen wat zich binnen Microsoft 365 afspeelt.`,
     },
     {
       label: 'Meerdere concrete toepassingen genoemd',
       voldaan: genoemdeToepassingen >= 3,
-      toelichting: `${genoemdeToepassingen} van de 9 werkzaamheden uit vraag 5 aangevinkt.`,
+      toelichting: `${genoemdeToepassingen} van de ${vraag('v5').opties.length} werkzaamheden uit vraag ${
+        vraag('v5').nummer
+      } aangevinkt.`,
     },
     {
       label: 'Verwachte tijdwinst groter dan 2 uur per week',
@@ -706,9 +647,9 @@ function categorieVoor(totaal) {
  * @param {object} antwoorden  De ingevulde antwoorden (sleutels = veld-id's).
  */
 function beoordeel(antwoorden) {
-  const informatiewerk = scoreInformatiewerk(antwoorden);
-  const businesswaarde = scoreBusinesswaarde(antwoorden);
-  const volwassenheid = scoreVolwassenheid(antwoorden);
+  const informatiewerk = scoreOnderdeel(antwoorden, 'informatiewerk');
+  const businesswaarde = scoreOnderdeel(antwoorden, 'businesswaarde');
+  const volwassenheid = scoreOnderdeel(antwoorden, 'volwassenheid');
 
   const totaal = afronden(informatiewerk.score + businesswaarde.score + volwassenheid.score);
   const categorie = categorieVoor(totaal);

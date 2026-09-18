@@ -19,11 +19,18 @@
  */
 
 /** Antwoordschalen die we vaker gebruiken. `punten` bepaalt de score. */
-const SCHAAL_TIJD = [
-  { waarde: 'minder_dan_2_uur', label: 'Minder dan 2 uur', punten: 0 },
-  { waarde: '2_tot_5_uur', label: '2-5 uur', punten: 1 },
-  { waarde: '5_tot_10_uur', label: '5-10 uur', punten: 2 },
-  { waarde: 'meer_dan_10_uur', label: 'Meer dan 10 uur', punten: 3 },
+/**
+ * Bewust een verhoudingsschaal en geen aantal uren. Met absolute uren kon
+ * iemand met een deeltijdcontract de bovenkant van de schaal niet bereiken,
+ * hoe informatie-intensief het werk ook was: vijf activiteiten van meer dan
+ * tien uur vraagt een werkweek van meer dan vijftig uur. Nu meet de vraag
+ * intensiteit in plaats van contractomvang.
+ */
+const SCHAAL_AANDEEL = [
+  { waarde: 'vrijwel_geen', label: 'Vrijwel geen tijd', punten: 0 },
+  { waarde: 'klein_deel', label: 'Een klein deel van mijn tijd', punten: 1 },
+  { waarde: 'aanzienlijk_deel', label: 'Een aanzienlijk deel van mijn tijd', punten: 2 },
+  { waarde: 'groot_deel', label: 'Een groot deel van mijn tijd', punten: 3 },
 ];
 
 const SCHAAL_FREQUENTIE = [
@@ -116,31 +123,16 @@ const VRAGEN = [
     deel: 1,
     nummer: 1,
     type: 'matrix',
-    vraag: 'Hoeveel tijd besteed je gemiddeld per week aan de volgende activiteiten?',
+    vraag: 'Welk deel van je werktijd gaat naar de volgende activiteiten?',
     verplicht: true,
     kolomkop: 'Activiteit',
-    opties: SCHAAL_TIJD,
+    opties: SCHAAL_AANDEEL,
     rijen: [
       { id: 'v1_email', label: 'E-mails verwerken' },
       { id: 'v1_overleggen', label: 'Overleggen/vergaderingen' },
       { id: 'v1_documenten', label: 'Documenten schrijven' },
       { id: 'v1_presentaties', label: 'Presentaties maken' },
       { id: 'v1_zoeken', label: 'Informatie zoeken in documenten, Teams of SharePoint' },
-    ],
-    onderdeel: 'informatiewerk',
-  },
-  {
-    id: 'v2',
-    deel: 1,
-    nummer: 2,
-    type: 'radio',
-    vraag: 'Werk je regelmatig met grote hoeveelheden informatie uit verschillende bronnen?',
-    verplicht: true,
-    opties: [
-      { waarde: 'nooit', label: 'Nooit', punten: 0 },
-      { waarde: 'soms', label: 'Soms', punten: 1 },
-      { waarde: 'regelmatig', label: 'Regelmatig', punten: 2 },
-      { waarde: 'dagelijks', label: 'Dagelijks', punten: 3 },
     ],
     onderdeel: 'informatiewerk',
   },
@@ -153,7 +145,7 @@ const VRAGEN = [
     // bestaan maar wordt niet meer gevuld.
     id: 'v3_m365',
     deel: 1,
-    nummer: 3,
+    nummer: 2,
     type: 'radio',
     vraag:
       'Welk deel van je werkdag speelt zich af in Microsoft\u00a0365 (Outlook, Teams, Word, Excel, SharePoint) in plaats van in andere systemen?',
@@ -173,7 +165,7 @@ const VRAGEN = [
   {
     id: 'v4',
     deel: 2,
-    nummer: 4,
+    nummer: 3,
     type: 'matrix',
     vraag: 'Hoe vaak herken je de volgende situaties?',
     verplicht: true,
@@ -192,7 +184,7 @@ const VRAGEN = [
   {
     id: 'v5',
     deel: 2,
-    nummer: 5,
+    nummer: 4,
     type: 'checkbox',
     vraag:
       'Welke van onderstaande werkzaamheden zouden volgens jou het meeste baat hebben bij AI-ondersteuning?',
@@ -210,14 +202,17 @@ const VRAGEN = [
       { waarde: 'anders', label: 'Anders, namelijk:', anders: true },
     ],
     andersVeld: 'v5_anders',
-    onderdeel: 'businesswaarde',
+    // Geen `onderdeel`, dus deze vraag levert geen punten op. Hij telde
+    // alleen het aantal vinkjes, ongeacht welke taken je aankruiste, en was
+    // daarmee de makkelijkst verdiende score in het model. De antwoorden
+    // blijven wel zichtbaar voor de beoordelaar en voeden een profielkenmerk.
   },
 
   // ---------------------------------------------------------------- Deel 3 --
   {
     id: 'v6',
     deel: 3,
-    nummer: 6,
+    nummer: 5,
     type: 'radio',
     vraag: 'Hoeveel tijd denk je wekelijks te kunnen besparen met Copilot?',
     verplicht: true,
@@ -234,7 +229,7 @@ const VRAGEN = [
   {
     id: 'v8',
     deel: 4,
-    nummer: 7,
+    nummer: 6,
     type: 'radio',
     vraag: 'Maak je al gebruik van Copilot Chat?',
     verplicht: true,
@@ -247,24 +242,9 @@ const VRAGEN = [
     onderdeel: 'volwassenheid',
   },
   {
-    id: 'v9',
-    deel: 4,
-    nummer: 8,
-    type: 'radio',
-    vraag: 'Hoe beoordeel je jouw vaardigheid in het werken met AI?',
-    verplicht: true,
-    opties: [
-      { waarde: 'beginner', label: 'Beginner', punten: 0 },
-      { waarde: 'basis', label: 'Basis', punten: 1 },
-      { waarde: 'gevorderd', label: 'Gevorderd', punten: 2 },
-      { waarde: 'expert', label: 'Expert', punten: 3 },
-    ],
-    onderdeel: 'volwassenheid',
-  },
-  {
     id: 'v10',
     deel: 4,
-    nummer: 9,
+    nummer: 7,
     type: 'radio',
     vraag: 'Ben je bereid tijd te investeren in het leren gebruiken van Microsoft 365 Copilot?',
     verplicht: true,

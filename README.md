@@ -3,7 +3,7 @@
 Webformulier waarmee medewerkers de vragenlijst *Microsoft 365 Copilot* invullen, plus een
 beheerdersomgeving waarin je per inzending ziet of je voor die persoon een Copilot-licentie
 zou moeten afsluiten. De score wordt volledig berekend uit de meerkeuzeantwoorden
-(50/38/12 met vier adviescategorieën). Valt iemand in de middelste categorie, dan vraagt het
+(75/13/12 met vier adviescategorieën). Valt iemand in de middelste categorie, dan vraagt het
 formulier zelf om een concrete use case.
 
 Alles staat in Driessen Groep-huisstijl: goud, donkergroen, witte kaart en afgeronde knoppen.
@@ -143,9 +143,10 @@ Controleer de verbinding met `curl http://localhost:3000/gezondheid`.
 aangemaakt. Bestaat hij al, dan worden alleen ontbrekende kolommen toegevoegd — bestaande
 gegevens blijven staan.
 
-Het script verwijdert nooit kolommen. Uit eerdere versies van de vragenlijst kunnen `v7`
-(de vervallen open vraag), `v3` (de vervallen vraag naar het aantal collega's),
-`score_usecase`, `score_usecase_automatisch` en `usecase_score_handmatig` blijven staan. Ze worden niet meer gevuld en mogen weg; dat doe je
+Het script verwijdert nooit kolommen. Uit eerdere versies van de vragenlijst kunnen deze
+kolommen blijven staan: `v7` (de vervallen open vraag), `v3` (het aantal collega's), `v2`
+(informatie uit meerdere bronnen), `v9` (de eigen AI-vaardigheid), `score_usecase`,
+`score_usecase_automatisch` en `usecase_score_handmatig`. Ze worden niet meer gevuld en mogen weg; dat doe je
 desgewenst zelf, bijvoorbeeld met `ALTER TABLE copilot_aanvragen DROP COLUMN v7;`.
 
 Scores van eerdere inzendingen worden bij het openen van de beheerdersomgeving opnieuw
@@ -190,26 +191,24 @@ aantal punten dat die keuze oplevert.
 | `email` | E-mailadres | vrije tekst |
 | `functie` | Functie | vrije tekst |
 | `afdeling` | Afdeling of organisatieonderdeel | vrije tekst |
-| `v1_email` | 1. E-mails verwerken | minder_dan_2_uur (0), 2_tot_5_uur (1), 5_tot_10_uur (2), meer_dan_10_uur (3) |
-| `v1_overleggen` | 1. Overleggen/vergaderingen | minder_dan_2_uur (0), 2_tot_5_uur (1), 5_tot_10_uur (2), meer_dan_10_uur (3) |
-| `v1_documenten` | 1. Documenten schrijven | minder_dan_2_uur (0), 2_tot_5_uur (1), 5_tot_10_uur (2), meer_dan_10_uur (3) |
-| `v1_presentaties` | 1. Presentaties maken | minder_dan_2_uur (0), 2_tot_5_uur (1), 5_tot_10_uur (2), meer_dan_10_uur (3) |
-| `v1_zoeken` | 1. Informatie zoeken in documenten, Teams of SharePoint | minder_dan_2_uur (0), 2_tot_5_uur (1), 5_tot_10_uur (2), meer_dan_10_uur (3) |
-| `v2` | 2. Werk je regelmatig met grote hoeveelheden informatie ui | nooit (0), soms (1), regelmatig (2), dagelijks (3) |
-| `v3_m365` | 3. Welk deel van je werkdag speelt zich af in Microsoft 36 | minder_dan_kwart (0), ongeveer_helft (1), grootste_deel (2), vrijwel_alles (3) |
-| `v4_oude_mails` | 4. Ik zoek informatie in oude mails | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
-| `v4_documenten_kwijt` | 4. Ik zoek documenten waarvan ik niet meer weet waar ze staan | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
-| `v4_vergadering_voorbereiden` | 4. Ik moet vergaderingen voorbereiden | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
-| `v4_context_missen` | 4. Ik mis soms context omdat ik niet bij eerdere gesprekken aanwezig was | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
-| `v4_informatie_combineren` | 4. Ik moet informatie uit meerdere documenten combineren | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
-| `v4_samenvatten` | 4. Ik maak samenvattingen van lange documenten of overleggen | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
-| `v5` | 5. Welke van onderstaande werkzaamheden zouden volgens jou | kommagescheiden lijst van gekozen waarden |
+| `v1_email` | 1. E-mails verwerken | vrijwel_geen (0), klein_deel (1), aanzienlijk_deel (2), groot_deel (3) |
+| `v1_overleggen` | 1. Overleggen/vergaderingen | vrijwel_geen (0), klein_deel (1), aanzienlijk_deel (2), groot_deel (3) |
+| `v1_documenten` | 1. Documenten schrijven | vrijwel_geen (0), klein_deel (1), aanzienlijk_deel (2), groot_deel (3) |
+| `v1_presentaties` | 1. Presentaties maken | vrijwel_geen (0), klein_deel (1), aanzienlijk_deel (2), groot_deel (3) |
+| `v1_zoeken` | 1. Informatie zoeken in documenten, Teams of SharePoint | vrijwel_geen (0), klein_deel (1), aanzienlijk_deel (2), groot_deel (3) |
+| `v3_m365` | 2. Welk deel van je werkdag speelt zich af in Microsof | minder_dan_kwart (0), ongeveer_helft (1), grootste_deel (2), vrijwel_alles (3) |
+| `v4_oude_mails` | 3. Ik zoek informatie in oude mails | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
+| `v4_documenten_kwijt` | 3. Ik zoek documenten waarvan ik niet meer weet waar ze staan | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
+| `v4_vergadering_voorbereiden` | 3. Ik moet vergaderingen voorbereiden | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
+| `v4_context_missen` | 3. Ik mis soms context omdat ik niet bij eerdere gesprekken aanwezig was | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
+| `v4_informatie_combineren` | 3. Ik moet informatie uit meerdere documenten combineren | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
+| `v4_samenvatten` | 3. Ik maak samenvattingen van lange documenten of overleggen | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
+| `v5` | 4. Welke van onderstaande werkzaamheden zouden volgens *(telt niet mee in de score)* | kommagescheiden lijst |
 | `v5_anders` | Toelichting bij "Anders, namelijk" | vrije tekst |
-| `v6` | 6. Hoeveel tijd denk je wekelijks te kunnen besparen met C | minder_dan_30_min (0), 30_tot_60_min (1), 1_tot_2_uur (2), 2_tot_4_uur (3), meer_dan_4_uur (4) |
-| `v8` | 7. Maak je al gebruik van Copilot Chat? | nee (0), af_en_toe (1), regelmatig (2), dagelijks (3) |
-| `v9` | 8. Hoe beoordeel je jouw vaardigheid in het werken met AI? | beginner (0), basis (1), gevorderd (2), expert (3) |
-| `v10` | 9. Ben je bereid tijd te investeren in het leren gebruiken | nee (0), beperkt (1), ja (2), ja_en_delen (3) |
-| `use_case` | Beschrijf één concrete, terugkerende situatie waarin Micro *(alleen bij geschikt_mits)* | vrije tekst |
+| `v6` | 5. Hoeveel tijd denk je wekelijks te kunnen besparen m | minder_dan_30_min (0), 30_tot_60_min (1), 1_tot_2_uur (2), 2_tot_4_uur (3), meer_dan_4_uur (4) |
+| `v8` | 6. Maak je al gebruik van Copilot Chat? | nee (0), af_en_toe (1), regelmatig (2), dagelijks (3) |
+| `v10` | 7. Ben je bereid tijd te investeren in het leren gebru | nee (0), beperkt (1), ja (2), ja_en_delen (3) |
+| `use_case` | Beschrijf één concrete, terugkerende situatie waarin M *(alleen bij geschikt_mits)* | vrije tekst |
 
 De kolomnamen liggen vast en veranderen niet als de nummering van de vragen wijzigt. De
 oorspronkelijke vraag 7 (een open vraag) is vervallen; daardoor staan de vragen met kolomnaam
@@ -228,16 +227,29 @@ ORDER BY score_totaal DESC;
 
 ## 5. Het beoordelingsmodel
 
-De score wordt volledig berekend uit de meerkeuzeantwoorden. De open vraag naar een concreet
-use case-voorbeeld is vervallen; de 20 punten daarvan zijn herverdeeld over de overgebleven
-onderdelen.
+De score wordt volledig berekend uit de meerkeuzeantwoorden. Het zwaartepunt ligt op wat
+iemand aantoonbaar dóét, niet op wat iemand verwácht: een voorspelling over een product dat
+je nog niet gebruikt is de minst betrouwbare input die er is, en juist de makkelijkste om te
+overdrijven.
 
 | Onderdeel | Vragen | In het kader | Nu |
 | --- | --- | --- | --- |
-| Informatiewerk | 1 t/m 4 | 40% | **50 punten** |
-| Verwachte businesswaarde | 5 en 6 | 30% | **38 punten** |
+| Informatiewerk | 1 t/m 3 | 40% | **75 punten** |
+| Verwachte businesswaarde | 5 | 30% | **13 punten** |
 | Concreet use case voorbeeld | (vervallen) | 20% | – |
-| AI-volwassenheid | 7 t/m 9 | 10% | **12 punten** |
+| AI-volwassenheid | 6 en 7 | 10% | **12 punten** |
+
+Per vraag komt dat neer op:
+
+| Vraag | Punten |
+| --- | --- |
+| 3. Herkenbare situaties (6 rijen) | 37,5 |
+| 1. Aandeel werktijd per activiteit (5 rijen) | 31,3 |
+| 5. Verwachte tijdwinst | 13,0 |
+| 2. Aandeel werk binnen Microsoft 365 | 6,3 |
+| 6. Gebruik je Copilot Chat al | 6,0 |
+| 7. Bereidheid tijd te investeren | 6,0 |
+| 4. Kansrijke werkzaamheden | – (telt niet mee) |
 
 De totaalscore bepaalt de adviescategorie. Microsoft 365 Copilot-licenties worden voor
 minimaal een jaar afgesloten, dus een proefperiode van 2-3 maanden kan niet worden toegezegd;
@@ -252,6 +264,56 @@ de categorieën beschrijven daarom prioriteit en voorwaarden.
 
 Een score kan een decimaal hebben, dus de categorie wordt bepaald op de ondergrens: 59,6
 punten valt onder *Eerst training*, 74,9 onder *Geschikt, mits*.
+
+### De vervolgvraag bij "Geschikt, mits"
+
+Bij deze categorie is de score alleen niet genoeg: er moet een concrete, terugkerende use case
+tegenover staan. Die vragen we daarom bij de invuller zelf uit, direct bij het verzenden:
+
+1. De invuller vult de negen meerkeuzevragen in en klikt op **Verzenden**.
+2. De server berekent de score. Valt die tussen 60 en 75, dan wordt de inzending **nog niet
+   opgeslagen**, maar verschijnt er één extra vraag op het formulier.
+3. Pas als die is beantwoord, wordt de aanvraag opgeslagen.
+
+Bij alle andere categorieën verschijnt de vraag niet en wordt er meteen opgeslagen.
+
+Een paar keuzes die daarbij horen:
+
+- **De server beslist, niet de browser.** Het beoordelingsmodel en de puntenwaarden worden
+  niet naar de browser gestuurd. Een invuller kan dus niet terugrekenen welke antwoorden het
+  hoogst scoren, en de vervolgvraag niet omzeilen door hem leeg te laten.
+- **Het antwoord telt niet mee in de score.** Het is onderbouwing voor jou, geen punten.
+- **Afhaken betekent geen aanvraag.** Wie de vervolgvraag niet invult, staat niet in je
+  database. Dat is bewust: een aanvraag zonder onderbouwing kun je in deze categorie toch niet
+  beoordelen. Wil je die halve inzendingen wél bewaren, laat het weten — dat is een kleine
+  aanpassing.
+- **Het antwoord staat in de kolom `use_case`** en wordt in de beheerdersomgeving bovenaan het
+  detailpaneel getoond, direct onder het advies.
+
+Wil je ook bij een andere categorie om een toelichting vragen? Zet in `src/vragenlijst.js` de
+`voorwaarde` van de vraag op die categorie, of voeg een tweede voorwaardelijke vraag toe.
+
+### Hoe de punten binnen een onderdeel verdeeld zijn
+
+Elke antwoordoptie heeft een puntenwaarde (zie de tabel in hoofdstuk 4). Binnen een onderdeel
+worden die punten opgeteld en daarna naar het gewicht van dat onderdeel geschaald. Voeg je een
+vraag toe of haal je er een weg, dan blijft het onderdeel op zijn gewicht uitkomen.
+
+- **Informatiewerk (75 punten)** — de zes situaties uit vraag 3 wegen het zwaarst, gevolgd
+  door de vijf activiteiten uit vraag 1. Vraag 2 (het aandeel werk binnen Microsoft 365) is
+  klein in punten maar belangrijk in betekenis: Copilot kan alleen redeneren over wat zich
+  binnen Microsoft 365 afspeelt, dus werk in vakapplicaties levert geen waarde op.
+- **Verwachte businesswaarde (13 punten)** — alleen vraag 5.
+- **AI-volwassenheid (12 punten)** — vraag 6 en 7 wegen even zwaar.
+
+Vraag 4 (welke werkzaamheden baat zouden hebben bij AI) levert géén punten op. Die telde
+alleen hoeveel vakjes je aankruiste, ongeacht welke, en was daarmee de makkelijkst verdiende
+score in het model. De antwoorden blijven wel zichtbaar in de beheerdersomgeving en voeden
+een van de profielkenmerken.
+
+Wil je een andere verdeling? Pas de `punten` per antwoordoptie aan in `src/vragenlijst.js`,
+of de gewichten in `src/scoring.js`. Draai daarna `npm test`: die controleert onder meer of
+de gewichten nog optellen tot 100 en of elke mogelijke score in een categorie valt.
 
 ### De vervolgvraag bij "Geschikt, mits"
 
@@ -301,10 +363,10 @@ de gewichten nog optellen tot 100 en of elke mogelijke score in een categorie va
 
 ### Profielkenmerken naast de score
 
-Het kader beschrijft bij *Direct kandidaat* een aantal kenmerken. Vier daarvan worden per
+Het kader beschrijft bij *Direct kandidaat* een aantal kenmerken. Vijf daarvan worden per
 inzending apart getoond met een vinkje: kenniswerker, veel vergaderingen/documenten/e-mails,
-meerdere concrete toepassingen genoemd, en een verwachte tijdwinst van meer dan 2 uur per
-week. Zo zie je of het profiel achter de score klopt met het beeld dat het kader schetst.
+werkt hoofdzakelijk binnen Microsoft 365, meerdere concrete toepassingen genoemd, en een
+verwachte tijdwinst van meer dan 2 uur per week. Zo zie je of het profiel achter de score klopt met het beeld dat het kader schetst.
 
 Omdat de score volledig automatisch tot stand komt, is dat het moment om even mee te kijken:
 twee mensen met dezelfde score kunnen een heel verschillend profiel hebben.
