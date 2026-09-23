@@ -85,8 +85,8 @@ function platteTekst(antwoorden, verzondenOp) {
   stukken.push(
     '',
     'Wat gebeurt er nu?',
-    'We beoordelen je aanvraag aan de hand van ons beoordelingskader. Je hoort van ons of we een',
-    'Microsoft 365 Copilot-licentie voor je afsluiten, of dat we dat (nog) niet doen.',
+    'We beoordelen je aanvraag en laten je weten of we een Microsoft 365 Copilot-licentie voor je',
+    'afsluiten, of dat we je eerst een e-learning aanbieden zodat je er straks meer uit haalt.',
     '',
     'Klopt er iets niet, of heb je een vraag? Beantwoord deze e-mail.',
     '',
@@ -160,8 +160,9 @@ function html(antwoorden, verzondenOp) {
 
                 <p style="margin:26px 0 6px;color:${groen};font-size:15px;font-weight:600;">Wat gebeurt er nu?</p>
                 <p style="margin:0 0 20px;color:${tekst};font-size:15px;line-height:1.6;">
-                  We beoordelen je aanvraag aan de hand van ons beoordelingskader. Je hoort van ons of we een
-                  Microsoft&nbsp;365 Copilot-licentie voor je afsluiten, of dat we dat (nog) niet doen.
+                  We beoordelen je aanvraag en laten je weten of we een Microsoft&nbsp;365 Copilot-licentie
+                  voor je afsluiten, of dat we je eerst een e-learning aanbieden zodat je er straks meer uit
+                  haalt.
                 </p>
                 <p style="margin:0 0 28px;color:${tekst};font-size:15px;line-height:1.6;">
                   Klopt er iets niet, of heb je een vraag? Beantwoord deze e-mail.
