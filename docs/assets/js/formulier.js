@@ -444,6 +444,10 @@
         if (resultaat.status === 201 || resultaat.status === 202) {
           if (resultaat.data && resultaat.data.bevestigingsmail) {
             var mailregel = document.getElementById('bedankt-mail');
+            var mailadres = document.getElementById('bedankt-mailadres');
+            // Het adres via textContent invullen: het komt van de bezoeker zelf
+            // en mag dus nooit als HTML worden uitgevoerd.
+            if (mailadres && antwoorden.email) mailadres.textContent = antwoorden.email;
             if (mailregel) mailregel.hidden = false;
           }
           document.getElementById('intro').hidden = true;
