@@ -11,7 +11,7 @@ const assert = require('node:assert');
 
 const { beoordeel, GEWICHTEN, CATEGORIEEN, categorieVoor } = require('../src/scoring');
 
-const V1 = ['v1_email', 'v1_overleggen', 'v1_documenten', 'v1_presentaties', 'v1_zoeken'];
+const V1 = ['v1_email', 'v1_overleggen', 'v1_documenten', 'v1_presentaties', 'v1_excel', 'v1_zoeken'];
 const V4 = [
   'v4_oude_mails',
   'v4_documenten_kwijt',
@@ -19,6 +19,7 @@ const V4 = [
   'v4_context_missen',
   'v4_informatie_combineren',
   'v4_samenvatten',
+  'v4_excel',
 ];
 
 /** Bouwt een set antwoorden met overal dezelfde keuze. */

@@ -176,7 +176,9 @@ function signalen(antwoorden) {
   return [
     {
       label: 'Kenniswerker (informatiewerk is kern van het werk)',
-      voldaan: herkenbareSituaties >= 3,
+      // De helft van de situaties, zodat de drempel meebeweegt als er rijen
+      // bij komen of afvallen.
+      voldaan: herkenbareSituaties >= Math.ceil(v4.rijen.length / 2),
       toelichting: `${herkenbareSituaties} van de ${v4.rijen.length} situaties uit vraag ${v4.nummer} komen regelmatig of zeer vaak voor.`,
     },
     {

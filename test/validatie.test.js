@@ -21,7 +21,7 @@ function geldigeInvoer(overschrijf = {}) {
     v10: 'ja',
     akkoord_privacy: true,
   };
-  ['v1_email', 'v1_overleggen', 'v1_documenten', 'v1_presentaties', 'v1_zoeken'].forEach(
+  ['v1_email', 'v1_overleggen', 'v1_documenten', 'v1_presentaties', 'v1_excel', 'v1_zoeken'].forEach(
     (id) => (invoer[id] = 'aanzienlijk_deel')
   );
   [
@@ -31,6 +31,7 @@ function geldigeInvoer(overschrijf = {}) {
     'v4_context_missen',
     'v4_informatie_combineren',
     'v4_samenvatten',
+    'v4_excel',
   ].forEach((id) => (invoer[id] = 'regelmatig'));
   return Object.assign(invoer, overschrijf);
 }

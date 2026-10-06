@@ -71,7 +71,7 @@
 
   // ------------------------------------------------------- voorbeelddata --
 
-  var V1 = ['v1_email', 'v1_overleggen', 'v1_documenten', 'v1_presentaties', 'v1_zoeken'];
+  var V1 = ['v1_email', 'v1_overleggen', 'v1_documenten', 'v1_presentaties', 'v1_excel', 'v1_zoeken'];
   var V4 = [
     'v4_oude_mails',
     'v4_documenten_kwijt',
@@ -79,6 +79,7 @@
     'v4_context_missen',
     'v4_informatie_combineren',
     'v4_samenvatten',
+    'v4_excel',
   ];
 
   var VOORBEELDEN = [

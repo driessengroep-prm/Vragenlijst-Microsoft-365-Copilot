@@ -195,6 +195,7 @@ aantal punten dat die keuze oplevert.
 | `v1_overleggen` | 1. Overleggen/vergaderingen | vrijwel_geen (0), klein_deel (1), aanzienlijk_deel (2), groot_deel (3) |
 | `v1_documenten` | 1. Documenten schrijven | vrijwel_geen (0), klein_deel (1), aanzienlijk_deel (2), groot_deel (3) |
 | `v1_presentaties` | 1. Presentaties maken | vrijwel_geen (0), klein_deel (1), aanzienlijk_deel (2), groot_deel (3) |
+| `v1_excel` | 1. Gegevens bijhouden of analyseren in Excel | vrijwel_geen (0), klein_deel (1), aanzienlijk_deel (2), groot_deel (3) |
 | `v1_zoeken` | 1. Informatie zoeken in documenten, Teams of SharePoint | vrijwel_geen (0), klein_deel (1), aanzienlijk_deel (2), groot_deel (3) |
 | `v3_m365` | 2. Welk deel van je werkdag speelt zich af in Microsof | minder_dan_kwart (0), ongeveer_helft (1), grootste_deel (2), vrijwel_alles (3) |
 | `v4_oude_mails` | 3. Ik zoek informatie in oude mails | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
@@ -203,7 +204,8 @@ aantal punten dat die keuze oplevert.
 | `v4_context_missen` | 3. Ik mis soms context omdat ik niet bij eerdere gesprekken aanwezig was | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_informatie_combineren` | 3. Ik moet informatie uit meerdere documenten combineren | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_samenvatten` | 3. Ik maak samenvattingen van lange documenten of overleggen | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
-| `v5` | 4. Bij welke van onderstaande werkzaamheden denk je vo *(telt niet mee in de score)* | kommagescheiden lijst | kommagescheiden lijst |
+| `v4_excel` | 3. Ik moet cijfers uit Excel analyseren of omzetten naar een overzicht | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
+| `v5` | 4. Bij welke van onderstaande werkzaamheden denk je vo *(telt niet mee in de score)* | kommagescheiden lijst |
 | `v5_anders` | Toelichting bij "Anders, namelijk" | vrije tekst |
 | `v6` | 5. Hoeveel tijd denk je wekelijks te kunnen besparen m | minder_dan_30_min (0), 30_tot_60_min (1), 1_tot_2_uur (2), 2_tot_4_uur (3), meer_dan_4_uur (4) |
 | `v8` | 6. Maak je al gebruik van Copilot Chat? | nee (0), af_en_toe (1), regelmatig (2), dagelijks (3) |
@@ -243,10 +245,10 @@ Per vraag komt dat neer op:
 
 | Vraag | Punten |
 | --- | --- |
-| 3. Herkenbare situaties (6 rijen) | 37,5 |
-| 1. Aandeel werktijd per activiteit (5 rijen) | 31,3 |
+| 3. Herkenbare situaties (7 rijen) | 37,5 |
+| 1. Aandeel werktijd per activiteit (6 rijen) | 32,1 |
 | 5. Verwachte tijdwinst | 13,0 |
-| 2. Aandeel werk binnen Microsoft 365 | 6,3 |
+| 2. Aandeel werk binnen Microsoft 365 | 5,4 |
 | 6. Gebruik je Copilot Chat al | 6,0 |
 | 7. Bereidheid tijd te investeren | 6,0 |
 | 4. Kansrijke werkzaamheden | – (telt niet mee) |
@@ -299,8 +301,8 @@ Elke antwoordoptie heeft een puntenwaarde (zie de tabel in hoofdstuk 4). Binnen 
 worden die punten opgeteld en daarna naar het gewicht van dat onderdeel geschaald. Voeg je een
 vraag toe of haal je er een weg, dan blijft het onderdeel op zijn gewicht uitkomen.
 
-- **Informatiewerk (75 punten)** — de zes situaties uit vraag 3 wegen het zwaarst, gevolgd
-  door de vijf activiteiten uit vraag 1. Vraag 2 (het aandeel werk binnen Microsoft 365) is
+- **Informatiewerk (75 punten)** — de zeven situaties uit vraag 3 wegen het zwaarst, gevolgd
+  door de zes activiteiten uit vraag 1. Vraag 2 (het aandeel werk binnen Microsoft 365) is
   klein in punten maar belangrijk in betekenis: Copilot kan alleen redeneren over wat zich
   binnen Microsoft 365 afspeelt, dus werk in vakapplicaties levert geen waarde op.
 - **Verwachte businesswaarde (13 punten)** — alleen vraag 5.

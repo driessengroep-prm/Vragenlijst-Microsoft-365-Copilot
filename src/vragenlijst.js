@@ -132,6 +132,7 @@ const VRAGEN = [
       { id: 'v1_overleggen', label: 'Overleggen/vergaderingen' },
       { id: 'v1_documenten', label: 'Documenten schrijven' },
       { id: 'v1_presentaties', label: 'Presentaties maken' },
+      { id: 'v1_excel', label: 'Gegevens bijhouden of analyseren in Excel' },
       { id: 'v1_zoeken', label: 'Informatie zoeken in documenten, Teams of SharePoint' },
     ],
     onderdeel: 'informatiewerk',
@@ -178,6 +179,10 @@ const VRAGEN = [
       { id: 'v4_context_missen', label: 'Ik mis soms context omdat ik niet bij eerdere gesprekken aanwezig was' },
       { id: 'v4_informatie_combineren', label: 'Ik moet informatie uit meerdere documenten combineren' },
       { id: 'v4_samenvatten', label: 'Ik maak samenvattingen van lange documenten of overleggen' },
+      {
+        id: 'v4_excel',
+        label: 'Ik moet cijfers uit Excel analyseren of omzetten naar een overzicht',
+      },
     ],
     onderdeel: 'informatiewerk',
   },
