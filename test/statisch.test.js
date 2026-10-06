@@ -128,3 +128,17 @@ test('de pagina’s zijn als testomgeving gemarkeerd en verwijzen naar elkaar', 
   assert.ok(vragenlijst.includes('href="beheer.html"'), 'de vragenlijst linkt niet naar de beheerderspagina.');
   assert.ok(beheer.includes('href="index.html"'), 'de beheerderspagina linkt niet naar de vragenlijst.');
 });
+
+test('de beheerderspagina leidt de uitleg af uit het model', () => {
+  // De uitleg over de bovengrens en de vervolgvraag stond eerder hard in de
+  // pagina en liep daardoor achter op het model. Die hoort nu uit de
+  // /api/beheer/model-gegevens te komen.
+  const beheer = fs.readFileSync(path.join(WORTEL, 'public/assets/js/beheer.js'), 'utf8');
+
+  assert.ok(beheer.includes('model.bovengrens'), 'de uitleg noemt de bovengrens niet vanuit het model');
+  assert.ok(beheer.includes('model.vervolgvragen'), 'de uitleg noemt de vervolgvraag niet vanuit het model');
+  assert.ok(
+    !/niet boven de \d+ punten|59 punten/.test(beheer),
+    'de beheerderspagina hoort geen grenswaarde hard in de tekst te hebben staan'
+  );
+});

@@ -123,6 +123,11 @@ const BOVENGRENS = {
     'Minder dan een kwart van het werk speelt zich af binnen Microsoft 365. Copilot kan alleen ' +
     'ondersteunen wat zich daar afspeelt, dus de score is begrensd op ' +
     '59 punten.',
+  // Dezelfde regel, maar algemeen geformuleerd voor de uitleg bij het model.
+  uitleg:
+    'Antwoordt iemand dat minder dan een kwart van het werk zich binnen Microsoft 365 afspeelt, dan ' +
+    'komt de totaalscore niet boven de 59 punten uit: Copilot kan alleen ondersteunen wat zich daar ' +
+    'afspeelt. Is een score afgetopt, dan zie je dat terug in de score-opbouw van die inzending.',
 };
 
 /** Hulpfunctie: haal een vraagdefinitie op via het id. */

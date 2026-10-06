@@ -231,3 +231,15 @@ test('het aandeel binnen Microsoft 365 weegt zwaarder dan een losse rij', () => 
 
   assert.ok(m365Hoger > rijHoger, `${m365Hoger} hoort groter te zijn dan ${rijHoger}`);
 });
+
+test('de bovengrens heeft een uitleg voor de beheerdersomgeving', () => {
+  assert.ok(BOVENGRENS.uitleg, 'zonder uitleg kan de beheerderspagina de bovengrens niet beschrijven');
+  assert.ok(
+    BOVENGRENS.uitleg.includes(String(BOVENGRENS.maximum)),
+    'de uitleg hoort hetzelfde maximum te noemen als dat werkelijk wordt toegepast'
+  );
+  assert.ok(
+    BOVENGRENS.reden.includes(String(BOVENGRENS.maximum)),
+    'de toelichting bij een afgetopte score hoort hetzelfde maximum te noemen'
+  );
+});

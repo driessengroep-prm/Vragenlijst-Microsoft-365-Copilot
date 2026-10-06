@@ -379,6 +379,18 @@
         onderdeelLabels: scoring.ONDERDEEL_LABELS,
         categorieen: scoring.CATEGORIEEN,
         besluiten: besluiten.BESLUITEN,
+        bovengrens: scoring.BOVENGRENS,
+        vervolgvragen: scoring.CATEGORIEEN.map(function (c) {
+          return {
+            categorie: c.sleutel,
+            label: c.kort || c.label,
+            vragen: vragenlijst.vervolgvragenVoor(c.sleutel).map(function (v) {
+              return v.vraag;
+            }),
+          };
+        }).filter(function (c) {
+          return c.vragen.length > 0;
+        }),
         beheerder: 'demo',
       });
     }

@@ -6,8 +6,9 @@ const express = require('express');
 
 const { tabel } = require('../db');
 const { beheerderAlleen } = require('../middleware/auth');
-const { CATEGORIEEN, GEWICHTEN, ONDERDEEL_LABELS } = require('../scoring');
+const { CATEGORIEEN, GEWICHTEN, ONDERDEEL_LABELS, BOVENGRENS } = require('../scoring');
 const { BESLUITEN } = require('../besluiten');
+const { vervolgvragenVoor } = require('../vragenlijst');
 const weergave = require('../beheerweergave');
 
 const router = express.Router();
@@ -20,6 +21,14 @@ router.get('/model', (req, res) => {
     onderdeelLabels: ONDERDEEL_LABELS,
     categorieen: CATEGORIEEN,
     besluiten: BESLUITEN,
+    bovengrens: BOVENGRENS,
+    // Welke categorie een extra vraag aan de invuller stelt. Zo beschrijft de
+    // uitleg in de beheerdersomgeving altijd het model zoals het echt is.
+    vervolgvragen: CATEGORIEEN.map((c) => ({
+      categorie: c.sleutel,
+      label: c.kort || c.label,
+      vragen: vervolgvragenVoor(c.sleutel).map((v) => v.vraag),
+    })).filter((c) => c.vragen.length > 0),
     beheerder: req.beheerder,
   });
 });

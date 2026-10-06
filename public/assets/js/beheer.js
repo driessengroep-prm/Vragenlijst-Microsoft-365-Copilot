@@ -104,10 +104,28 @@
       el(
         'p',
         null,
-        'De score wordt volledig berekend uit de meerkeuzeantwoorden en staat daarmee vast. Jij legt per ' +
-          'inzending vast welk besluit je op basis daarvan neemt.'
+        'De score wordt volledig berekend uit de meerkeuzeantwoorden. Jij legt per inzending vast welk ' +
+          'besluit je op basis daarvan neemt.'
       )
     );
+
+    // De uitleg over de bovengrens en de vervolgvraag komt uit het model zelf,
+    // zodat hij niet achterloopt zodra daar iets aan verandert.
+    if (model.bovengrens && model.bovengrens.uitleg) {
+      uitleg.appendChild(el('p', null, model.bovengrens.uitleg));
+    }
+
+    (model.vervolgvragen || []).forEach(function (c) {
+      uitleg.appendChild(
+        el(
+          'p',
+          null,
+          'Valt een score in "' + c.label + '", dan krijgt de invuller nog \u00e9\u00e9n vraag voorgelegd: ' +
+            '\u201c' + c.vragen.join('\u201d en \u201c') + '\u201d De aanvraag wordt pas opgeslagen als die is ' +
+            'beantwoord. Het antwoord telt niet mee in de score en staat bovenaan het detailpaneel.'
+        )
+      );
+    });
   }
 
   function tekenTegels(samenvatting, totaalAantal) {
