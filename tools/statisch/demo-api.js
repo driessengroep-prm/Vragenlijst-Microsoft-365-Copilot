@@ -25,7 +25,7 @@
   // Het volgnummer in de sleutel loopt op zodra het beoordelingsmodel wijzigt,
   // zodat terugkerende bezoekers verse voorbeelddata krijgen in plaats van
   // voorbeelden die bij een ouder model horen.
-  var OPSLAGSLEUTEL = 'dg-copilot-demo-inzendingen-v2';
+  var OPSLAGSLEUTEL = 'dg-copilot-demo-inzendingen-v3';
 
   // ------------------------------------------------------------- opslag ---
 
@@ -45,6 +45,28 @@
       /* Privémodus of volle opslag: de demo werkt dan alleen deze sessie. */
     }
   }
+
+  /**
+   * Ruim opslag van eerdere versies op. Het volgnummer in de sleutel loopt op
+   * zodra het beoordelingsmodel wijzigt; de oude inhoud hoort bij een model
+   * dat niet meer bestaat en zou alleen maar ruimte innemen.
+   */
+  function ruimOudeVersiesOp() {
+    try {
+      var basis = OPSLAGSLEUTEL.replace(/-v\d+$/, '');
+      Object.keys(window.localStorage)
+        .filter(function (sleutel) {
+          return sleutel !== OPSLAGSLEUTEL && sleutel.indexOf(basis) === 0;
+        })
+        .forEach(function (sleutel) {
+          window.localStorage.removeItem(sleutel);
+        });
+    } catch (fout) {
+      /* Privémodus of geblokkeerde opslag: dan valt er ook niets op te ruimen. */
+    }
+  }
+
+  ruimOudeVersiesOp();
 
   var rijenInGeheugen = null;
 
@@ -133,6 +155,22 @@
       v8: 'nee',
       v10: 'beperkt',
       dagenGeleden: 4,
+    },
+    {
+      // Laat de bovengrens zien: zwaar informatiewerk, maar vrijwel alles
+      // speelt zich af in een vakapplicatie buiten Microsoft 365.
+      naam: 'Youssef El Amrani',
+      email: 'youssef.elamrani@voorbeeld.nl',
+      functie: 'Specialist salarisverwerking',
+      afdeling: 'Salarisadministratie',
+      v1: 'groot_deel',
+      v4: 'zeer_vaak',
+      v3_m365: 'minder_dan_kwart',
+      v5: ['analyse_excel', 'samenvatten_email', 'zoeken_m365'],
+      v6: '2_tot_4_uur',
+      v8: 'af_en_toe',
+      v10: 'ja',
+      dagenGeleden: 3,
     },
     {
       naam: 'Peter Smit',
