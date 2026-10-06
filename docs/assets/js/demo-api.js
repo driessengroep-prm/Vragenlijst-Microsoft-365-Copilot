@@ -216,7 +216,6 @@
       var rij = weergave.nieuweRij(antwoorden, {
         ingezonden_op: datum.toISOString(),
         bron: 'voorbeeld',
-        akkoord_privacy: true,
         akkoord_contact: index % 2 === 0,
       });
       rij.id = index + 1;
@@ -366,7 +365,6 @@
       var rij = weergave.nieuweRij(resultaat.antwoorden, {
         ingezonden_op: new Date().toISOString(),
         bron: 'demo',
-        akkoord_privacy: resultaat.akkoordPrivacy,
         akkoord_contact: resultaat.akkoordContact,
       });
       rij.id = volgendId();

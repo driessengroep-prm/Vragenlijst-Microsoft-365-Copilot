@@ -145,8 +145,9 @@ gegevens blijven staan.
 
 Het script verwijdert nooit kolommen. Uit eerdere versies van de vragenlijst kunnen deze
 kolommen blijven staan: `v7` (de vervallen open vraag), `v3` (het aantal collega's), `v2`
-(informatie uit meerdere bronnen), `v9` (de eigen AI-vaardigheid), `score_usecase`,
-`score_usecase_automatisch` en `usecase_score_handmatig`. Ze worden niet meer gevuld en mogen weg; dat doe je
+(informatie uit meerdere bronnen), `v9` (de eigen AI-vaardigheid), `akkoord_privacy` (de
+vervallen akkoordverklaring), `score_usecase`, `score_usecase_automatisch` en
+`usecase_score_handmatig`. Ze worden niet meer gevuld en mogen weg; dat doe je
 desgewenst zelf, bijvoorbeeld met `ALTER TABLE copilot_aanvragen DROP COLUMN v7;`.
 
 Scores van eerdere inzendingen worden bij het openen van de beheerdersomgeving opnieuw
@@ -176,7 +177,7 @@ JSON, zodat er niets verloren gaat.
 | `besluit` | `nieuw`, `licentie_toekennen`, `training_eerst` of `afgewezen` |
 | `besluit_toelichting` | Jouw toelichting bij het besluit |
 | `beoordeeld_door` / `beoordeeld_op` | Wie er beoordeelde en wanneer |
-| `akkoord_privacy` / `akkoord_contact` | Gegeven toestemmingen |
+| `akkoord_contact` | Of de medewerker benaderd mag worden voor toelichting |
 | `bevestiging_verzonden` | Of de bevestigingsmail is verstuurd |
 | `ip_hash` / `user_agent` | Alleen voor misbruikdetectie; het IP-adres zelf wordt niet bewaard |
 
@@ -568,8 +569,12 @@ omgezet — die keuze is aan jou. In de beheerdersomgeving blijft zo'n waarde zi
 
 De vragenlijst verzamelt naam, e-mailadres, functie en afdeling. Die velden zijn toegevoegd
 omdat je anders niet weet voor wie je een besluit neemt; ze staan niet in het oorspronkelijke
-Word-document. Op het formulier staat een verplichte akkoordverklaring en een losse,
-optionele vraag of de medewerker benaderd mag worden.
+Word-document. Onder het formulier staat nog één optionele vraag: of de medewerker benaderd
+mag worden om de antwoorden toe te lichten.
+
+De verplichte akkoordverklaring is vervallen. Wil je toch ergens vastleggen waarvoor de
+antwoorden worden gebruikt, dan is de inleiding op het formulier daar de aangewezen plek; die
+vertelt al wat er met de inzending gebeurt.
 
 ---
 

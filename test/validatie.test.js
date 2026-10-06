@@ -19,7 +19,6 @@ function geldigeInvoer(overschrijf = {}) {
     v6: '2_tot_4_uur',
     v8: 'af_en_toe',
     v10: 'ja',
-    akkoord_privacy: true,
   };
   ['v1_email', 'v1_overleggen', 'v1_documenten', 'v1_presentaties', 'v1_excel', 'v1_zoeken'].forEach(
     (id) => (invoer[id] = 'aanzienlijk_deel')
@@ -49,7 +48,6 @@ test('elke verplichte vraag levert een eigen foutmelding op', () => {
   for (const veld of verplicht) {
     assert.ok(resultaat.fouten[veld.id], `verwachtte een foutmelding voor ${veld.id}`);
   }
-  assert.ok(resultaat.fouten.akkoord_privacy);
 });
 
 test('een ongeldig e-mailadres wordt geweigerd', () => {
@@ -57,10 +55,17 @@ test('een ongeldig e-mailadres wordt geweigerd', () => {
   assert.ok(!valideer(geldigeInvoer({ email: 'goed@voorbeeld.nl' })).fouten.email);
 });
 
-test('zonder akkoord is de inzending niet geldig', () => {
-  const resultaat = valideer(geldigeInvoer({ akkoord_privacy: false }));
-  assert.strictEqual(resultaat.geldig, false);
-  assert.ok(resultaat.fouten.akkoord_privacy);
+test('de vragenlijst vraagt niet langer om een akkoordverklaring', () => {
+  // De verplichte akkoordverklaring is vervallen; een inzending zonder die
+  // bevestiging hoort gewoon geldig te zijn.
+  const resultaat = valideer(geldigeInvoer());
+  assert.strictEqual(resultaat.geldig, true, JSON.stringify(resultaat.fouten));
+  assert.strictEqual(resultaat.fouten.akkoord_privacy, undefined);
+});
+
+test('de optionele toestemming om benaderd te worden blijft bestaan', () => {
+  assert.strictEqual(valideer(geldigeInvoer({ akkoord_contact: true })).akkoordContact, true);
+  assert.strictEqual(valideer(geldigeInvoer()).akkoordContact, false);
 });
 
 test('onbekende keuzes worden niet overgenomen', () => {

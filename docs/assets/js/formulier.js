@@ -300,8 +300,7 @@
     var velden = verplichteVelden();
     if (velden.length === 0) return;
     var ingevuld = velden.filter(veldIsIngevuld).length;
-    if (document.getElementById('akkoord_privacy').checked) ingevuld += 1;
-    var percentage = Math.round((ingevuld / (velden.length + 1)) * 100);
+    var percentage = Math.round((ingevuld / velden.length) * 100);
     voortgangsbalk.style.width = percentage + '%';
   }
 
@@ -334,7 +333,6 @@
       var veld = document.getElementById(vraag.id);
       antwoorden[vraag.id] = veld ? veld.value.trim() : '';
     });
-    antwoorden.akkoord_privacy = document.getElementById('akkoord_privacy').checked;
     antwoorden.akkoord_contact = document.getElementById('akkoord_contact').checked;
     antwoorden.website = (form.elements.website && form.elements.website.value) || '';
     return antwoorden;
@@ -350,9 +348,6 @@
     Array.prototype.forEach.call(form.querySelectorAll('.dg-veld--fout'), function (veld) {
       veld.classList.remove('dg-veld--fout');
     });
-    var akkoordFout = document.getElementById('fout-akkoord_privacy');
-    akkoordFout.textContent = '';
-    akkoordFout.hidden = true;
     foutmelding.hidden = true;
   }
 
@@ -402,9 +397,6 @@
     }
     if (antwoorden.v7 && antwoorden.v7.length < 15) {
       fouten.v7 = 'Beschrijf je voorbeeld iets uitgebreider (minimaal 15 tekens).';
-    }
-    if (!antwoorden.akkoord_privacy) {
-      fouten.akkoord_privacy = 'Je moet akkoord gaan om het formulier te kunnen versturen.';
     }
     return fouten;
   }

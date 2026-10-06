@@ -95,7 +95,6 @@ router.post('/inzendingen', inzendLimiet, async (req, res) => {
   const rij = nieuweRij(antwoorden, {
     ip_hash: ipHash(req.ip),
     user_agent: (req.get('user-agent') || '').slice(0, 255),
-    akkoord_privacy: resultaat.akkoordPrivacy,
     akkoord_contact: resultaat.akkoordContact,
   });
 

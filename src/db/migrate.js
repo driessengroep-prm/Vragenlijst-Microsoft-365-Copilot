@@ -20,7 +20,6 @@ const VASTE_KOLOMMEN = [
   { naam: 'bron', soort: 'string', lengte: 50 },
   { naam: 'ip_hash', soort: 'string', lengte: 64 },
   { naam: 'user_agent', soort: 'string', lengte: 255 },
-  { naam: 'akkoord_privacy', soort: 'boolean' },
   { naam: 'akkoord_contact', soort: 'boolean' },
   { naam: 'antwoorden_json', soort: 'text' },
   { naam: 'bevestiging_verzonden', soort: 'boolean' },

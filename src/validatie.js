@@ -63,15 +63,10 @@ function valideer(invoer) {
     antwoorden[veld.id] = waarde;
   }
 
-  if (!invoer.akkoord_privacy) {
-    fouten.akkoord_privacy = 'Je moet akkoord gaan om het formulier te kunnen versturen.';
-  }
-
   return {
     geldig: Object.keys(fouten).length === 0,
     fouten,
     antwoorden,
-    akkoordPrivacy: Boolean(invoer.akkoord_privacy),
     akkoordContact: Boolean(invoer.akkoord_contact),
   };
 }

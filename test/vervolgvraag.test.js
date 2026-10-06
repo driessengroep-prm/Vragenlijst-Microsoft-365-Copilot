@@ -55,7 +55,6 @@ test('de vervolgvraag blokkeert een gewone inzending niet', () => {
     v6: '2_tot_4_uur',
     v8: 'af_en_toe',
     v10: 'ja',
-    akkoord_privacy: true,
   };
   ['v1_email', 'v1_overleggen', 'v1_documenten', 'v1_presentaties', 'v1_excel', 'v1_zoeken'].forEach(
     (id) => (invoer[id] = 'aanzienlijk_deel')

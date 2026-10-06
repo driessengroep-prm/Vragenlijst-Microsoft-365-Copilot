@@ -791,15 +791,10 @@ function valideer(invoer) {
     antwoorden[veld.id] = waarde;
   }
 
-  if (!invoer.akkoord_privacy) {
-    fouten.akkoord_privacy = 'Je moet akkoord gaan om het formulier te kunnen versturen.';
-  }
-
   return {
     geldig: Object.keys(fouten).length === 0,
     fouten,
     antwoorden,
-    akkoordPrivacy: Boolean(invoer.akkoord_privacy),
     akkoordContact: Boolean(invoer.akkoord_contact),
   };
 }
@@ -1002,7 +997,6 @@ function nieuweRij(antwoorden, extra = {}) {
     bron: extra.bron || 'webformulier',
     ip_hash: extra.ip_hash || null,
     user_agent: extra.user_agent || null,
-    akkoord_privacy: Boolean(extra.akkoord_privacy),
     akkoord_contact: Boolean(extra.akkoord_contact),
     antwoorden_json: JSON.stringify(antwoorden),
 
