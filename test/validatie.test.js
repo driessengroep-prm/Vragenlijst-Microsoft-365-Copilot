@@ -13,7 +13,7 @@ function geldigeInvoer(overschrijf = {}) {
     email: 'test@example.nl',
     functie: 'Adviseur',
     afdeling: 'Staf',
-    v3_m365: 'grootste_deel',
+    v3_m365: 'meer_dan_helft',
     v5: ['samenvatten_email'],
     v5_anders: '',
     v6: '2_tot_4_uur',

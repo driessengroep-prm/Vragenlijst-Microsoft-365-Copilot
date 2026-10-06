@@ -104,7 +104,7 @@
       afdeling: 'Implementatie',
       v1: 'aanzienlijk_deel',
       v4: 'regelmatig',
-      v3_m365: 'grootste_deel',
+      v3_m365: 'meer_dan_helft',
       v5: ['opstellen_documenten', 'analyse_excel', 'zoeken_m365', 'samenvatten_teams'],
       v6: '2_tot_4_uur',
       use_case:
@@ -127,7 +127,7 @@
       afdeling: 'Support',
       v1: 'klein_deel',
       v4: 'soms',
-      v3_m365: 'ongeveer_helft',
+      v3_m365: 'kwart_tot_helft',
       v5: ['samenvatten_email'],
       v6: '30_tot_60_min',
       v8: 'nee',

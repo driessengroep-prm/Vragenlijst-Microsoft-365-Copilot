@@ -197,7 +197,7 @@ aantal punten dat die keuze oplevert.
 | `v1_presentaties` | 1. Presentaties maken | vrijwel_geen (0), klein_deel (1), aanzienlijk_deel (2), groot_deel (3) |
 | `v1_excel` | 1. Gegevens bijhouden of analyseren in Excel | vrijwel_geen (0), klein_deel (1), aanzienlijk_deel (2), groot_deel (3) |
 | `v1_zoeken` | 1. Informatie zoeken in documenten, Teams of SharePoint | vrijwel_geen (0), klein_deel (1), aanzienlijk_deel (2), groot_deel (3) |
-| `v3_m365` | 2. Welk deel van je werkdag speelt zich af in Microsof | minder_dan_kwart (0), ongeveer_helft (1), grootste_deel (2), vrijwel_alles (3) |
+| `v3_m365` | 2. Welk deel van je werkdag speelt zich af in Microsof | minder_dan_kwart (0), kwart_tot_helft (3), meer_dan_helft (6), vrijwel_alles (9) |
 | `v4_oude_mails` | 3. Ik zoek informatie in oude mails | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_documenten_kwijt` | 3. Ik zoek documenten waarvan ik niet meer weet waar ze staan | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
 | `v4_vergadering_voorbereiden` | 3. Ik moet vergaderingen voorbereiden | nooit (0), soms (1), regelmatig (2), zeer_vaak (3) |
@@ -245,10 +245,10 @@ Per vraag komt dat neer op:
 
 | Vraag | Punten |
 | --- | --- |
-| 3. Herkenbare situaties (7 rijen) | 37,5 |
-| 1. Aandeel werktijd per activiteit (6 rijen) | 32,1 |
+| 3. Herkenbare situaties (7 rijen) | 32,8 |
+| 1. Aandeel werktijd per activiteit (6 rijen) | 28,1 |
+| 2. Aandeel werk binnen Microsoft 365 | 14,1 |
 | 5. Verwachte tijdwinst | 13,0 |
-| 2. Aandeel werk binnen Microsoft 365 | 5,4 |
 | 6. Gebruik je Copilot Chat al | 6,0 |
 | 7. Bereidheid tijd te investeren | 6,0 |
 | 4. Kansrijke werkzaamheden | – (telt niet mee) |
@@ -266,6 +266,26 @@ de categorieën beschrijven daarom prioriteit en voorwaarden.
 
 Een score kan een decimaal hebben, dus de categorie wordt bepaald op de ondergrens: 59,6
 punten valt onder *Eerst training*, 74,9 onder *Geschikt, mits*.
+
+### Bovengrens bij werk buiten Microsoft 365
+
+Antwoordt iemand op vraag 2 dat minder dan een kwart van het werk zich binnen Microsoft 365
+afspeelt, dan komt de totaalscore niet boven de **59 punten** uit. Zo iemand valt dus hooguit
+in *Eerst training of begeleiding*.
+
+Dat is bewust geen aftrek maar een plafond. Copilot kan alleen redeneren over wat zich binnen
+Microsoft 365 afspeelt; speelt het werk zich grotendeels in een salaris- of HR-systeem af, dan
+helpt een licentie weinig, hoe informatie-intensief dat werk verder ook is. Met punten alleen
+is dat niet uit te drukken: ook bij een zware weging haalde zo'n profiel nog de hoogste
+categorie.
+
+Een harde afwijzing past er niet bij — deze collega's hebben Copilot Chat al, en als er later
+meer werk naar Microsoft 365 verschuift, verandert het beeld. Daarom ligt de grens op de
+bovenkant van *Eerst training* en niet lager.
+
+Is een score afgetopt, dan laat de beheerdersomgeving dat zien in de score-opbouw (de
+berekende score, een pijl en de grens) met een toelichting eronder. In de CSV-export staat de
+berekende score in de kolom `score_voor_begrenzing`; die is leeg als er niets is afgetopt.
 
 ### De vervolgvraag bij "Geschikt, mits"
 
@@ -302,9 +322,9 @@ worden die punten opgeteld en daarna naar het gewicht van dat onderdeel geschaal
 vraag toe of haal je er een weg, dan blijft het onderdeel op zijn gewicht uitkomen.
 
 - **Informatiewerk (75 punten)** — de zeven situaties uit vraag 3 wegen het zwaarst, gevolgd
-  door de zes activiteiten uit vraag 1. Vraag 2 (het aandeel werk binnen Microsoft 365) is
-  klein in punten maar belangrijk in betekenis: Copilot kan alleen redeneren over wat zich
-  binnen Microsoft 365 afspeelt, dus werk in vakapplicaties levert geen waarde op.
+  door de zes activiteiten uit vraag 1. Vraag 2 (het aandeel werk binnen Microsoft 365) telt
+  zwaarder dan een losse rij uit die twee: hij bepaalt niet hoevéél Copilot helpt, maar óf het
+  kan helpen.
 - **Verwachte businesswaarde (13 punten)** — alleen vraag 5.
 - **AI-volwassenheid (12 punten)** — vraag 6 en 7 wegen even zwaar.
 

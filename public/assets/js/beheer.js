@@ -233,6 +233,17 @@
       tbody.appendChild(rij);
     });
 
+    // Is de score afgetopt, dan tellen de onderdelen niet op tot het totaal.
+    // Die regel ertussen laat zien waar het verschil vandaan komt.
+    if (beoordeling.begrenzing) {
+      var grensRij = el('tr');
+      grensRij.appendChild(el('td', null, 'Begrensd (werk grotendeels buiten Microsoft 365)'));
+      grensRij.appendChild(
+        el('td', null, beoordeling.begrenzing.berekend + ' \u2192 ' + beoordeling.begrenzing.maximum)
+      );
+      tbody.appendChild(grensRij);
+    }
+
     var totaalRij = el('tr');
     totaalRij.appendChild(el('td', null, 'Totaal'));
     totaalRij.appendChild(el('td', null, beoordeling.totaal + ' / 100'));
@@ -306,6 +317,9 @@
     // Score-opbouw
     detailEl.appendChild(el('h3', null, 'Score-opbouw'));
     detailEl.appendChild(scoreOpbouwTabel(data.beoordeling));
+    if (data.beoordeling.begrenzing) {
+      detailEl.appendChild(el('p', 'dg-begrenzing', data.beoordeling.begrenzing.reden));
+    }
 
     // Kwalitatieve signalen
     detailEl.appendChild(el('h3', null, 'Profielkenmerken uit het beoordelingskader'));

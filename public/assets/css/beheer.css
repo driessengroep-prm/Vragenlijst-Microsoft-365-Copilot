@@ -470,3 +470,15 @@ details.dg-uitklap summary {
   color: var(--dg-tekst);
   white-space: pre-wrap;
 }
+
+/* Toelichting bij een score die is afgetopt. */
+.dg-begrenzing {
+  margin: -2px 0 20px;
+  padding: 10px 14px;
+  background: #fbf0e2;
+  border-left: 4px solid var(--dg-status-oranje);
+  border-radius: 0 var(--dg-radius) var(--dg-radius) 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #7d4a12;
+}

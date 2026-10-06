@@ -101,6 +101,30 @@ const CATEGORIEEN = [
   },
 ];
 
+/**
+ * Bovengrens op de totaalscore.
+ *
+ * Copilot kan alleen redeneren over wat zich binnen Microsoft 365 afspeelt.
+ * Speelt iemands werk zich grotendeels in vakapplicaties af, dan helpt een
+ * licentie weinig, hoe informatie-intensief dat werk verder ook is. Punten
+ * optellen kan dat niet uitdrukken: ook met een zware weging haalde zo iemand
+ * nog de hoogste categorie. Daarom geldt hier een plafond in plaats van een
+ * aftrek.
+ *
+ * De grens ligt op de bovenkant van 'Eerst training of begeleiding'. Een harde
+ * afwijzing past niet: deze collega's hebben Copilot Chat al, en als er later
+ * meer werk naar Microsoft 365 verschuift, verandert het beeld.
+ */
+const BOVENGRENS = {
+  vraag: 'v3_m365',
+  waarde: 'minder_dan_kwart',
+  maximum: 59,
+  reden:
+    'Minder dan een kwart van het werk speelt zich af binnen Microsoft 365. Copilot kan alleen ' +
+    'ondersteunen wat zich daar afspeelt, dus de score is begrensd op ' +
+    '59 punten.',
+};
+
 /** Hulpfunctie: haal een vraagdefinitie op via het id. */
 function vraag(id) {
   return VRAGEN.find((v) => v.id === id);
@@ -164,7 +188,9 @@ function signalen(antwoorden) {
     (id) => puntenVoor(v1.opties, antwoorden[id]) >= 2
   ).length;
 
-  const aandeelM365 = puntenVoor(vraag('v3_m365').opties, antwoorden.v3_m365);
+  // Op de positie in de schaal vergelijken, niet op punten: die veranderen
+  // als de weging van deze vraag wordt bijgesteld.
+  const m365Trede = vraag('v3_m365').opties.findIndex((o) => o.waarde === antwoorden.v3_m365);
 
   const herkenbareSituaties = v4.rijen.filter(
     (rij) => puntenVoor(v4.opties, antwoorden[rij.id]) >= 2
@@ -188,7 +214,7 @@ function signalen(antwoorden) {
     },
     {
       label: 'Werkt hoofdzakelijk binnen Microsoft 365',
-      voldaan: aandeelM365 >= 2,
+      voldaan: m365Trede >= 2,
       toelichting: `Opgegeven aandeel: ${
         (vraag('v3_m365').opties.find((o) => o.waarde === antwoorden.v3_m365) || {}).label || 'onbekend'
       }. Copilot kan alleen ondersteunen wat zich binnen Microsoft 365 afspeelt.`,
@@ -233,12 +259,19 @@ function beoordeel(antwoorden) {
   const businesswaarde = scoreOnderdeel(antwoorden, 'businesswaarde');
   const volwassenheid = scoreOnderdeel(antwoorden, 'volwassenheid');
 
-  const totaal = afronden(informatiewerk.score + businesswaarde.score + volwassenheid.score);
+  const berekend = afronden(informatiewerk.score + businesswaarde.score + volwassenheid.score);
+
+  const begrensd =
+    antwoorden[BOVENGRENS.vraag] === BOVENGRENS.waarde && berekend > BOVENGRENS.maximum;
+  const totaal = begrensd ? BOVENGRENS.maximum : berekend;
   const categorie = categorieVoor(totaal);
 
   return {
     onderdelen: { informatiewerk, businesswaarde, volwassenheid },
     totaal,
+    // Alleen gevuld als het plafond daadwerkelijk iets heeft afgetopt, zodat
+    // de beoordelaar ziet waarom de optelling niet uitkomt op het totaal.
+    begrenzing: begrensd ? { berekend, maximum: BOVENGRENS.maximum, reden: BOVENGRENS.reden } : null,
     categorie: categorie.sleutel,
     categorieLabel: categorie.label,
     categorieKort: categorie.kort || categorie.label,
@@ -250,6 +283,7 @@ function beoordeel(antwoorden) {
 
 module.exports = {
   GEWICHTEN,
+  BOVENGRENS,
   ONDERDEEL_LABELS,
   CATEGORIEEN,
   beoordeel,

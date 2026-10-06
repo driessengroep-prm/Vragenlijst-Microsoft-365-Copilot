@@ -153,11 +153,19 @@ const VRAGEN = [
     toelichting:
       'Denk aan vakapplicaties zoals salaris- of HR-systemen: werk dat daar gebeurt, kan Copilot niet ondersteunen.',
     verplicht: true,
+    // De schaal sluit aaneen: tussen "minder dan een kwart" en "ongeveer de
+    // helft" zat een gat, en juist aan de onderste trede hangt een
+    // bovengrens op de totaalscore. Dan mag er geen twijfel zijn waar een
+    // antwoord thuishoort.
+    //
+    // De punten lopen in stappen van drie in plaats van één. Daarmee weegt
+    // deze vraag zwaarder dan de losse rijen van vraag 1 en 3: hij bepaalt
+    // niet hoevéél Copilot helpt, maar óf het kan helpen.
     opties: [
       { waarde: 'minder_dan_kwart', label: 'Minder dan een kwart', punten: 0 },
-      { waarde: 'ongeveer_helft', label: 'Ongeveer de helft', punten: 1 },
-      { waarde: 'grootste_deel', label: 'Het grootste deel', punten: 2 },
-      { waarde: 'vrijwel_alles', label: 'Vrijwel alles', punten: 3 },
+      { waarde: 'kwart_tot_helft', label: 'Een kwart tot de helft', punten: 3 },
+      { waarde: 'meer_dan_helft', label: 'Meer dan de helft', punten: 6 },
+      { waarde: 'vrijwel_alles', label: 'Vrijwel alles', punten: 9 },
     ],
     onderdeel: 'informatiewerk',
   },

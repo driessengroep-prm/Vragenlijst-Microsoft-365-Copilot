@@ -9,7 +9,7 @@
 const test = require('node:test');
 const assert = require('node:assert');
 
-const { beoordeel, GEWICHTEN, CATEGORIEEN, categorieVoor } = require('../src/scoring');
+const { beoordeel, GEWICHTEN, CATEGORIEEN, BOVENGRENS, categorieVoor } = require('../src/scoring');
 
 const V1 = ['v1_email', 'v1_overleggen', 'v1_documenten', 'v1_presentaties', 'v1_excel', 'v1_zoeken'];
 const V4 = [
@@ -183,4 +183,51 @@ test('de vervolgvraag telt niet mee in de score', () => {
 
   assert.strictEqual(met.totaal, zonder.totaal);
   assert.strictEqual(met.categorie, zonder.categorie);
+});
+
+test('werk buiten Microsoft 365 wordt afgetopt in plaats van alleen afgestraft', () => {
+  const zwaarInformatiewerk = maximaal();
+
+  // Hetzelfde profiel, alleen het aandeel werk binnen Microsoft 365 verschilt.
+  const binnen = beoordeel({ ...zwaarInformatiewerk, v3_m365: 'vrijwel_alles' });
+  const buiten = beoordeel({ ...zwaarInformatiewerk, v3_m365: 'minder_dan_kwart' });
+
+  assert.strictEqual(binnen.begrenzing, null, 'wie binnen Microsoft 365 werkt wordt niet begrensd');
+  assert.strictEqual(binnen.categorie, 'hoge_prioriteit');
+
+  assert.ok(buiten.begrenzing, 'wie buiten Microsoft 365 werkt hoort begrensd te worden');
+  assert.strictEqual(buiten.totaal, BOVENGRENS.maximum);
+  assert.strictEqual(buiten.categorie, 'eerst_training');
+  assert.ok(
+    buiten.begrenzing.berekend > buiten.totaal,
+    'de begrenzing hoort de oorspronkelijke score te bewaren'
+  );
+});
+
+test('de bovengrens verlaagt een score die er al onder zit niet', () => {
+  const laag = antwoorden({ v3_m365: 'minder_dan_kwart' });
+  const resultaat = beoordeel(laag);
+
+  assert.ok(resultaat.totaal < BOVENGRENS.maximum);
+  assert.strictEqual(resultaat.begrenzing, null, 'onder de grens hoort er niets afgetopt te worden');
+});
+
+test('de bovengrens laat de categorie nooit hoger uitvallen', () => {
+  // Over het hele bereik: begrenzen mag alleen omlaag werken.
+  const basis = maximaal();
+  for (const waarde of ['minder_dan_kwart', 'kwart_tot_helft', 'meer_dan_helft', 'vrijwel_alles']) {
+    const r = beoordeel({ ...basis, v3_m365: waarde });
+    assert.ok(r.totaal <= 100 && r.totaal >= 0);
+    if (r.begrenzing) assert.ok(r.totaal <= r.begrenzing.berekend);
+  }
+});
+
+test('het aandeel binnen Microsoft 365 weegt zwaarder dan een losse rij', () => {
+  // Eén trede hoger op deze vraag hoort meer te doen dan één trede op een
+  // losse activiteit uit vraag 1.
+  const basis = antwoorden({ v3_m365: 'kwart_tot_helft' });
+  const m365Hoger = beoordeel({ ...basis, v3_m365: 'meer_dan_helft' }).totaal - beoordeel(basis).totaal;
+  const rijHoger = beoordeel({ ...basis, v1_email: 'klein_deel' }).totaal - beoordeel(basis).totaal;
+
+  assert.ok(m365Hoger > rijHoger, `${m365Hoger} hoort groter te zijn dan ${rijHoger}`);
 });
